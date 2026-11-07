@@ -6,6 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../cubits/scan_cubit.dart';
 import '../main.dart';
+import '../widgets/manual_code_dialog.dart';
 
 class ScanScreen extends StatefulWidget {
   final bool isEntry;
@@ -81,6 +82,21 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
+  Future<void> _enterManually() async {
+    if (_hasScanned) return;
+    final code = await showManualCodeDialog(context);
+    if (code == null || code.isEmpty || !mounted) return;
+    final value = _normalizeScannedValue(code);
+
+    setState(() => _hasScanned = true);
+    _scannerController.stop();
+    if (widget.isEntry) {
+      _scanCubit.validateEntry(value);
+    } else {
+      _scanCubit.validateExit(value);
+    }
+  }
+
   void _resetScanner() {
     setState(() {
       _hasScanned = false;
@@ -135,6 +151,11 @@ class _ScanScreenState extends State<ScanScreen> {
             onPressed: () => context.pop(),
           ),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.keyboard),
+              tooltip: 'Enter code manually',
+              onPressed: _enterManually,
+            ),
             // Torch toggle
             IconButton(
               icon: const Icon(Icons.flash_on),
@@ -155,7 +176,7 @@ class _ScanScreenState extends State<ScanScreen> {
             MobileScanner(controller: _scannerController, onDetect: _onDetect),
 
             // Scan overlay
-            _ScanOverlay(scanType: scanType),
+            _ScanOverlay(scanType: scanType, onManualEntry: _enterManually),
 
             // Loading overlay
             BlocBuilder<ScanCubit, ScanState>(
@@ -195,8 +216,9 @@ class _ScanScreenState extends State<ScanScreen> {
 
 class _ScanOverlay extends StatelessWidget {
   final String scanType;
+  final VoidCallback onManualEntry;
 
-  const _ScanOverlay({required this.scanType});
+  const _ScanOverlay({required this.scanType, required this.onManualEntry});
 
   @override
   Widget build(BuildContext context) {
@@ -225,6 +247,14 @@ class _ScanOverlay extends StatelessWidget {
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: onManualEntry,
+                icon: const Icon(Icons.keyboard, color: Colors.white),
+                label: const Text(
+                  'Camera not working? Enter code manually',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],

@@ -16,6 +16,7 @@ Find a slot, pay online, drive in through a QR gate. Guards scan, overstays are 
 
 <p align="center">
   <a href="https://parkwise-alpha.vercel.app"><b>Try the live demo</b></a> ·
+  <a href="https://github.com/08pranav/parkwise-platform/releases/latest"><b>Download APKs</b></a> ·
   <a href="https://parkwise-api-77gc.onrender.com/api/docs/">API docs (Swagger)</a> ·
   <a href="docs/EDGE_CASES.md">Edge cases we solved</a>
 </p>
@@ -115,7 +116,7 @@ These are the problems that turned out to be the real work. Each has a test; det
 | Background jobs | Celery with beat, Redis |
 | Database | PostgreSQL |
 | Payments | Stripe and Razorpay (test mode) |
-| Apps | Flutter (web and Android), bloc/cubit, go_router, Dio, json_serializable, one shared `core` package |
+| Apps | Flutter (web and signed Android APKs), bloc/cubit, go_router, Dio, json_serializable, one shared `core` package |
 | Hosting | Supabase, Upstash, Render, Vercel (all free tiers) |
 | Quality | pytest + factory_boy, ruff, `flutter analyze --fatal-infos`, gitleaks, GitHub Actions |
 
@@ -142,6 +143,11 @@ flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000 --dart-de
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow.
+
+## Android apps
+
+Signed release APKs for all five apps are on the [v1.0.0 release](https://github.com/08pranav/parkwise-platform/releases/tag/v1.0.0) (with SHA-256 checksums).
+They point at the demo API and have demo mode on. `scripts/build-apks.sh` rebuilds them.
 
 ## Demo accounts and test payments
 
@@ -175,6 +181,7 @@ The reference is generated from the OpenAPI schema: [docs/API_DOCUMENTATION.md](
 - Wallet balance and OTP password reset (carried over from the first prototype, see [ADR 0001](docs/decisions/0001-app-structure.md)).
 - Break up the largest Flutter screens into feature folders (`home_screen`, `refund_screen`, `booking_detail_screen` are still 1,400 to 2,200 lines).
 - Describe every endpoint's request and response in the OpenAPI schema (some views have no serializer yet).
+- A narrated demo video, GIF and per-role screenshots (the recording tooling in `demo/` is in place; the video itself is not recorded yet).
 - Real-money payments need live keys, tax invoices and a production database plan.
 
 ## Team

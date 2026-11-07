@@ -1,6 +1,9 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
+/// "08:00:00" -> "08:00".
+String _hhmm(String time) => time.length >= 5 ? time.substring(0, 5) : time;
+
 class SlotCard extends StatelessWidget {
   const SlotCard({super.key, required this.slot, required this.onToggle});
 
@@ -55,7 +58,7 @@ class SlotCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               '₹${slot.hourlyRate}/hour'
-              '${slot.availableFrom != null ? ' · ${slot.availableFrom}–${slot.availableTo}' : ''}',
+              '${slot.availableFrom != null ? ' · ${_hhmm(slot.availableFrom!)}–${_hhmm(slot.availableTo ?? '')}' : ''}',
             ),
             if (slot.approvalNotes.isNotEmpty) ...[
               const SizedBox(height: 6),
@@ -71,7 +74,7 @@ class SlotCard extends StatelessWidget {
               subtitle: approved
                   ? null
                   : const Text('Available once your society admin approves'),
-              value: slot.isActive,
+              value: approved && slot.isActive,
               onChanged: approved ? onToggle : null,
             ),
           ],

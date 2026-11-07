@@ -80,7 +80,8 @@ Honest caveat: three Flutter screens are still very large (`home_screen.dart` 2,
 
 - 65 commits on `main` in the new repository (the original history was kept; original authors and dates preserved).
 - Live check: `scripts/smoke-live.mjs` runs 31 checks against the deployed API: all five roles sign in, a real Stripe test-card payment, QR entry, replay rejected, forced overstay with a penalty, a real Stripe refund, a Razorpay order and a signed Razorpay webhook. All 31 passed on the last run.
-- Videos: **not available** in this pass. Screenshots and a GIF: **not available**. Android APKs: **not available**.
+- Android: five signed release APKs (53 to 69 MB each) in the v1.0.0 GitHub release, checked by package metadata, permissions and signature (not installed on a physical device).
+- Videos and a GIF: **not available** yet. Screenshots: in `docs/screenshots/` once the screenshot script has been run on the final build.
 
 ## 8. Skills demonstrated
 
@@ -96,7 +97,7 @@ services; secret scanning and git history rewriting; free-tier deployment (Rende
 - The data is a **fictional demo dataset** that resets nightly.
 - Three screens still need splitting; some endpoints lack request/response schemas in the OpenAPI docs.
 - Wallet balance and OTP password reset were in the first prototype and are not in the current product.
-- Android APKs and the demo videos are not produced yet.
+- The demo videos are not produced yet; the APKs were verified by inspection, not on a device.
 
 ## 10. Links
 
@@ -104,7 +105,8 @@ services; secret scanning and git history rewriting; free-tier deployment (Rende
 - API docs (Swagger): https://parkwise-api-77gc.onrender.com/api/docs/
 - Repository: https://github.com/08pranav/parkwise-platform
 - Edge cases: https://github.com/08pranav/parkwise-platform/blob/main/docs/EDGE_CASES.md
-- APK release, videos, GIF, screenshots: **not available yet**
+- APK release: https://github.com/08pranav/parkwise-platform/releases/tag/v1.0.0
+- Videos and GIF: **not available yet**
 
 ## 11. LinkedIn material
 
@@ -237,4 +239,4 @@ See ADR 0001.
 
 **Why Django?** Transactions and row locks, a mature ecosystem, and thin views over testable services.
 
-**What would you do next?** Split the three largest Flutter screens, finish the OpenAPI schemas, add the wallet and OTP password reset, and produce the demo video and Android releases.
+**What would you do next?** Split the three largest Flutter screens, finish the OpenAPI schemas, add the wallet and OTP password reset, and record the demo video.

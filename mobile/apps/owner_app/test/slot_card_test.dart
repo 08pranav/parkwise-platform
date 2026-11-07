@@ -40,7 +40,7 @@ void main() {
   testWidgets('shows slot details and the approval state', (tester) async {
     await pump(tester, slot(), (_) {});
     expect(find.text('Slot B-12 · Floor 2'), findsOneWidget);
-    expect(find.textContaining('₹25.00/hour'), findsOneWidget);
+    expect(find.textContaining('₹25.00/hour · 09:00–18:00'), findsOneWidget);
     expect(find.text('Approved'), findsOneWidget);
   });
 
@@ -57,6 +57,7 @@ void main() {
     bool? changed;
     await pump(tester, slot(approval: 'pending'), (v) => changed = v);
     expect(find.text('Awaiting approval'), findsOneWidget);
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
     expect(
       find.text('Available once your society admin approves'),
       findsOneWidget,

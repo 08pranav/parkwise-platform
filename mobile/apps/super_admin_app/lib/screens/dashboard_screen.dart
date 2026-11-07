@@ -223,42 +223,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
         state.societies.fold<int>(0, (sum, s) => sum + (s.totalSlots ?? 0));
     final totalRevenue = data?['total_revenue'] ?? '0';
 
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.5,
-      children: [
-        PremiumMetricTile(
-          label: 'Total Societies',
-          value: '$totalSocieties',
-          icon: Icons.apartment_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Active Societies',
-          value: '$activeSocieties',
-          icon: Icons.check_circle_outline_rounded,
-          valueColor: AppColors.success,
-        ),
-        PremiumMetricTile(
-          label: 'Total Slots',
-          value: '$totalSlots',
-          icon: Icons.local_parking_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Total Bookings',
-          value: '$totalBookings',
-          icon: Icons.receipt_long_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Platform Revenue',
-          value: '₹$totalRevenue',
-          icon: Icons.payments_rounded,
-          valueColor: AppColors.tertiary,
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Phones keep two columns; wide screens use compact four-column tiles
+        // instead of stretching two huge ones.
+        final wide = constraints.maxWidth >= 900;
+        return GridView.count(
+          crossAxisCount: wide ? 4 : 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: wide ? 2.2 : 1.5,
+          children: [
+            PremiumMetricTile(
+              label: 'Total Societies',
+              value: '$totalSocieties',
+              icon: Icons.apartment_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Active Societies',
+              value: '$activeSocieties',
+              icon: Icons.check_circle_outline_rounded,
+              valueColor: AppColors.success,
+            ),
+            PremiumMetricTile(
+              label: 'Total Slots',
+              value: '$totalSlots',
+              icon: Icons.local_parking_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Total Bookings',
+              value: '$totalBookings',
+              icon: Icons.receipt_long_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Platform Revenue',
+              value: '₹$totalRevenue',
+              icon: Icons.payments_rounded,
+              valueColor: AppColors.tertiary,
+            ),
+          ],
+        );
+      },
     );
   }
 

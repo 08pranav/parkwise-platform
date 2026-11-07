@@ -361,45 +361,52 @@ class _SummaryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.5,
-      children: [
-        PremiumMetricTile(
-          label: 'Total Slots',
-          value: dashboard.totalSlots.toString(),
-          icon: Icons.local_parking_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Occupied Slots',
-          value: dashboard.occupiedSlots.toString(),
-          icon: Icons.directions_car_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Reserved Slots',
-          value: dashboard.reservedSlots.toString(),
-          icon: Icons.schedule_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Active Bookings',
-          value: dashboard.activeBookings.toString(),
-          icon: Icons.book_online_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Guard Requests',
-          value: dashboard.pendingGuardRequests.toString(),
-          icon: Icons.security_rounded,
-        ),
-        PremiumMetricTile(
-          label: 'Completed Today',
-          value: dashboard.completedToday.toString(),
-          icon: Icons.task_alt_rounded,
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Phones keep two columns; wide screens use compact four-column tiles
+        // instead of stretching two huge ones.
+        final wide = constraints.maxWidth >= 900;
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: wide ? 4 : 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: wide ? 2.2 : 1.5,
+          children: [
+            PremiumMetricTile(
+              label: 'Total Slots',
+              value: dashboard.totalSlots.toString(),
+              icon: Icons.local_parking_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Occupied Slots',
+              value: dashboard.occupiedSlots.toString(),
+              icon: Icons.directions_car_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Reserved Slots',
+              value: dashboard.reservedSlots.toString(),
+              icon: Icons.schedule_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Active Bookings',
+              value: dashboard.activeBookings.toString(),
+              icon: Icons.book_online_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Guard Requests',
+              value: dashboard.pendingGuardRequests.toString(),
+              icon: Icons.security_rounded,
+            ),
+            PremiumMetricTile(
+              label: 'Completed Today',
+              value: dashboard.completedToday.toString(),
+              icon: Icons.task_alt_rounded,
+            ),
+          ],
+        );
+      },
     );
   }
 }

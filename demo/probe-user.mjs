@@ -1,0 +1,25 @@
+import { newSession, openApp, tryAs, semanticDump, typeInto, tap, scroll, wait, PHONE } from './lib.mjs';
+const show = async (page, title, shot) => {
+  const nodes = (await semanticDump(page)).filter((n) => ['button','textbox','link','tab','checkbox','switch','menuitem'].includes(n.role));
+  console.log(`\n### ${title}  (${page.url().replace(/^https?:\/\/[^/]+/, '')})`);
+  for (const n of nodes.slice(0, 22)) console.log(`  [${n.role}] "${n.label.replace(/\n/g, ' | ').slice(0, 56)}" @${n.x},${n.y} ${n.w}x${n.h}`);
+  if (shot) await page.screenshot({ path: `out/probe-${shot}.png` });
+};
+const { browser, page } = await newSession({ viewport: PHONE });
+await openApp(page, '/user/');
+await tryAs(page, PHONE);
+await typeInto(page, 'Where do you need parking?', 'Bandra');
+await wait(page, 3500);
+await show(page, 'after typing destination', 'user-1');
+await tap(page, 'Gurunanak Marg', { role: 'button' });
+await wait(page, 1500);
+await show(page, 'destination chosen', 'user-2');
+await tap(page, 'Find Available Parking', { role: 'button', pause: 6000 });
+await show(page, 'results', 'user-3');
+await scroll(page, 700);
+await show(page, 'results scrolled', 'user-4');
+await tap(page, 'Lakeview Heights', { role: 'button', pause: 4000 });
+await show(page, 'society detail (Lakeview)', 'user-5');
+await scroll(page, 500);
+await show(page, 'society detail scrolled', 'user-6');
+await browser.close();

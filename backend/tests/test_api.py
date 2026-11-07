@@ -130,6 +130,26 @@ class TestBookingApi:
         assert response.status_code == 400
 
 
+class TestQrToken:
+    def test_owner_can_read_the_token_of_a_paid_booking(self, auth_client):
+        booking = BookingFactory(status="confirmed")
+        response = auth_client(booking.user).get(f"/api/v1/bookings/{booking.id}/qr-token/")
+        assert response.status_code == 200
+        assert response.json()["qr_token"] == booking.qr_code_token
+
+    def test_nobody_else_can_read_it(self, auth_client):
+        booking = BookingFactory(status="confirmed")
+        for actor in (UserFactory(), GuardFactory(society=booking.slot.society)):
+            response = auth_client(actor).get(f"/api/v1/bookings/{booking.id}/qr-token/")
+            assert response.status_code == 404
+
+    @pytest.mark.parametrize("state", ["pending_payment", "cancelled", "expired", "completed"])
+    def test_not_available_before_payment_or_after_the_stay(self, auth_client, state):
+        booking = BookingFactory(status=state)
+        response = auth_client(booking.user).get(f"/api/v1/bookings/{booking.id}/qr-token/")
+        assert response.status_code == 400
+
+
 class TestWebhookEndpoints:
     def test_unsigned_stripe_webhook_is_rejected(self, api, settings):
         settings.STRIPE_SECRET_KEY = "sk_test_x"

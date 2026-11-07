@@ -26,13 +26,10 @@ def detect_no_shows():
     now = timezone.now()
 
     with transaction.atomic():
-        expired_bookings = (
-            Booking.objects.select_for_update()
-            .filter(
-                status=Booking.Status.CONFIRMED,
-                actual_entry__isnull=True,
-                start_time__lte=now,
-            )
+        expired_bookings = Booking.objects.select_for_update().filter(
+            status=Booking.Status.CONFIRMED,
+            actual_entry__isnull=True,
+            start_time__lte=now,
         )
 
         for booking in expired_bookings:

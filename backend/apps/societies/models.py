@@ -1,5 +1,5 @@
-import uuid
 import secrets
+import uuid
 
 from django.db import models
 
@@ -66,9 +66,7 @@ class ParkingSlot(models.Model):
     slot_number = models.CharField(max_length=50)
     floor = models.CharField(max_length=10, blank=True)
     slot_type = models.CharField(max_length=10, choices=SlotType.choices)
-    state = models.CharField(
-        max_length=20, choices=SlotState.choices, default=SlotState.AVAILABLE
-    )
+    state = models.CharField(max_length=20, choices=SlotState.choices, default=SlotState.AVAILABLE)
     ownership_type = models.CharField(
         max_length=20, choices=OwnershipType.choices, default=OwnershipType.SOCIETY
     )
@@ -191,4 +189,6 @@ class SlotAvailabilityWindow(models.Model):
         ordering = ["day_of_week", "start_time"]
 
     def __str__(self):
-        return f"{self.slot.slot_number} - Day {self.day_of_week}: {self.start_time}-{self.end_time}"
+        return (
+            f"{self.slot.slot_number} - Day {self.day_of_week}: {self.start_time}-{self.end_time}"
+        )

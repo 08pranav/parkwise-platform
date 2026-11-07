@@ -1,8 +1,8 @@
 import secrets
 import string
 
-from django.db import transaction
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -77,10 +77,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             missing_fields = [field for field in required_fields if attrs.get(field) in (None, "")]
             if missing_fields:
                 raise serializers.ValidationError(
-                    {
-                        field: "This field is required for admin signup."
-                        for field in missing_fields
-                    }
+                    {field: "This field is required for admin signup." for field in missing_fields}
                 )
 
         join_code = attrs.get("society_join_code")
@@ -93,7 +90,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             except Society.DoesNotExist:
                 raise serializers.ValidationError(
                     {"society_join_code": "Invalid or inactive society code."}
-                )
+                ) from None
         return attrs
 
     def create(self, validated_data):
@@ -111,9 +108,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data.pop("society_join_code", None)
 
         with transaction.atomic():
-            society = None
             if role == User.Role.SOCIETY_ADMIN:
-                society = Society.objects.create(
+                Society.objects.create(
                     name=society_data["name"],
                     address=society_data["address"],
                     city=society_data["city"],
@@ -194,6 +190,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["can_scan_exit"] = user.can_scan_exit
         return token
 
+
 class GuardRegistrationSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=150)
     email = serializers.EmailField()
@@ -250,7 +247,9 @@ class GuardCredentialSerializer(serializers.Serializer):
             raise serializers.ValidationError("Only society admins can create gate credentials.")
 
         if admin.society_id is None:
-            raise serializers.ValidationError("Admin must be linked to a society before creating gate devices.")
+            raise serializers.ValidationError(
+                "Admin must be linked to a society before creating gate devices."
+            )
 
         if not attrs.get("can_scan_entry") and not attrs.get("can_scan_exit"):
             raise serializers.ValidationError(
@@ -260,12 +259,16 @@ class GuardCredentialSerializer(serializers.Serializer):
         email = attrs.get("email")
         if email:
             if User.objects.filter(email__iexact=email).exists():
-                raise serializers.ValidationError({"email": "A user with this email already exists."})
+                raise serializers.ValidationError(
+                    {"email": "A user with this email already exists."}
+                )
         else:
             attrs["email"] = self._build_email(admin.society_id)
 
         if User.objects.filter(phone=attrs["phone"]).exists():
-            raise serializers.ValidationError({"phone": "A user with this phone number already exists."})
+            raise serializers.ValidationError(
+                {"phone": "A user with this phone number already exists."}
+            )
 
         return attrs
 

@@ -58,7 +58,7 @@ def validate_entry(qr_token, guard):
             result=ScanEvent.Result.DENIED,
             error_message="Invalid QR code.",
         )
-        raise ValidationError("Invalid QR code.")
+        raise ValidationError("Invalid QR code.") from None
 
     now = timezone.now()
     booking = None
@@ -85,8 +85,7 @@ def validate_entry(qr_token, guard):
             if now < booking.start_time:
                 local_start = timezone.localtime(booking.start_time)
                 raise ValidationError(
-                    f"Early arrival. Entry is not permitted before "
-                    f"{local_start.strftime('%H:%M')}."
+                    f"Early arrival. Entry is not permitted before {local_start.strftime('%H:%M')}."
                 )
 
             if now > booking.end_time:
@@ -138,7 +137,7 @@ def validate_exit(qr_token, guard):
             result=ScanEvent.Result.DENIED,
             error_message="Invalid QR code.",
         )
-        raise ValidationError("Invalid QR code.")
+        raise ValidationError("Invalid QR code.") from None
 
     now = timezone.now()
     booking = None

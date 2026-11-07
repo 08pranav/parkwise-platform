@@ -4,7 +4,6 @@ from rest_framework import serializers
 
 from apps.accounts.serializers import UserProfileSerializer
 from apps.bookings.serializers import BookingSerializer
-from apps.payments.models import Payment
 from apps.payments.serializers import RefundSerializer
 from apps.qr_validation.models import ScanEvent
 
@@ -111,6 +110,7 @@ class RefundInitiateSerializer(serializers.Serializer):
 
 class BookingRefundLookupSerializer(serializers.Serializer):
     """Returned when super admin looks up a booking before issuing a refund."""
+
     booking_id = serializers.UUIDField()
     booking_number = serializers.CharField()
     user_name = serializers.CharField()

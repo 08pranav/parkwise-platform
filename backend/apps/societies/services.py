@@ -1,11 +1,11 @@
 import json
 import math
+import ssl
 from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-import ssl
-import certifi
 
+import certifi
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
@@ -28,10 +28,13 @@ def _request_location_json(base_url, query_params):
     )
 
     try:
-        import urllib.error
         import logging
+        import urllib.error
+
         context = ssl.create_default_context(cafile=certifi.where())
-        with urlopen(request, timeout=settings.GEOCODING_TIMEOUT_SECONDS, context=context) as response:
+        with urlopen(
+            request, timeout=settings.GEOCODING_TIMEOUT_SECONDS, context=context
+        ) as response:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.URLError as e:
         logging.getLogger(__name__).error(f"Geocoding req failed: {e}")
@@ -124,10 +127,7 @@ def haversine_distance_km(lat1, lon1, lat2, lon2):
     dlat = lat2_rad - lat1_rad
     dlon = lon2_rad - lon1_rad
 
-    a = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
-    )
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return radius_km * c
 

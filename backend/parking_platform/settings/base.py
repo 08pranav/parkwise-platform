@@ -1,6 +1,6 @@
 import os
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
 
 import environ
 
@@ -11,7 +11,8 @@ env = environ.Env(
 )
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me-in-production")
+# Development fallbacks only; production.py requires real values from the environment.
+SECRET_KEY = env("SECRET_KEY", default="django-insecure-dev-only-key")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -79,6 +81,11 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
@@ -119,7 +126,7 @@ SIMPLE_JWT = {
 }
 
 # QR Code signing
-QR_SIGNING_SECRET = env("QR_SIGNING_SECRET", default="qr-signing-secret-change-me")
+QR_SIGNING_SECRET = env("QR_SIGNING_SECRET", default="dev-only-qr-signing-secret")
 MAPTILER_API_KEY = env("MAPTILER_API_KEY", default="")
 
 # Razorpay
@@ -148,7 +155,7 @@ REVERSE_GEOCODING_BASE_URL = env(
 )
 GEOCODING_USER_AGENT = env(
     "GEOCODING_USER_AGENT",
-    default="ParkEase/1.0 (local-development)",
+    default="ParkWise/1.0 (local-development)",
 )
 GEOCODING_TIMEOUT_SECONDS = env.int("GEOCODING_TIMEOUT_SECONDS", default=8)
 LOCATION_AUTOCOMPLETE_LIMIT = env.int("LOCATION_AUTOCOMPLETE_LIMIT", default=5)

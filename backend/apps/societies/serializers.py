@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from rest_framework import serializers
 from django.utils import timezone
+from rest_framework import serializers
 
 from apps.bookings.models import Booking
 from apps.bookings.services import _booking_blocks_user
@@ -20,17 +20,27 @@ class SocietySerializer(serializers.ModelSerializer):
     class Meta:
         model = Society
         fields = [
-            "id", "name", "address", "city", "state", "pincode",
-            "latitude", "longitude", "contact_email", "contact_phone",
-            "join_code", "is_active", "total_slots", "available_slots", "created_at",
+            "id",
+            "name",
+            "address",
+            "city",
+            "state",
+            "pincode",
+            "latitude",
+            "longitude",
+            "contact_email",
+            "contact_phone",
+            "join_code",
+            "is_active",
+            "total_slots",
+            "available_slots",
+            "created_at",
         ]
         read_only_fields = ["id", "join_code", "created_at"]
 
 
 class SocietyCreateSerializer(serializers.ModelSerializer):
-    admin_full_name = serializers.CharField(
-        write_only=True, required=False, max_length=150
-    )
+    admin_full_name = serializers.CharField(write_only=True, required=False, max_length=150)
     admin_email = serializers.EmailField(write_only=True, required=False)
     admin_phone = serializers.CharField(write_only=True, required=False, max_length=15)
     admin_password = serializers.CharField(
@@ -40,9 +50,19 @@ class SocietyCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Society
         fields = [
-            "name", "address", "city", "state", "pincode",
-            "latitude", "longitude", "contact_email", "contact_phone",
-            "admin_full_name", "admin_email", "admin_phone", "admin_password",
+            "name",
+            "address",
+            "city",
+            "state",
+            "pincode",
+            "latitude",
+            "longitude",
+            "contact_email",
+            "contact_phone",
+            "admin_full_name",
+            "admin_email",
+            "admin_phone",
+            "admin_password",
         ]
 
     def validate(self, attrs):
@@ -56,9 +76,7 @@ class SocietyCreateSerializer(serializers.ModelSerializer):
             "admin_password",
         )
         missing_fields = [
-            field
-            for field in required_admin_fields
-            if not attrs.get(field, "").strip()
+            field for field in required_admin_fields if not attrs.get(field, "").strip()
         ]
         if missing_fields:
             raise serializers.ValidationError(
@@ -119,16 +137,37 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParkingSlot
         fields = [
-            "id", "society", "slot_number", "floor", "slot_type",
-            "state", "ownership_type", "owner", "hourly_rate",
-            "created_by", "approval_status", "approval_notes",
-            "approved_by", "approved_at", "is_active", "created_at",
-            "owner_name", "approval_owner", "available_from_write", "available_to_write",
-            "available_from", "available_to",
-            "current_booking_number", "current_booking_status",
-            "current_booking_start_time", "current_booking_end_time",
-            "current_booking_actual_entry", "current_booking_actual_exit",
-            "next_free_at", "freeing_up_note", "bookings",
+            "id",
+            "society",
+            "slot_number",
+            "floor",
+            "slot_type",
+            "state",
+            "ownership_type",
+            "owner",
+            "hourly_rate",
+            "created_by",
+            "approval_status",
+            "approval_notes",
+            "approved_by",
+            "approved_at",
+            "is_active",
+            "created_at",
+            "owner_name",
+            "approval_owner",
+            "available_from_write",
+            "available_to_write",
+            "available_from",
+            "available_to",
+            "current_booking_number",
+            "current_booking_status",
+            "current_booking_start_time",
+            "current_booking_end_time",
+            "current_booking_actual_entry",
+            "current_booking_actual_exit",
+            "next_free_at",
+            "freeing_up_note",
+            "bookings",
         ]
         read_only_fields = [
             "id",
@@ -289,7 +328,7 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         available_from = validated_data.pop("available_from_write", None)
         available_to = validated_data.pop("available_to_write", None)
-        
+
         instance = super().create(validated_data)
         self._update_availability_windows(instance, available_from, available_to)
         return instance
@@ -297,7 +336,7 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         available_from = validated_data.pop("available_from_write", None)
         available_to = validated_data.pop("available_to_write", None)
-        
+
         instance = super().update(instance, validated_data)
         self._update_availability_windows(instance, available_from, available_to)
         return instance
@@ -368,15 +407,11 @@ class SocietyAvailabilitySearchSerializer(serializers.Serializer):
         has_end_time = attrs.get("end_time") is not None
         has_duration = attrs.get("duration_minutes") is not None
         if has_end_time == has_duration:
-            raise serializers.ValidationError(
-                "Provide either end_time or duration_minutes."
-            )
+            raise serializers.ValidationError("Provide either end_time or duration_minutes.")
         has_current_lat = attrs.get("current_lat") is not None
         has_current_lng = attrs.get("current_lng") is not None
         if has_current_lat != has_current_lng:
-            raise serializers.ValidationError(
-                "Provide both current_lat and current_lng together."
-            )
+            raise serializers.ValidationError("Provide both current_lat and current_lng together.")
 
         timezone_obj = timezone.get_current_timezone()
         start_dt = timezone.make_aware(
@@ -411,9 +446,7 @@ class SlotAvailabilityFilterSerializer(serializers.Serializer):
         has_end_time = attrs.get("end_time") is not None
         has_duration = attrs.get("duration_minutes") is not None
         if has_end_time == has_duration:
-            raise serializers.ValidationError(
-                "Provide either end_time or duration_minutes."
-            )
+            raise serializers.ValidationError("Provide either end_time or duration_minutes.")
 
         timezone_obj = timezone.get_current_timezone()
         start_dt = timezone.make_aware(

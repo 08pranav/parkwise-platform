@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class SocietiesConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.societies'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.societies"

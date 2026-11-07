@@ -16,9 +16,7 @@ class Booking(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     booking_number = models.CharField(max_length=20, unique=True, db_index=True)
-    user = models.ForeignKey(
-        "accounts.User", on_delete=models.CASCADE, related_name="bookings"
-    )
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE, related_name="bookings")
     vehicle = models.ForeignKey(
         "accounts.Vehicle", on_delete=models.CASCADE, related_name="bookings"
     )
@@ -29,9 +27,7 @@ class Booking(models.Model):
     end_time = models.DateTimeField()
     actual_entry = models.DateTimeField(null=True, blank=True)
     actual_exit = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT
-    )
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT)
     base_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     surge_multiplier = models.DecimalField(max_digits=4, decimal_places=2, default=1.00)
     surge_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

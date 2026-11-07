@@ -39,9 +39,9 @@ class AdminDashboardView(APIView):
         active_societies = Society.objects.filter(is_active=True).count()
         total_slots = ParkingSlot.objects.filter(is_active=True).count()
         total_bookings = Booking.objects.count()
-        total_revenue = Payment.objects.filter(
-            status=Payment.Status.CAPTURED
-        ).aggregate(total=Coalesce(Sum("amount"), Decimal("0.00")))["total"]
+        total_revenue = Payment.objects.filter(status=Payment.Status.CAPTURED).aggregate(
+            total=Coalesce(Sum("amount"), Decimal("0.00"))
+        )["total"]
 
         return Response(
             {
@@ -67,23 +67,15 @@ class SocietyStatsView(APIView):
             is_active=True,
         ).aggregate(
             total_slots=Count("id"),
-            available_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.AVAILABLE)
-            ),
-            reserved_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.RESERVED)
-            ),
-            occupied_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.OCCUPIED)
-            ),
+            available_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.AVAILABLE)),
+            reserved_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.RESERVED)),
+            occupied_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.OCCUPIED)),
         )
         total_slots = slot_counts["total_slots"] or 0
         unavailable_slots = (slot_counts["reserved_slots"] or 0) + (
             slot_counts["occupied_slots"] or 0
         )
-        occupancy_rate = round(
-            (unavailable_slots / total_slots) * 100, 1
-        ) if total_slots else 0.0
+        occupancy_rate = round((unavailable_slots / total_slots) * 100, 1) if total_slots else 0.0
 
         total_bookings = Booking.objects.filter(slot__society_id=society_id).count()
         active_bookings = Booking.objects.filter(
@@ -123,18 +115,10 @@ class SocietyAdminDashboardView(APIView):
             is_active=True,
         ).aggregate(
             total_slots=Count("id"),
-            available_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.AVAILABLE)
-            ),
-            reserved_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.RESERVED)
-            ),
-            occupied_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.OCCUPIED)
-            ),
-            blocked_slots=Count(
-                "id", filter=Q(state=ParkingSlot.SlotState.BLOCKED)
-            ),
+            available_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.AVAILABLE)),
+            reserved_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.RESERVED)),
+            occupied_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.OCCUPIED)),
+            blocked_slots=Count("id", filter=Q(state=ParkingSlot.SlotState.BLOCKED)),
         )
 
         booking_payments_prefetch = Prefetch(
@@ -272,6 +256,7 @@ class SocietyGuardRejectView(APIView):
 # Refund / Rollback Views  (Super Admin only)
 # ---------------------------------------------------------------------------
 
+
 class RefundLookupView(APIView):
     """
     GET /api/v1/admin/refunds/lookup/?booking_id=<uuid>
@@ -279,6 +264,7 @@ class RefundLookupView(APIView):
     Returns a snapshot of the booking and its latest captured payment so
     the super admin can review the details before issuing a refund.
     """
+
     permission_classes = [permissions.IsAuthenticated, IsSuperAdmin]
 
     def get(self, request):
@@ -290,10 +276,8 @@ class RefundLookupView(APIView):
             )
 
         try:
-            booking = (
-                Booking.objects
-                .select_related("user", "slot", "slot__society")
-                .get(id=booking_id)
+            booking = Booking.objects.select_related("user", "slot", "slot__society").get(
+                id=booking_id
             )
         except (Booking.DoesNotExist, Exception):
             return Response(
@@ -302,15 +286,13 @@ class RefundLookupView(APIView):
             )
 
         payment = (
-            Payment.objects
-            .filter(booking=booking, status=Payment.Status.CAPTURED)
+            Payment.objects.filter(booking=booking, status=Payment.Status.CAPTURED)
             .order_by("-created_at")
             .first()
         )
 
         past_refunds = list(
-            Refund.objects
-            .filter(booking=booking)
+            Refund.objects.filter(booking=booking)
             .select_related("initiated_by", "payment")
             .order_by("-created_at")
         )
@@ -344,13 +326,14 @@ class RefundView(APIView):
     GET  /api/v1/admin/refunds/        – list all refunds (audit trail)
     POST /api/v1/admin/refunds/        – initiate a refund for a booking
     """
+
     permission_classes = [permissions.IsAuthenticated, IsSuperAdmin]
 
     def get(self, request):
         refunds = (
-            Refund.objects
-            .select_related("booking", "initiated_by", "payment")
-            .order_by("-created_at")[:100]  # last 100 refunds
+            Refund.objects.select_related("booking", "initiated_by", "payment").order_by(
+                "-created_at"
+            )[:100]  # last 100 refunds
         )
         return Response(RefundSerializer(refunds, many=True).data)
 

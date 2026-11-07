@@ -129,9 +129,7 @@ def slot_is_available(slot, vehicle_type, start_time, end_time):
     overlapping = Booking.objects.filter(
         slot=slot,
         status__in=ACTIVE_BOOKING_STATUSES,
-    ).filter(
-        Q(start_time__lt=end_time) & Q(end_time__gt=start_time)
-    )
+    ).filter(Q(start_time__lt=end_time) & Q(end_time__gt=start_time))
     return not any(
         _booking_blocks_user(booking, now)
         for booking in overlapping.only(
@@ -154,13 +152,9 @@ def get_available_slots(*, society_id, vehicle_type, start_time, end_time, for_u
     if for_update:
         queryset = queryset.select_for_update()
 
-    slots = list(
-        queryset.select_related("society").prefetch_related("availability_windows")
-    )
+    slots = list(queryset.select_related("society").prefetch_related("availability_windows"))
     valid_slots = [
-        slot
-        for slot in slots
-        if slot_is_available(slot, vehicle_type, start_time, end_time)
+        slot for slot in slots if slot_is_available(slot, vehicle_type, start_time, end_time)
     ]
     valid_slots.sort(key=lambda slot: (slot.hourly_rate, slot.slot_number))
     return valid_slots
@@ -169,26 +163,27 @@ def get_available_slots(*, society_id, vehicle_type, start_time, end_time, for_u
 def _build_pending_booking(user, slot, vehicle, start_time, end_time):
     duration = end_time - start_time
     duration_hours = math.ceil(duration.total_seconds() / 3600)
-    
+
     # Calculate occupancy-based surge
     total_slots = ParkingSlot.objects.filter(society_id=slot.society_id, is_active=True).count()
     active_bookings = Booking.objects.filter(
-        slot__society_id=slot.society_id, 
+        slot__society_id=slot.society_id,
         status__in=ACTIVE_BOOKING_STATUSES,
         end_time__gt=start_time,
-        start_time__lt=end_time
+        start_time__lt=end_time,
     ).count()
     occupancy_rate = active_bookings / max(total_slots, 1)
-    
+
     surge_multiplier = 1.0
     if occupancy_rate > 0.8:
         surge_multiplier += 0.5
     elif occupancy_rate > 0.5:
         surge_multiplier += 0.2
-        
+
     # Nearby area demand based on actual nearby societies (within ~5km radius)
     area_demand = 0.0
     from decimal import Decimal
+
     if slot.society.latitude and slot.society.longitude:
         lat_diff = Decimal("0.045")
         lon_diff = Decimal("0.045")
@@ -196,19 +191,21 @@ def _build_pending_booking(user, slot, vehicle, start_time, end_time):
             latitude__isnull=False,
             longitude__isnull=False,
             latitude__range=(slot.society.latitude - lat_diff, slot.society.latitude + lat_diff),
-            longitude__range=(slot.society.longitude - lon_diff, slot.society.longitude + lon_diff)
+            longitude__range=(slot.society.longitude - lon_diff, slot.society.longitude + lon_diff),
         ).exclude(id=slot.society_id)
-        
+
         if nearby_societies.exists():
-            nearby_society_ids = nearby_societies.values_list('id', flat=True)
-            nearby_slots = ParkingSlot.objects.filter(society_id__in=nearby_society_ids, is_active=True).count()
+            nearby_society_ids = nearby_societies.values_list("id", flat=True)
+            nearby_slots = ParkingSlot.objects.filter(
+                society_id__in=nearby_society_ids, is_active=True
+            ).count()
             nearby_active_bookings = Booking.objects.filter(
                 slot__society_id__in=nearby_society_ids,
                 status__in=ACTIVE_BOOKING_STATUSES,
                 end_time__gt=start_time,
-                start_time__lt=end_time
+                start_time__lt=end_time,
             ).count()
-            
+
             if nearby_slots > 0:
                 nearby_occupancy_rate = nearby_active_bookings / nearby_slots
                 if nearby_occupancy_rate > 0.8:
@@ -221,11 +218,12 @@ def _build_pending_booking(user, slot, vehicle, start_time, end_time):
     surge_multiplier += area_demand
 
     from decimal import Decimal
+
     surge_multiplier_dec = Decimal(str(surge_multiplier)).quantize(Decimal("0.01"))
     base_amount = slot.hourly_rate * Decimal(str(duration_hours))
     surge_amount = base_amount * (surge_multiplier_dec - Decimal("1.00"))
     amount = base_amount + surge_amount
-    
+
     booking_number = _generate_booking_number()
     now = timezone.now()
 
@@ -248,9 +246,10 @@ def _build_pending_booking(user, slot, vehicle, start_time, end_time):
     booking.qr_code_token = generate_qr_token(booking)
     booking.save(update_fields=["qr_code_token"])
 
-    from .tasks import expire_booking_lock
     import logging
     import threading
+
+    from .tasks import expire_booking_lock
 
     def trigger_celery_task():
         try:
@@ -284,7 +283,7 @@ def create_booking(user, slot_id, vehicle, start_time, end_time):
                 .get(id=slot_id, is_active=True)
             )
         except ParkingSlot.DoesNotExist:
-            raise ValidationError("Slot not found or inactive.")
+            raise ValidationError("Slot not found or inactive.") from None
 
         if not slot_is_available(slot, vehicle.vehicle_type, start_time, end_time):
             raise ValidationError("Slot is not available for the requested time range.")

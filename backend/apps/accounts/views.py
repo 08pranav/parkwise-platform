@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import UserNotification, Vehicle
+from .permissions import IsSocietyAdmin
 from .serializers import (
     CustomTokenObtainPairSerializer,
     GuardCredentialSerializer,
@@ -15,7 +16,6 @@ from .serializers import (
     UserProfileSerializer,
     VehicleSerializer,
 )
-from .permissions import IsSocietyAdmin
 
 
 class RegisterView(generics.CreateAPIView):

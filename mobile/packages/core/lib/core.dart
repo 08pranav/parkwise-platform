@@ -27,6 +27,9 @@ export 'src/models/api_response.dart';
 // Storage
 export 'src/storage/secure_storage_service.dart';
 
+// Bootstrap
+export 'src/bootstrap.dart';
+
 // Config
 export 'src/config/env_config.dart';
 export 'src/config/app_constants.dart';

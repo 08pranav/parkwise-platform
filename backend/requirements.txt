@@ -20,3 +20,4 @@ PyJWT==2.10.1
 qrcode==8.2
 razorpay==2.0.1
 stripe==12.5.1
+whitenoise==6.9.0

@@ -11,10 +11,10 @@ from .serializers import (
     PaymentVerifySerializer,
 )
 from .services import (
+    create_razorpay_order,
     create_stripe_checkout_session,
     handle_stripe_webhook,
     verify_checkout_session,
-    create_razorpay_order,
     verify_razorpay_payment,
 )
 
@@ -94,7 +94,9 @@ class PaymentVerifyRazorpayView(APIView):
 
         if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
             return Response(
-                {"error": "razorpay_order_id, razorpay_payment_id, and razorpay_signature are required"},
+                {
+                    "error": "razorpay_order_id, razorpay_payment_id, and razorpay_signature are required"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -120,6 +122,7 @@ class StripeWebhookView(APIView):
 
 class ManualPaymentVerifyView(APIView):
     """Manual payment verification endpoint for testing without webhooks"""
+
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):

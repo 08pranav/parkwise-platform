@@ -9,7 +9,13 @@ class PenaltySerializer(serializers.ModelSerializer):
     class Meta:
         model = Penalty
         fields = [
-            "id", "booking", "booking_number", "user",
-            "overstay_minutes", "amount", "status", "created_at",
+            "id",
+            "booking",
+            "booking_number",
+            "user",
+            "overstay_minutes",
+            "amount",
+            "status",
+            "created_at",
         ]
         read_only_fields = fields

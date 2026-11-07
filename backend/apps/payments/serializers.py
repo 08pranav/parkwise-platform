@@ -70,9 +70,7 @@ class RefundSerializer(serializers.ModelSerializer):
     booking_number = serializers.CharField(
         source="booking.booking_number", read_only=True, default=""
     )
-    payment_provider = serializers.CharField(
-        source="payment.provider", read_only=True, default=""
-    )
+    payment_provider = serializers.CharField(source="payment.provider", read_only=True, default="")
 
     class Meta:
         model = Refund
@@ -93,4 +91,3 @@ class RefundSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = fields
-

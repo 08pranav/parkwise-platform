@@ -26,9 +26,7 @@ class PenaltyPayView(APIView):
 
     def post(self, request, pk):
         try:
-            penalty = Penalty.objects.get(
-                id=pk, user=request.user, status=Penalty.Status.UNPAID
-            )
+            penalty = Penalty.objects.get(id=pk, user=request.user, status=Penalty.Status.UNPAID)
         except Penalty.DoesNotExist:
             return Response(
                 {"error": "Penalty not found or already paid."},
@@ -54,6 +52,7 @@ class PenaltyPayView(APIView):
             )
         else:
             from apps.payments.services import create_razorpay_penalty_order
+
             payment, razorpay_order_id = create_razorpay_penalty_order(penalty, request)
             serializer = PaymentSerializer(payment)
 

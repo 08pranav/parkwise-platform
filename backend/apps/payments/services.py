@@ -2,8 +2,8 @@ import json
 from decimal import Decimal
 from urllib.parse import urlparse
 
-import stripe
 import razorpay
+import stripe
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
@@ -13,7 +13,6 @@ from apps.bookings.models import Booking
 from apps.societies.models import ParkingSlot
 
 from .models import Payment, Refund
-
 
 MONEY_MULTIPLIER = Decimal("100")
 
@@ -34,22 +33,20 @@ def sync_razorpay_order_status(razorpay_order_id):
     client = _get_razorpay_client()
     try:
         # Fetch the order from Razorpay
-        order = client.order.fetch(razorpay_order_id)
+        client.order.fetch(razorpay_order_id)
         # Fetch payments for this order
         payments = client.order.payments(razorpay_order_id)
-        
+
         if not payments or not payments.get("items"):
             return False
 
         # Look for a captured payment
-        captured_payment = next(
-            (p for p in payments["items"] if p["status"] == "captured"), 
-            None
-        )
+        captured_payment = next((p for p in payments["items"] if p["status"] == "captured"), None)
 
         if captured_payment:
-            from .models import Payment
             from apps.bookings.models import Booking
+
+            from .models import Payment
 
             with transaction.atomic():
                 payment_obj = Payment.objects.select_for_update().get(
@@ -68,7 +65,7 @@ def sync_razorpay_order_status(razorpay_order_id):
             return True
     except Exception as e:
         print(f"Error syncing Razorpay order {razorpay_order_id}: {e}")
-    
+
     return False
 
 
@@ -76,9 +73,7 @@ def _get_razorpay_client():
     if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
         raise ValidationError("Razorpay is not configured.")
 
-    return razorpay.Client(
-        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-    )
+    return razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 
 def _resolve_frontend_base_url(request=None):
@@ -172,8 +167,7 @@ def create_stripe_checkout_session(booking, request=None, embedded=False):
                     "product_data": {
                         "name": f"Parking Booking {booking.booking_number}",
                         "description": (
-                            f"Slot {booking.slot.slot_number} "
-                            f"at {booking.slot.society.name}"
+                            f"Slot {booking.slot.slot_number} at {booking.slot.society.name}"
                         ),
                     },
                 },
@@ -271,9 +265,7 @@ def create_stripe_penalty_checkout_session(penalty, request=None, embedded=False
                     "unit_amount": _amount_in_smallest_unit(penalty.amount),
                     "product_data": {
                         "name": f"Parking Penalty {penalty.id}",
-                        "description": (
-                            f"Penalty for booking {penalty.booking.booking_number}"
-                        ),
+                        "description": (f"Penalty for booking {penalty.booking.booking_number}"),
                     },
                 },
             }
@@ -356,12 +348,8 @@ def verify_checkout_session(checkout_session_id, user=None):
             raise ValidationError("Payment does not belong to this user.")
 
         payment.provider = Payment.Provider.STRIPE
-        payment.currency = (
-            checkout_session.currency or payment.currency or "inr"
-        ).upper()
-        payment.stripe_payment_intent_id = _payment_intent_id(
-            checkout_session.payment_intent
-        )
+        payment.currency = (checkout_session.currency or payment.currency or "inr").upper()
+        payment.stripe_payment_intent_id = _payment_intent_id(checkout_session.payment_intent)
 
         if payment.status == Payment.Status.CAPTURED:
             payment.save(
@@ -403,9 +391,7 @@ def verify_checkout_session(checkout_session_id, user=None):
         return payment
 
 
-def verify_razorpay_payment(
-    razorpay_order_id, razorpay_payment_id, razorpay_signature, user=None
-):
+def verify_razorpay_payment(razorpay_order_id, razorpay_payment_id, razorpay_signature, user=None):
     client = _get_razorpay_client()
 
     # Verify signature
@@ -435,9 +421,7 @@ def verify_razorpay_payment(
 
         payment.razorpay_payment_id = razorpay_payment_id
         payment.status = Payment.Status.CAPTURED
-        payment.save(
-            update_fields=["razorpay_payment_id", "status", "updated_at"]
-        )
+        payment.save(update_fields=["razorpay_payment_id", "status", "updated_at"])
 
         _mark_booking_as_confirmed(payment)
         _mark_penalty_as_paid(payment)
@@ -450,6 +434,7 @@ def handle_stripe_webhook(request_body, signature):
     if not settings.STRIPE_WEBHOOK_SECRET:
         # In development without webhook secret, parse event directly (INSECURE - for testing only)
         import json
+
         event = json.loads(request_body)
     else:
         # Production: verify webhook signature
@@ -523,9 +508,7 @@ def process_refund(booking_id, refund_amount, reason, admin_user):
         .first()
     )
     if payment is None:
-        raise ValidationError(
-            "No captured payment found for this booking. Refund is not possible."
-        )
+        raise ValidationError("No captured payment found for this booking. Refund is not possible.")
 
     # ------------------------------------------------------------------
     # 3. Validate amount
@@ -549,9 +532,7 @@ def process_refund(booking_id, refund_amount, reason, admin_user):
     if payment.provider == Payment.Provider.STRIPE:
         stripe_client = _get_stripe_client()
         if not payment.stripe_payment_intent_id:
-            raise ValidationError(
-                "Stripe payment intent ID is missing – cannot process refund."
-            )
+            raise ValidationError("Stripe payment intent ID is missing – cannot process refund.")
         stripe_refund = stripe_client.Refund.create(
             payment_intent=payment.stripe_payment_intent_id,
             amount=_amount_in_smallest_unit(refund_amount),  # paise
@@ -569,9 +550,7 @@ def process_refund(booking_id, refund_amount, reason, admin_user):
     elif payment.provider == Payment.Provider.RAZORPAY:
         rz_client = _get_razorpay_client()
         if not payment.razorpay_payment_id:
-            raise ValidationError(
-                "Razorpay payment ID is missing – cannot process refund."
-            )
+            raise ValidationError("Razorpay payment ID is missing – cannot process refund.")
         rz_refund = rz_client.payment.refund(
             payment.razorpay_payment_id,
             {
@@ -628,8 +607,7 @@ def process_refund(booking_id, refund_amount, reason, admin_user):
         #       the driver hasn't parked yet, so the slot can go back to
         #       available regardless of whether the refund is partial.
         refund_before_start = (
-            booking_obj.start_time is not None
-            and timezone.now() < booking_obj.start_time
+            booking_obj.start_time is not None and timezone.now() < booking_obj.start_time
         )
         should_release_slot = is_full_refund or refund_before_start
 
@@ -643,4 +621,3 @@ def process_refund(booking_id, refund_amount, reason, admin_user):
                 slot.save(update_fields=["state", "updated_at"])
 
     return refund_record
-

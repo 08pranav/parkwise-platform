@@ -13,14 +13,10 @@ class Penalty(models.Model):
     booking = models.ForeignKey(
         "bookings.Booking", on_delete=models.CASCADE, related_name="penalties"
     )
-    user = models.ForeignKey(
-        "accounts.User", on_delete=models.CASCADE, related_name="penalties"
-    )
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE, related_name="penalties")
     overstay_minutes = models.IntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.UNPAID
-    )
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.UNPAID)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

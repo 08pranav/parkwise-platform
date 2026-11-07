@@ -1,8 +1,9 @@
-from django.http import HttpResponse
-from django.db.models import Prefetch
-from django.utils import timezone
-from decimal import Decimal
 import math
+from decimal import Decimal
+
+from django.db.models import Prefetch
+from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -93,14 +94,13 @@ class BookingDetailView(generics.RetrieveAPIView):
         if obj.status == Booking.Status.PENDING_PAYMENT:
             # Auto-verify pending payments from Stripe or Razorpay when refreshing
             from apps.payments.models import Payment
-            from apps.payments.services import verify_checkout_session, sync_razorpay_order_status
-            
+            from apps.payments.services import sync_razorpay_order_status, verify_checkout_session
+
             # Stripe verification
             stripe_payments = obj.payments.filter(
-                provider=Payment.Provider.STRIPE, 
-                status=Payment.Status.CREATED
+                provider=Payment.Provider.STRIPE, status=Payment.Status.CREATED
             ).exclude(stripe_checkout_session_id__isnull=True)
-            
+
             for payment in stripe_payments:
                 try:
                     verify_checkout_session(payment.stripe_checkout_session_id)
@@ -109,8 +109,7 @@ class BookingDetailView(generics.RetrieveAPIView):
 
             # Razorpay verification
             razorpay_payments = obj.payments.filter(
-                provider=Payment.Provider.RAZORPAY, 
-                status=Payment.Status.CREATED
+                provider=Payment.Provider.RAZORPAY, status=Payment.Status.CREATED
             ).exclude(razorpay_order_id__isnull=True)
 
             for payment in razorpay_payments:
@@ -118,7 +117,7 @@ class BookingDetailView(generics.RetrieveAPIView):
                     sync_razorpay_order_status(payment.razorpay_order_id)
                 except Exception as e:
                     print(f"Auto-verify (Razorpay) failed for {payment.id}: {e}")
-            
+
             obj.refresh_from_db()
         return obj
 
@@ -175,13 +174,12 @@ class BookingOvertimeView(APIView):
     Does NOT create a penalty — that only happens when the exit QR is scanned.
     The Flutter app uses this to show the red overtime counter and estimated charge.
     """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk):
         try:
-            booking = Booking.objects.select_related("slot").get(
-                id=pk, user=request.user
-            )
+            booking = Booking.objects.select_related("slot").get(id=pk, user=request.user)
         except Booking.DoesNotExist:
             return Response(
                 {"error": "Booking not found."},

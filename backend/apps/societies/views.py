@@ -1,15 +1,13 @@
-from django.db.models import Count, Prefetch, Q
-from django.utils import timezone
-from django.contrib.auth import get_user_model
-from urllib.request import Request, urlopen
 import json
-from urllib.parse import quote
 import ssl
+from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 import certifi
-
 from django.conf import settings
-
+from django.contrib.auth import get_user_model
+from django.db.models import Count, Prefetch, Q
+from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,12 +22,12 @@ from .serializers import (
     DestinationAutocompleteSerializer,
     ParkingSlotSerializer,
     ReverseGeocodeSerializer,
-    SocietyMembershipRequestDecisionSerializer,
-    SocietyMembershipRequestSerializer,
-    SlotAvailabilityWindowSerializer,
     SlotAvailabilityFilterSerializer,
+    SlotAvailabilityWindowSerializer,
     SocietyAvailabilitySearchSerializer,
     SocietyCreateSerializer,
+    SocietyMembershipRequestDecisionSerializer,
+    SocietyMembershipRequestSerializer,
     SocietySerializer,
 )
 from .services import (
@@ -52,10 +50,7 @@ class GeocodeLocationView(APIView):
 
     def _maptiler_features(self, query, maptiler_key):
         encoded_query = quote(query)
-        url = (
-            f"https://api.maptiler.com/geocoding/{encoded_query}.json"
-            f"?key={maptiler_key}&limit=5"
-        )
+        url = f"https://api.maptiler.com/geocoding/{encoded_query}.json?key={maptiler_key}&limit=5"
         req = Request(
             url,
             headers={
@@ -145,9 +140,7 @@ class GeocodeLocationView(APIView):
                 "longitude": float(coordinates[0]),
                 "display_name": top.get("place_name"),
                 "results": [
-                    feature.get("place_name")
-                    for feature in features
-                    if feature.get("place_name")
+                    feature.get("place_name") for feature in features if feature.get("place_name")
                 ],
             }
         )
@@ -256,9 +249,7 @@ class SocietyAvailabilitySearchView(APIView):
             destination_lat=serializer.validated_data["destination_lat"],
             destination_lng=serializer.validated_data["destination_lng"],
             destination_text=serializer.validated_data.get("destination_text", ""),
-            destination_place_id=serializer.validated_data.get(
-                "destination_place_id", ""
-            ),
+            destination_place_id=serializer.validated_data.get("destination_place_id", ""),
             start_time=serializer.validated_data["start_datetime"],
             end_time=serializer.validated_data["end_datetime"],
             vehicle_type=serializer.validated_data["vehicle_type"],
@@ -285,18 +276,14 @@ class SlotListCreateView(generics.ListCreateAPIView):
             ),
             to_attr="prefetched_bookings",
         )
-        qs = ParkingSlot.objects.filter(society_id=society_id).prefetch_related(
-            booking_prefetch
-        )
+        qs = ParkingSlot.objects.filter(society_id=society_id).prefetch_related(booking_prefetch)
 
         params = self.request.query_params
         if {
             "booking_date",
             "start_time",
             "vehicle_type",
-        }.issubset(params.keys()) and (
-            "end_time" in params or "duration_minutes" in params
-        ):
+        }.issubset(params.keys()) and ("end_time" in params or "duration_minutes" in params):
             filter_serializer = SlotAvailabilityFilterSerializer(data=params)
             filter_serializer.is_valid(raise_exception=True)
 
@@ -349,6 +336,7 @@ class SlotListCreateView(generics.ListCreateAPIView):
 
         if user.society_id != society.id:
             from rest_framework.exceptions import PermissionDenied
+
             raise PermissionDenied("You can only manage slots in your own society.")
 
         available_from = serializer.validated_data.pop("available_from_write", None)
@@ -468,7 +456,9 @@ class SocietyMembershipRequestDecisionView(APIView):
             join_request.status = SocietyMembershipRequest.Status.APPROVED
             join_request.user.society = join_request.society
             join_request.user.save(update_fields=["society", "updated_at"])
-            join_request.save(update_fields=["status", "notes", "reviewed_by", "reviewed_at", "updated_at"])
+            join_request.save(
+                update_fields=["status", "notes", "reviewed_by", "reviewed_at", "updated_at"]
+            )
             UserNotification.objects.create(
                 user=join_request.user,
                 notification_type=UserNotification.NotificationType.JOIN_APPROVED,
@@ -481,7 +471,9 @@ class SocietyMembershipRequestDecisionView(APIView):
             )
         else:
             join_request.status = SocietyMembershipRequest.Status.REJECTED
-            join_request.save(update_fields=["status", "notes", "reviewed_by", "reviewed_at", "updated_at"])
+            join_request.save(
+                update_fields=["status", "notes", "reviewed_by", "reviewed_at", "updated_at"]
+            )
             UserNotification.objects.create(
                 user=join_request.user,
                 notification_type=UserNotification.NotificationType.JOIN_REJECTED,
@@ -652,13 +644,13 @@ class SlotToggleActiveView(APIView):
 
         if not is_active:
             from datetime import timedelta
+
             now = timezone.now()
             one_hour_from_now = now + timedelta(hours=1)
-            
+
             # Check for active bookings
             active_bookings = Booking.objects.filter(
-                slot=slot,
-                status=Booking.Status.ACTIVE
+                slot=slot, status=Booking.Status.ACTIVE
             ).exists()
             if active_bookings:
                 return Response(
@@ -671,23 +663,23 @@ class SlotToggleActiveView(APIView):
                 slot=slot,
                 status=Booking.Status.CONFIRMED,
                 start_time__lt=one_hour_from_now,
-                end_time__gt=now
+                end_time__gt=now,
             ).exists()
             if upcoming_bookings:
                 return Response(
                     {"error": "Cannot deactivate: a booking is scheduled within the next hour."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-                
+
             # Check for any future confirmed bookings
             future_bookings = Booking.objects.filter(
-                slot=slot,
-                status=Booking.Status.CONFIRMED,
-                start_time__gt=now
+                slot=slot, status=Booking.Status.CONFIRMED, start_time__gt=now
             ).exists()
             if future_bookings:
                 return Response(
-                    {"error": "Cannot deactivate: there are upcoming scheduled bookings for this slot."},
+                    {
+                        "error": "Cannot deactivate: there are upcoming scheduled bookings for this slot."
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 

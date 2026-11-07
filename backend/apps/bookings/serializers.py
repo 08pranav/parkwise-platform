@@ -40,12 +40,34 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = [
-            "id", "booking_number", "user", "vehicle", "slot",
-            "slot_number", "society_name", "owner_name", "owner_email",
-            "owner_phone", "society_address", "society_city", "society_state",
-            "society_latitude", "society_longitude", "start_time", "end_time",
-            "actual_entry", "actual_exit", "status", "base_amount", "surge_amount", "surge_multiplier", "amount", "amount_paid",
-            "payment_status", "lock_expires_at", "created_at",
+            "id",
+            "booking_number",
+            "user",
+            "vehicle",
+            "slot",
+            "slot_number",
+            "society_name",
+            "owner_name",
+            "owner_email",
+            "owner_phone",
+            "society_address",
+            "society_city",
+            "society_state",
+            "society_latitude",
+            "society_longitude",
+            "start_time",
+            "end_time",
+            "actual_entry",
+            "actual_exit",
+            "status",
+            "base_amount",
+            "surge_amount",
+            "surge_multiplier",
+            "amount",
+            "amount_paid",
+            "payment_status",
+            "lock_expires_at",
+            "created_at",
         ]
         read_only_fields = fields
 
@@ -62,7 +84,9 @@ class BookingSerializer(serializers.ModelSerializer):
         if payments is None:
             payments = list(obj.payments.all())
         # Sum up captured payments that are specifically for the booking (ignoring penalties if any mixed)
-        total_paid = sum(p.amount for p in payments if p.status == "captured" and p.payment_type == "booking")
+        total_paid = sum(
+            p.amount for p in payments if p.status == "captured" and p.payment_type == "booking"
+        )
         # If no captured payment, fallback to the original booking amount
         if total_paid > 0:
             return str(total_paid)

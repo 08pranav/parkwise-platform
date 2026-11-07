@@ -9,4 +9,5 @@ workspace:
   - apps/admin_app
   - apps/guard_app
   - apps/super_admin_app
+  - apps/owner_app
   - packages/core

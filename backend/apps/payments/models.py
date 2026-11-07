@@ -37,21 +37,15 @@ class Payment(models.Model):
     payment_type = models.CharField(max_length=20, choices=PaymentType.choices)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="INR")
-    provider = models.CharField(
-        max_length=20, choices=Provider.choices, default=Provider.STRIPE
-    )
+    provider = models.CharField(max_length=20, choices=Provider.choices, default=Provider.STRIPE)
     razorpay_order_id = models.CharField(max_length=100, null=True, blank=True, unique=True)
     razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
     razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
     stripe_checkout_session_id = models.CharField(
         max_length=255, null=True, blank=True, unique=True
     )
-    stripe_payment_intent_id = models.CharField(
-        max_length=255, null=True, blank=True, unique=True
-    )
-    status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.CREATED
-    )
+    stripe_payment_intent_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.CREATED)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -59,11 +53,7 @@ class Payment(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        reference = (
-            self.stripe_checkout_session_id
-            or self.razorpay_order_id
-            or str(self.id)
-        )
+        reference = self.stripe_checkout_session_id or self.razorpay_order_id or str(self.id)
         return f"Payment {reference} - {self.status}"
 
 
@@ -96,9 +86,7 @@ class Refund(models.Model):
     refund_amount = models.DecimalField(max_digits=10, decimal_places=2)
     reason = models.TextField(blank=True, default="")
     provider_refund_id = models.CharField(max_length=255, blank=True, default="")
-    status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.PENDING
-    )
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     is_full_refund = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

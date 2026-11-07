@@ -2,9 +2,9 @@ import io
 
 import jwt
 import qrcode
-from qrcode.constants import ERROR_CORRECT_M
 from django.conf import settings
 from django.utils import timezone
+from qrcode.constants import ERROR_CORRECT_M
 
 
 def generate_qr_token(booking):

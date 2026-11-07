@@ -1,124 +1,35 @@
-# 🅿️ ParkWise — Smart Parking App
+# ParkWise
 
-A full-stack parking management app built with **Flutter** (frontend) and **Django** (backend), connected to **Supabase PostgreSQL**.
+Smart society parking platform: residents and visitors find and book parking
+slots in housing societies, pay online, enter through a QR gate checked by
+guards, and get penalties for overstays.
 
----
+> Originally developed at `Parkingapp-crce/Parkingapp` during our internship.
 
-## 🧱 Tech Stack
+Built by **Pranav Koradiya, Santo Xavier and Junaid Momin** as SDE interns at
+Specter Technology and Games Pvt. Ltd. (Feb-Jun 2026), mentored by
+**Dr. Sanket Jack**.
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Flutter |
-| Backend | Django + Django REST Framework |
-| Auth | JWT (SimpleJWT) |
-| Database | Supabase PostgreSQL |
+## Repository layout
 
----
+| Path | What |
+|---|---|
+| `backend/` | Django + DRF API, Celery tasks |
+| `mobile/apps/` | Flutter apps: `user_app`, `owner_app`, `admin_app`, `guard_app`, `super_admin_app` |
+| `mobile/packages/core/` | Shared API client, auth, models, theme, widgets |
+| `docs/` | Architecture notes and decisions |
 
-## ⚙️ Setup Instructions
+## Quick start
 
-### 🔹 1. Clone the repository
-```
-git clone <repo-url>
-cd Parkingapp
-```
-
----
-
-### 🔹 2. Backend Setup
-```
-cd parkwise_backend
+```sh
+make install   # backend + Flutter dependencies
+make dev       # Postgres + Redis in Docker, migrate, run the API on :8000
+make test      # backend tests
+make analyze   # Flutter analyze
 ```
 
-Create and activate virtual environment:
-```
-python -m venv venv
+A full README (architecture, features, demo, edge cases) follows in a later phase.
 
-venv\Scripts\activate        (Windows)
-source venv/bin/activate     (Mac/Linux)
-```
+## License
 
-Install dependencies:
-```
-pip install -r requirements.txt
-```
-
-Create `.env` file:
-```
-copy .env.example .env       (Windows)
-cp .env.example .env         (Mac/Linux)
-```
-
-Add your Supabase values to `.env`:
-```
-DJANGO_SECRET_KEY=your-secret-key
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1,10.0.2.2
-
-DB_NAME=postgres
-DB_USER=postgres.your-project-ref
-DB_PASSWORD=your-supabase-password
-DB_HOST=***REMOVED***
-DB_PORT=5432
-```
-
-Run migrations:
-```
-python manage.py migrate
-```
-
-Start backend:
-```
-python manage.py runserver
-```
-
-Backend runs at: `http://127.0.0.1:8000`
-
----
-
-### 🔹 3. Flutter Setup
-```
-cd park_app
-flutter pub get
-```
-
-Run app:
-```
-flutter run
-```
-
----
-
-## 🔌 API Endpoints
-
-The current backend uses versioned endpoints under `/api/v1/*`.
-
-- Human-readable reference: [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md)
-- Local Swagger UI: `http://127.0.0.1:8000/api/docs/`
-- OpenAPI schema: `http://127.0.0.1:8000/api/schema/`
-
----
-
-## ⚠️ Important
-
-- Use `http://10.0.2.2:8000` for Android emulator
-- Use `http://localhost:8000` for Flutter web
-- Use your laptop's local IP for real device (e.g. `http://192.168.1.x:8000`)
-- Never commit your `.env` file — it's in `.gitignore` ✅
-
----
-
-## ✅ Backend/API Notes
-
-For the app family under `mobile/apps/*`, use the `backend/` service with `/api/v1/*` endpoints.
-
-All runtime data should come from the database and authenticated API responses.
-
----
-
-## 📦 Required Tools
-
-- Python 3.10+
-- Flutter SDK
-- Android Studio / Emulator
-- Git
+MIT. See [LICENSE](LICENSE).

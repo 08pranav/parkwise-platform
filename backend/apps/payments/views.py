@@ -1,5 +1,6 @@
 from django.conf import settings
 from rest_framework import permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,6 +14,7 @@ from .serializers import (
 from .services import (
     create_razorpay_order,
     create_stripe_checkout_session,
+    handle_razorpay_webhook,
     handle_stripe_webhook,
     verify_checkout_session,
     verify_razorpay_payment,
@@ -24,8 +26,6 @@ class PaymentInitiateView(APIView):
 
     def post(self, request):
         serializer = PaymentInitiateSerializer(data=request.data)
-        if not serializer.is_valid():
-            print("Serializer errors:", serializer.errors)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -35,7 +35,6 @@ class PaymentInitiateView(APIView):
                 status=Booking.Status.PENDING_PAYMENT,
             )
         except Booking.DoesNotExist:
-            print("Booking not found. Validated data:", serializer.validated_data)
             return Response(
                 {"error": "Booking not found or not in pending payment state."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -111,13 +110,27 @@ class PaymentVerifyRazorpayView(APIView):
 
 class StripeWebhookView(APIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = []
 
     def post(self, request):
         signature = request.headers.get("Stripe-Signature", "")
-        body = request.body.decode("utf-8")
+        outcome = handle_stripe_webhook(request.body.decode("utf-8"), signature)
+        return Response({"status": outcome})
 
-        handle_stripe_webhook(body, signature)
-        return Response({"status": "ok"})
+
+class RazorpayWebhookView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = []
+
+    def post(self, request):
+        outcome = handle_razorpay_webhook(
+            request.body,
+            request.headers.get("X-Razorpay-Signature", ""),
+            request.headers.get("X-Razorpay-Event-Id", ""),
+        )
+        return Response({"status": outcome})
 
 
 class ManualPaymentVerifyView(APIView):
@@ -140,8 +153,5 @@ class ManualPaymentVerifyView(APIView):
                 user=request.user,
             )
             return Response(PaymentSerializer(payment).data)
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        except ValidationError as exc:
+            return Response({"error": exc.detail}, status=status.HTTP_400_BAD_REQUEST)

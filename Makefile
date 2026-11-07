@@ -20,8 +20,8 @@ dev: infra ## Run migrations and start the API on :8000
 worker: ## Run the Celery worker with beat
 	cd $(BACKEND) && DB_HOST=localhost celery -A parking_platform worker -B -l info
 
-test: ## Backend tests (needs `make infra`)
-	cd $(BACKEND) && DJANGO_SETTINGS_MODULE=parking_platform.settings.test pytest
+test: ## Backend tests with coverage (needs `make infra`)
+	cd $(BACKEND) && DJANGO_SETTINGS_MODULE=parking_platform.settings.test pytest --cov=apps
 
 lint: ## Ruff lint + format check
 	cd $(BACKEND) && ruff check . && ruff format --check .

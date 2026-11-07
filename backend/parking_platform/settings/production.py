@@ -50,3 +50,8 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 if CELERY_BROKER_URL.startswith("rediss://"):  # noqa: F405
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
     CELERY_REDIS_BACKEND_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
+
+# drf-spectacular reports schema-quality warnings (views without a serializer_class,
+# querysets that read request.user). They affect the generated docs only, not security,
+# and are tracked as documentation debt.
+SILENCED_SYSTEM_CHECKS = ["drf_spectacular.W001", "drf_spectacular.W002"]

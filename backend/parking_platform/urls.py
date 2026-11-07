@@ -3,6 +3,8 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from .health import HealthView
+
 urlpatterns = [
     path("", RedirectView.as_view(url="api/docs/", permanent=False)),
     path("admin/", admin.site.urls),
@@ -15,6 +17,7 @@ urlpatterns = [
     path("api/v1/qr/", include("apps.qr_validation.urls")),
     path("api/v1/penalties/", include("apps.penalties.urls")),
     # API docs
+    path("api/health/", HealthView.as_view(), name="health"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
 ]

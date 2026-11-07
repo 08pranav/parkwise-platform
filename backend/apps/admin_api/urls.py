@@ -40,4 +40,7 @@ urlpatterns = [
         views.RefundLookupView.as_view(),
         name="admin-refund-lookup",
     ),
+    # ----- Public demo only (404 unless DEMO_MODE=true) -----
+    path("reset-demo/", views.DemoResetView.as_view(), name="demo-reset"),
+    path("demo/fast-forward/", views.DemoFastForwardView.as_view(), name="demo-fast-forward"),
 ]

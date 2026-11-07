@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ParkWise</title>
+  <meta name="description" content="Smart society parking: book a slot, pay online, enter with a QR code.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #f6f7fb; --surface: #ffffff; --text: #14172b; --muted: #5b6078;
+      --primary: #4f46e5; --primary-ink: #ffffff; --border: #e3e5ee; --accent: #0ea5a4;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f1120; --surface: #181b30; --text: #eef0fb; --muted: #a2a8c6;
+        --primary: #8b85ff; --primary-ink: #0f1120; --border: #2a2e4a; --accent: #3dd6d4;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+    header { padding: 56px 0 32px; text-align: center; }
+    header img { width: 72px; height: 72px; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 12px 0 8px; letter-spacing: -0.02em; }
+    .pitch { color: var(--muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto; }
+    .banner { display: inline-block; margin-top: 18px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); font-size: .85rem; font-weight: 600; }
+    h2 { margin: 40px 0 16px; font-size: 1.25rem; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .card h3 { margin: 0; font-size: 1.05rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .95rem; flex: 1; }
+    .btn { display: inline-block; text-align: center; padding: 10px 14px; border-radius: 10px; background: var(--primary); color: var(--primary-ink); text-decoration: none; font-weight: 600; margin-top: 8px; }
+    .btn.secondary { background: transparent; color: var(--primary); border: 1px solid var(--border); }
+    .links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
+    .links .btn { margin-top: 0; }
+    footer { text-align: center; color: var(--muted); font-size: .9rem; padding: 40px 0 56px; }
+    a:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <img src="logo.svg" alt="ParkWise logo">
+    <h1>ParkWise</h1>
+    <p class="pitch">Smart parking for housing societies: find a slot, pay online, and drive in through a QR gate. Guards scan, overstays are charged automatically.</p>
+    <span class="banner">Public demo · data resets nightly · test payments only</span>
+    <div class="links">
+      <a class="btn" href="/user/">Try as resident</a>
+      <a class="btn secondary" href="https://github.com/08pranav/parkwise-platform">GitHub repository</a>
+      <a class="btn secondary" href="https://github.com/08pranav/parkwise-platform/releases/latest">Download Android APKs</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h2>Pick a role</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Resident &amp; visitor</h3>
+        <p>Search by location, see the live surge-priced quote, add a vehicle, pay with Stripe or Razorpay and get a QR code.</p>
+        <a class="btn" href="/user/">Try as resident</a>
+      </article>
+      <article class="card">
+        <h3>Slot owner</h3>
+        <p>List a spare slot with the hours it is free, then wait for society approval and switch it on or off.</p>
+        <a class="btn" href="/owner/">Try as slot owner</a>
+      </article>
+      <article class="card">
+        <h3>Society admin</h3>
+        <p>Approve residents and slots, manage slots and availability windows, add guards and see bookings.</p>
+        <a class="btn" href="/admin/">Try as society admin</a>
+      </article>
+      <article class="card">
+        <h3>Gate guard</h3>
+        <p>Scan or enter a booking's QR code. A second scan of the same code is rejected.</p>
+        <a class="btn" href="/guard/">Try as guard</a>
+      </article>
+      <article class="card">
+        <h3>Super admin</h3>
+        <p>Onboard societies, see payments and look up bookings to refund them in full or in part.</p>
+        <a class="btn" href="/super-admin/">Try as super admin</a>
+      </article>
+    </div>
+
+    <h2>Test payments</h2>
+    <div class="grid">
+      <article class="card"><h3>Stripe</h3><p>Card <strong>4242 4242 4242 4242</strong>, any future expiry, any CVC.</p></article>
+      <article class="card"><h3>Razorpay</h3><p>Test-mode checkout: choose UPI and use <strong>success@razorpay</strong>.</p></article>
+    </div>
+  </main>
+
+  <footer class="wrap">
+    Built by Pranav Koradiya, Santo Xavier &amp; Junaid Momin as SDE interns at Specter Technology and Games Pvt. Ltd.,
+    mentored by Dr. Sanket Jack.
+  </footer>
+</body>
+</html>

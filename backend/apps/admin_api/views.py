@@ -1,5 +1,7 @@
+import hmac
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Count, Prefetch, Q, Sum
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -365,4 +367,68 @@ class RefundView(APIView):
         return Response(
             RefundSerializer(refund_record).data,
             status=status.HTTP_201_CREATED,
+        )
+
+
+class DemoResetView(APIView):
+    """Wipe and reseed the demo data. Disabled unless DEMO_MODE is on; guarded by a bearer token."""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+    throttle_classes = []
+
+    def post(self, request):
+        from django.conf import settings
+
+        expected = settings.DEMO_RESET_TOKEN
+        if not settings.DEMO_MODE or not expected:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        supplied = request.headers.get("Authorization", "").removeprefix("Bearer ").strip()
+        if not hmac.compare_digest(supplied.encode(), expected.encode()):
+            return Response({"error": "Invalid token."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        from . import demo
+
+        return Response(demo.seed(reset=True))
+
+
+class DemoFastForwardView(APIView):
+    """Demo only: move a booking N minutes into the past so an overstay can be shown live.
+
+    Both the booking window and the check-in time shift together, so an active booking
+    looks as if the driver arrived earlier and is now past the end time.
+    """
+
+    permission_classes = [permissions.IsAuthenticated, IsSuperAdmin]
+
+    def post(self, request):
+        from datetime import timedelta
+
+        from django.conf import settings
+
+        if not settings.DEMO_MODE:
+            return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            minutes = int(request.data.get("minutes", 0))
+            booking = Booking.objects.get(id=request.data.get("booking_id"))
+        except (TypeError, ValueError, Booking.DoesNotExist, DjangoValidationError):
+            return Response({"error": "booking_id and minutes are required."}, status=400)
+        if not 1 <= minutes <= 24 * 60:
+            return Response({"error": "minutes must be between 1 and 1440."}, status=400)
+
+        shift = timedelta(minutes=minutes)
+        booking.start_time -= shift
+        booking.end_time -= shift
+        if booking.actual_entry:
+            booking.actual_entry -= shift
+        booking.save(update_fields=["start_time", "end_time", "actual_entry", "updated_at"])
+        return Response(
+            {
+                "booking_id": str(booking.id),
+                "start_time": booking.start_time,
+                "end_time": booking.end_time,
+                "status": booking.status,
+            }
         )

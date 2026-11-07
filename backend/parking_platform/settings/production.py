@@ -40,6 +40,11 @@ SECURE_HSTS_PRELOAD = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
+# Upstash requires TLS; accept a plain redis:// URL copied from its dashboard.
+if CELERY_BROKER_URL.startswith("redis://") and ".upstash.io" in CELERY_BROKER_URL:  # noqa: F405
+    CELERY_BROKER_URL = CELERY_BROKER_URL.replace("redis://", "rediss://", 1)
+    CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
 # Celery: Upstash exposes rediss:// and needs TLS options.
 CELERY_BROKER_CONNECTION_TIMEOUT = 5
 CELERY_BROKER_CONNECTION_MAX_RETRIES = 3
@@ -47,7 +52,7 @@ CELERY_REDIS_RETRY_ON_TIMEOUT = True
 CELERY_REDIS_MAX_CONNECTIONS = 10
 CELERY_RESULT_BACKEND_MAX_RETRIES = 3
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-if CELERY_BROKER_URL.startswith("rediss://"):  # noqa: F405
+if CELERY_BROKER_URL.startswith("rediss://"):
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
     CELERY_REDIS_BACKEND_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 

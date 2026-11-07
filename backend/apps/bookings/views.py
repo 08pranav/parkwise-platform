@@ -18,6 +18,7 @@ from .services import cancel_booking, create_booking
 
 
 class BookingCreateView(APIView):
+    throttle_scope = "booking"
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):

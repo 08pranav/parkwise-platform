@@ -1,0 +1,31 @@
+name: deploy-web
+on:
+  push:
+    branches: [main]
+    paths: ["mobile/**", "web/**", "scripts/build-web.sh", "scripts/assemble-site.sh"]
+  workflow_dispatch:
+jobs:
+  vercel:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Build every app against the live API
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          scripts/build-web.sh "$API_URL" true
+          scripts/assemble-site.sh "$API_URL"
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd dist
+          npx --yes vercel@latest pull --yes --environment=production --token "$VERCEL_TOKEN" || true
+          npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"

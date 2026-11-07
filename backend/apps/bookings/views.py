@@ -1,3 +1,4 @@
+import logging
 import math
 from decimal import Decimal
 
@@ -15,6 +16,8 @@ from utils.qr import generate_qr_image
 from .models import Booking
 from .serializers import BookingCreateSerializer, BookingSerializer
 from .services import cancel_booking, create_booking
+
+logger = logging.getLogger(__name__)
 
 
 class BookingCreateView(APIView):
@@ -105,8 +108,8 @@ class BookingDetailView(generics.RetrieveAPIView):
             for payment in stripe_payments:
                 try:
                     verify_checkout_session(payment.stripe_checkout_session_id)
-                except Exception as e:
-                    print(f"Auto-verify (Stripe) failed for {payment.id}: {e}")
+                except Exception:
+                    logger.warning("Auto-verify (Stripe) failed for %s", payment.id, exc_info=True)
 
             # Razorpay verification
             razorpay_payments = obj.payments.filter(
@@ -116,8 +119,10 @@ class BookingDetailView(generics.RetrieveAPIView):
             for payment in razorpay_payments:
                 try:
                     sync_razorpay_order_status(payment.razorpay_order_id)
-                except Exception as e:
-                    print(f"Auto-verify (Razorpay) failed for {payment.id}: {e}")
+                except Exception:
+                    logger.warning(
+                        "Auto-verify (Razorpay) failed for %s", payment.id, exc_info=True
+                    )
 
             obj.refresh_from_db()
         return obj
@@ -139,31 +144,41 @@ class BookingCancelView(APIView):
         return Response(BookingSerializer(booking).data)
 
 
-class BookingQRView(APIView):
+class BookingQRTokenView(APIView):
+    """The QR payload as text, for manual entry at the gate. Only the booking's owner may read it."""
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk):
-        print(f"QR View hit for booking {pk}")
         try:
             booking = Booking.objects.get(id=pk, user=request.user)
         except Booking.DoesNotExist:
-            print("Booking not found")
-            return Response(
-                {"error": "Booking not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        print(f"Booking status is {booking.status}")
+            return Response({"error": "Booking not found."}, status=status.HTTP_404_NOT_FOUND)
         if booking.status not in (Booking.Status.CONFIRMED, Booking.Status.ACTIVE):
-            print("Booking status invalid for QR")
             return Response(
                 {"error": "QR code only available for confirmed or active bookings."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        return Response({"qr_token": booking.qr_code_token})
 
-        print("Generating QR image...")
+
+class BookingQRView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            booking = Booking.objects.get(id=pk, user=request.user)
+        except Booking.DoesNotExist:
+            return Response(
+                {"error": "Booking not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        if booking.status not in (Booking.Status.CONFIRMED, Booking.Status.ACTIVE):
+            return Response(
+                {"error": "QR code only available for confirmed or active bookings."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         qr_image = generate_qr_image(booking.qr_code_token)
-        print("QR image generated successfully")
         return HttpResponse(qr_image.getvalue(), content_type="image/png")
 
 

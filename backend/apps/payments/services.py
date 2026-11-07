@@ -60,24 +60,32 @@ def _get_razorpay_client():
     return razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 
+def _origin(url):
+    parsed = urlparse(url or "")
+    return f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else None
+
+
 def _resolve_frontend_base_url(request=None):
-    candidates = []
+    """Where to send the browser after checkout.
+
+    The web apps are served under a sub-path (``/user``), so when the request comes from the
+    configured site the full configured URL is used; any other origin keeps just its origin.
+    """
+    configured = (settings.FRONTEND_BASE_URL or "").rstrip("/")
+    configured_origin = _origin(configured)
+
     if request is not None:
-        origin = request.headers.get("Origin")
-        referer = request.headers.get("Referer")
-        if origin:
-            candidates.append(origin)
-        if referer:
-            candidates.append(referer)
+        for header in ("Origin", "Referer"):
+            origin = _origin(request.headers.get(header))
+            if origin:
+                return configured if origin == configured_origin else origin
 
-    candidates.append(settings.FRONTEND_BASE_URL)
+    return configured if configured_origin else "http://127.0.0.1:3000"
 
-    for candidate in candidates:
-        parsed = urlparse(candidate)
-        if parsed.scheme and parsed.netloc:
-            return f"{parsed.scheme}://{parsed.netloc}"
 
-    return "http://127.0.0.1:3000"
+def _booking_return_url(base_url, booking_id, query):
+    # The Flutter web apps use hash routing: <site>/user/#/bookings/<id>
+    return f"{base_url}/#/bookings/{booking_id}?{query}"
 
 
 def _amount_in_smallest_unit(amount):
@@ -187,9 +195,8 @@ def create_stripe_checkout_session(booking, request=None, embedded=False):
     stripe_client = _get_stripe_client()
     frontend_base_url = _resolve_frontend_base_url(request)
 
-    return_url = (
-        f"{frontend_base_url}/bookings/{booking.id}"
-        "?checkout=success&session_id={CHECKOUT_SESSION_ID}"
+    return_url = _booking_return_url(
+        frontend_base_url, booking.id, "checkout=success&session_id={CHECKOUT_SESSION_ID}"
     )
     session_params = dict(
         client_reference_id=str(booking.id),
@@ -230,7 +237,7 @@ def create_stripe_checkout_session(booking, request=None, embedded=False):
     else:
         session_params.update(
             success_url=return_url,
-            cancel_url=f"{frontend_base_url}/bookings/{booking.id}?checkout=cancelled",
+            cancel_url=_booking_return_url(frontend_base_url, booking.id, "checkout=cancelled"),
         )
 
     checkout_session = stripe_client.checkout.Session.create(**session_params)
@@ -284,11 +291,12 @@ def create_stripe_penalty_checkout_session(penalty, request=None, embedded=False
     stripe_client = _get_stripe_client()
     frontend_base_url = _resolve_frontend_base_url(request)
 
-    success_url = (
-        f"{frontend_base_url}/bookings/{penalty.booking_id}"
-        "?checkout=success&session_id={CHECKOUT_SESSION_ID}"
+    success_url = _booking_return_url(
+        frontend_base_url,
+        penalty.booking_id,
+        "checkout=success&session_id={CHECKOUT_SESSION_ID}",
     )
-    cancel_url = f"{frontend_base_url}/bookings/{penalty.booking_id}?checkout=cancelled"
+    cancel_url = _booking_return_url(frontend_base_url, penalty.booking_id, "checkout=cancelled")
 
     session_params = dict(
         mode="payment",

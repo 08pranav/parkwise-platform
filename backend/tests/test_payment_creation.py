@@ -42,6 +42,26 @@ class TestConfiguration:
     def test_amounts_convert_to_paise(self):
         assert pay._amount_in_smallest_unit(Decimal("60.50")) == 6050
 
+    def test_the_configured_sub_path_is_kept_for_requests_from_the_configured_site(self, settings):
+        settings.FRONTEND_BASE_URL = "https://site.example.test/user/"
+        same_site = SimpleNamespace(headers={"Origin": "https://site.example.test"})
+        other_site = SimpleNamespace(headers={"Origin": "https://other.test"})
+        assert pay._resolve_frontend_base_url(same_site) == "https://site.example.test/user"
+        assert pay._resolve_frontend_base_url(other_site) == "https://other.test"
+        assert pay._resolve_frontend_base_url() == "https://site.example.test/user"
+
+    def test_checkout_returns_to_the_hash_route_of_the_app(self, settings):
+        settings.FRONTEND_BASE_URL = "https://site.example.test/user"
+        booking = BookingFactory(status="pending_payment")
+        with mock.patch("stripe.checkout.Session.create", return_value=stripe_session()) as create:
+            pay.create_stripe_checkout_session(booking)
+        kwargs = create.call_args.kwargs
+        assert kwargs["success_url"] == (
+            f"https://site.example.test/user/#/bookings/{booking.id}"
+            "?checkout=success&session_id={CHECKOUT_SESSION_ID}"
+        )
+        assert kwargs["cancel_url"].endswith(f"/#/bookings/{booking.id}?checkout=cancelled")
+
     def test_frontend_url_prefers_the_request_origin(self):
         request = SimpleNamespace(headers={"Origin": "https://shop.test/path", "Referer": ""})
         assert pay._resolve_frontend_base_url(request) == "https://shop.test"

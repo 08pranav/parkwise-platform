@@ -19,6 +19,7 @@ from .serializers import (
 
 
 class RegisterView(generics.CreateAPIView):
+    throttle_scope = "auth"
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -41,11 +42,13 @@ class RegisterView(generics.CreateAPIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    throttle_scope = "auth"
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class GuardRegisterView(generics.CreateAPIView):
+    throttle_scope = "auth"
     serializer_class = GuardRegistrationSerializer
     permission_classes = [permissions.AllowAny]
 

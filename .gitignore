@@ -58,3 +58,4 @@ scratch/
 key.properties
 **/android/key.properties
 .vercel/
+dist/

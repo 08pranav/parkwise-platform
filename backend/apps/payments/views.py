@@ -22,6 +22,7 @@ from .services import (
 
 
 class PaymentInitiateView(APIView):
+    throttle_scope = "payment"
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -70,6 +71,7 @@ class PaymentInitiateView(APIView):
 
 
 class PaymentVerifyView(APIView):
+    throttle_scope = "payment"
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -84,6 +86,7 @@ class PaymentVerifyView(APIView):
 
 
 class PaymentVerifyRazorpayView(APIView):
+    throttle_scope = "payment"
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -134,6 +137,7 @@ class RazorpayWebhookView(APIView):
 
 
 class ManualPaymentVerifyView(APIView):
+    throttle_scope = "payment"
     """Manual payment verification endpoint for testing without webhooks"""
 
     permission_classes = [permissions.IsAuthenticated]

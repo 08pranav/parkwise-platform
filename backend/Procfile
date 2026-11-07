@@ -1,0 +1,2 @@
+web: gunicorn parking_platform.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1 --threads 4 --timeout 60 --access-logfile -
+worker: sh -c 'while true; do celery -A parking_platform worker --beat --pool=solo --loglevel=info; echo "celery exited, restarting in 10s"; sleep 10; done'

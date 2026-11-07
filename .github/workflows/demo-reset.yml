@@ -1,0 +1,20 @@
+name: demo-reset
+on:
+  schedule:
+    - cron: "0 19 * * *" # 00:30 IST
+  workflow_dispatch:
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake the API, then reset the demo data
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          DEMO_RESET_TOKEN: ${{ secrets.DEMO_RESET_TOKEN }}
+        run: |
+          for i in $(seq 1 12); do
+            curl -fsS --max-time 30 "$API_URL/api/health/" >/dev/null && break
+            echo "waiting for the API to wake up ($i)"; sleep 10
+          done
+          curl -fsS --max-time 120 -X POST "$API_URL/api/v1/admin/reset-demo/" \
+            -H "Authorization: Bearer $DEMO_RESET_TOKEN"

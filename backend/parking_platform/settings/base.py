@@ -109,10 +109,15 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
         "anon": "30/minute",
-        "user": "60/minute",
+        "user": "120/minute",
+        # Per-client limits on the endpoints that are expensive or abuse-prone.
+        "auth": "20/minute",
+        "booking": "20/minute",
+        "payment": "20/minute",
     },
 }
 
@@ -189,6 +194,10 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 60.0,  # every minute
     },
 }
+
+# Public demo deployment
+DEMO_MODE = env.bool("DEMO_MODE", default=False)
+DEMO_RESET_TOKEN = env("DEMO_RESET_TOKEN", default="")
 
 # drf-spectacular
 SPECTACULAR_SETTINGS = {

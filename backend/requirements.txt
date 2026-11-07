@@ -21,3 +21,5 @@ qrcode==8.2
 razorpay==2.0.1
 stripe==12.5.1
 whitenoise==6.9.0
+gunicorn==23.0.0
+honcho==2.0.0

@@ -19,6 +19,7 @@ jobs:
       - name: Build every app against the live API
         env:
           API_URL: ${{ secrets.API_URL }}
+          MAPTILER_API_KEY: ${{ secrets.MAPTILER_API_KEY }}
         run: |
           scripts/build-web.sh "$API_URL" true
           scripts/assemble-site.sh "$API_URL"

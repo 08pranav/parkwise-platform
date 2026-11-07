@@ -56,6 +56,12 @@ class TestSeed:
         demo.seed()
         assert not _user_has_blocking_booking(User.objects.get(email="user@parkwise.demo"))
 
+    def test_the_demo_resident_has_no_unpaid_penalty_blocking_new_bookings(self):
+        demo.seed()
+        resident = User.objects.get(email="user@parkwise.demo")
+        assert not Penalty.objects.filter(user=resident, status="unpaid").exists()
+        assert Penalty.objects.filter(status="unpaid").exists()  # still shown for someone
+
     def test_the_seeded_paid_booking_has_a_valid_qr(self):
         from utils.qr import decode_qr_token
 

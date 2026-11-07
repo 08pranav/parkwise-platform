@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Assemble dist/ (landing page + every web app + vercel.json). Run after build-web.sh.
-# Usage: scripts/assemble-site.sh <RENDER_API_ORIGIN>   e.g. https://parkwise-api.onrender.com
+# Usage: scripts/assemble-site.sh <API_ORIGIN>  (kept for the signature; the apps call the API directly with CORS)
 set -euo pipefail
 API_ORIGIN="${1:?usage: assemble-site.sh <api origin>}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,14 +8,13 @@ OUT="$ROOT/dist"
 cp "$ROOT"/web/landing/* "$OUT/"
 cat > "$OUT/vercel.json" <<JSON
 {
-  "cleanUrls": false,
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "${API_ORIGIN}/api/:path*" },
-    { "source": "/user/:path*", "destination": "/user/index.html" },
-    { "source": "/owner/:path*", "destination": "/owner/index.html" },
-    { "source": "/admin/:path*", "destination": "/admin/index.html" },
-    { "source": "/guard/:path*", "destination": "/guard/index.html" },
-    { "source": "/super-admin/:path*", "destination": "/super-admin/index.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/user/.*", "dest": "/user/index.html" },
+    { "src": "/owner/.*", "dest": "/owner/index.html" },
+    { "src": "/admin/.*", "dest": "/admin/index.html" },
+    { "src": "/guard/.*", "dest": "/guard/index.html" },
+    { "src": "/super-admin/.*", "dest": "/super-admin/index.html" }
   ]
 }
 JSON

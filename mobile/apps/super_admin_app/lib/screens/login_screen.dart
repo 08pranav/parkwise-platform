@@ -25,11 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLogin() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
-            AuthLoginRequested(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        AuthLoginRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -51,8 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -63,19 +62,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                              color:
-                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.25),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.verified_user_rounded,
-                                size: 14, color: Theme.of(context).colorScheme.tertiary),
+                            Icon(
+                              Icons.verified_user_rounded,
+                              size: 14,
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
                             SizedBox(width: 6),
                             Text(
                               'PARKWISE · PLATFORM',
@@ -145,7 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: _obscurePassword,
                       suffix: GestureDetector(
                         onTap: () => setState(
-                            () => _obscurePassword = !_obscurePassword),
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                         child: Icon(
                           _obscurePassword
                               ? Icons.visibility_off_outlined

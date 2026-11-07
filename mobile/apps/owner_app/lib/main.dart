@@ -38,6 +38,8 @@ class _OwnerAppState extends State<OwnerApp> {
           themeMode: widget.themeNotifier.themeMode,
           routerConfig: _router,
           debugShowCheckedModeBanner: false,
+          builder: (context, child) =>
+              DemoModeWrapper(account: DemoAccount.owner, child: child!),
         ),
       ),
     );

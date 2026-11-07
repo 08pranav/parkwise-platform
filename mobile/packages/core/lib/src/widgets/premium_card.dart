@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 
 class PremiumCard extends StatelessWidget {
   final Widget child;
@@ -28,10 +27,17 @@ class PremiumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final decoration = BoxDecoration(
-      color: gradient == null ? (color ?? Theme.of(context).colorScheme.surfaceContainerHighest) : null,
+      color: gradient == null
+          ? (color ?? Theme.of(context).colorScheme.surfaceContainerHighest)
+          : null,
       gradient: gradient,
       borderRadius: BorderRadius.circular(borderRadius),
-      border: border ?? Border.all(color: Theme.of(context).colorScheme.outlineVariant, width: 1.0),
+      border:
+          border ??
+          Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1.0,
+          ),
       boxShadow: boxShadow,
     );
 
@@ -45,10 +51,7 @@ class PremiumCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             child: Ink(
               decoration: decoration,
-              child: Padding(
-                padding: padding,
-                child: child,
-              ),
+              child: Padding(padding: padding, child: child),
             ),
           ),
         ),

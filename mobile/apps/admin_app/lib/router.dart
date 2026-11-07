@@ -166,7 +166,10 @@ class _AdminShellState extends State<AdminShell> {
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1),
+                top: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 1,
+                ),
               ),
             ),
             child: NavigationBar(

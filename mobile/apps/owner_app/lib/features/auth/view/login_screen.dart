@@ -25,11 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(
-          AuthLoginRequested(
-            email: _email.text.trim(),
-            password: _password.text,
-          ),
-        );
+      AuthLoginRequested(email: _email.text.trim(), password: _password.text),
+    );
   }
 
   @override
@@ -58,8 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(Icons.local_parking_rounded,
-                          size: 48, color: scheme.primary),
+                      Icon(
+                        Icons.local_parking_rounded,
+                        size: 48,
+                        color: scheme.primary,
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'ParkWise Owner',

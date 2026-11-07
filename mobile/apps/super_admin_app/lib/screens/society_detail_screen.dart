@@ -78,12 +78,16 @@ class _SocietyDetailScreenState extends State<SocietyDetailScreen> {
                 decoration: BoxDecoration(
                   color: society.isActive
                       ? AppColors.success.withValues(alpha: 0.1)
-                      : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: society.isActive
                         ? AppColors.success.withValues(alpha: 0.3)
-                        : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -111,7 +115,9 @@ class _SocietyDetailScreenState extends State<SocietyDetailScreen> {
                             style: TextStyle(
                               color: society.isActive
                                   ? AppColors.success
-                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                                  : Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -185,10 +191,14 @@ class _SocietyDetailScreenState extends State<SocietyDetailScreen> {
                         ),
                         label: Text(
                           'Deactivate Society',
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Theme.of(context).colorScheme.error),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       )
                     : PrimaryButton(
@@ -323,7 +333,9 @@ class _SocietyDetailScreenState extends State<SocietyDetailScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
-              foregroundColor: newStatus ? AppColors.success : Theme.of(context).colorScheme.error,
+              foregroundColor: newStatus
+                  ? AppColors.success
+                  : Theme.of(context).colorScheme.error,
             ),
             child: Text(action[0].toUpperCase() + action.substring(1)),
           ),
@@ -365,9 +377,9 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -389,7 +401,12 @@ class _DetailRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Text(
+            label,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(width: 16),
           Flexible(
             child: Text(

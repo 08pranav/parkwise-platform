@@ -38,7 +38,10 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(1),
-                  child: Container(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                  child: Container(
+                    height: 1,
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                 ),
               ),
 
@@ -53,11 +56,16 @@ class ProfileScreen extends StatelessWidget {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                           shape: BoxShape.circle,
                           border: Border.all(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
-                              width: 2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.4),
+                            width: 2,
+                          ),
                         ),
                         child: Center(
                           child: Text(
@@ -87,12 +95,19 @@ class ProfileScreen extends StatelessWidget {
                       // Role badge
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.25),
+                          ),
                         ),
                         child: Text(
                           user.role.toUpperCase(),
@@ -192,13 +207,19 @@ class ProfileScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3)),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.error.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.logout_rounded,
-                              color: Theme.of(context).colorScheme.error, size: 18),
+                          Icon(
+                            Icons.logout_rounded,
+                            color: Theme.of(context).colorScheme.error,
+                            size: 18,
+                          ),
                           SizedBox(width: 8),
                           Text(
                             'SIGN OUT',
@@ -239,7 +260,9 @@ class ProfileScreen extends StatelessWidget {
               Navigator.of(dialogContext).pop();
               context.read<AuthBloc>().add(const AuthLoggedOut());
             },
-            style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Sign Out'),
           ),
         ],
@@ -285,11 +308,24 @@ class _InfoTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         border: Border(
-          left: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1),
-          right: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1),
-          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1),
-          bottom:
-              isLast ? BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1) : BorderSide.none,
+          left: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1,
+          ),
+          right: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1,
+          ),
+          top: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            width: 1,
+          ),
+          bottom: isLast
+              ? BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 1,
+                )
+              : BorderSide.none,
         ),
         borderRadius: isLast
             ? const BorderRadius.only(
@@ -301,7 +337,11 @@ class _InfoTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
+          Icon(
+            icon,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 18,
+          ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,7 +394,9 @@ class _ActionTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         child: Row(
           children: [
@@ -384,8 +426,11 @@ class _ActionTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),
@@ -411,7 +456,9 @@ class _ThemeToggleTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
             child: Row(
               children: [
@@ -448,7 +495,7 @@ class _ThemeToggleTile extends StatelessWidget {
                 Switch(
                   value: isDark,
                   onChanged: (_) => _themeNotifier.toggle(),
-                  activeColor: Theme.of(context).colorScheme.primary,
+                  activeThumbColor: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -458,4 +505,3 @@ class _ThemeToggleTile extends StatelessWidget {
     );
   }
 }
-

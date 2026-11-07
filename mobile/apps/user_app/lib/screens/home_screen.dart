@@ -106,17 +106,29 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               if (blockingBooking != null) {
                 return Container(
                   margin: const EdgeInsets.only(right: 16, top: 10, bottom: 10),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.local_parking_rounded,
-                          color: Theme.of(context).colorScheme.tertiary, size: 12),
+                      Icon(
+                        Icons.local_parking_rounded,
+                        color: Theme.of(context).colorScheme.tertiary,
+                        size: 12,
+                      ),
                       SizedBox(width: 4),
                       Text(
                         'PARKING ACTIVE',
@@ -138,7 +150,10 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+          child: Container(
+            height: 1,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
       ),
       body: BlocBuilder<PenaltiesCubit, PenaltiesState>(
@@ -170,21 +185,33 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                           ),
                         ] else if (penaltyState.penalties.isNotEmpty) ...[
                           Card(
-                            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.error.withValues(alpha: 0.1),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3)),
+                              side: BorderSide(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.error.withValues(alpha: 0.3),
+                              ),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Column(
                                 children: [
-                                  Icon(Icons.warning_amber_rounded, size: 48, color: Theme.of(context).colorScheme.error),
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    size: 48,
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
                                   const SizedBox(height: 12),
                                   Text(
                                     'Action Required',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.error,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                     ),
@@ -194,15 +221,20 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                                     'You have an unpaid overstay penalty on your profile. You cannot book new slots until all dues are cleared.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 16),
                                   PrimaryButton(
                                     label: 'Go to Booking to Pay Penalty',
                                     onPressed: () {
-                                      final firstPenalty = penaltyState.penalties.first;
-                                      context.push('/bookings/${firstPenalty.booking}');
+                                      final firstPenalty =
+                                          penaltyState.penalties.first;
+                                      context.push(
+                                        '/bookings/${firstPenalty.booking}',
+                                      );
                                     },
                                   ),
                                 ],
@@ -247,7 +279,8 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     }
 
     if (booking.isActive) {
-      final hasExitTime = booking.actualExit != null && booking.actualExit!.isNotEmpty;
+      final hasExitTime =
+          booking.actualExit != null && booking.actualExit!.isNotEmpty;
       return !hasExitTime;
     }
 
@@ -280,7 +313,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
         ),
       ],
       border: Border.all(
-        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.8),
       ),
       borderRadius: 16,
       padding: const EdgeInsets.all(20),
@@ -290,9 +325,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           Text(
             'Destination',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w800,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -326,7 +361,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
               ),
               child: Column(
                 children: state.destinationSuggestions
@@ -408,9 +445,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           Text(
             'Booking Filters',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w800,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 16),
 
@@ -418,16 +455,25 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 4,
+              ),
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -439,17 +485,17 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               title: Text(
                 'BOOKING DATE',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
               ),
               subtitle: Text(
                 dateFormat.format(_bookingDate),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               trailing: Icon(
                 Icons.chevron_right_rounded,
@@ -479,16 +525,25 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           Container(
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 4,
+              ),
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -500,17 +555,17 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               title: Text(
                 'START TIME',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
               ),
               subtitle: Text(
                 _startTime.format(context),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
               trailing: Icon(
                 Icons.chevron_right_rounded,
@@ -542,10 +597,12 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 selected: _useDuration,
                 selectedColor: Theme.of(context).colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: _useDuration 
-                      ? Theme.of(context).colorScheme.primary 
+                  color: _useDuration
+                      ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: _useDuration ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: _useDuration
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                 ),
                 onSelected: (_) {
                   setState(() {
@@ -559,10 +616,12 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 selected: !_useDuration,
                 selectedColor: Theme.of(context).colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: !_useDuration 
-                      ? Theme.of(context).colorScheme.primary 
+                  color: !_useDuration
+                      ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: !_useDuration ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: !_useDuration
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                 ),
                 onSelected: (_) {
                   setState(() {
@@ -601,16 +660,25 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
+                color: Theme.of(
+                  context,
+                ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -622,17 +690,17 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 title: Text(
                   'END TIME',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 subtitle: Text(
                   _endTime?.format(context) ?? 'Select end time',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
@@ -655,9 +723,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           Text(
             'Vehicle Type',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -671,7 +739,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                   color: _vehicleType == 'car'
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: _vehicleType == 'car' ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: _vehicleType == 'car'
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                 ),
                 onSelected: (_) => setState(() => _vehicleType = 'car'),
               ),
@@ -683,7 +753,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                   color: _vehicleType == 'bike'
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: _vehicleType == 'bike' ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: _vehicleType == 'bike'
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                 ),
                 onSelected: (_) => setState(() => _vehicleType = 'bike'),
               ),
@@ -865,7 +937,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.5),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -945,7 +1019,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
@@ -1302,7 +1378,9 @@ class _SocietyCard extends StatelessWidget {
         ),
       ],
       border: Border.all(
-        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.8),
       ),
       borderRadius: 16,
       onTap: () {
@@ -1354,11 +1432,10 @@ class _SocietyCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${society.address}, ${society.city}',
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontFamily: 'Inter',
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontFamily: 'Inter',
+                        ),
                       ),
                     ],
                   ),
@@ -1370,11 +1447,11 @@ class _SocietyCard extends StatelessWidget {
                     Text(
                       '${society.distanceKm.toStringAsFixed(1)} km',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: Theme.of(context).colorScheme.primary,
-                            letterSpacing: -0.2,
-                            fontFamily: 'Inter',
-                          ),
+                        fontWeight: FontWeight.w900,
+                        color: Theme.of(context).colorScheme.primary,
+                        letterSpacing: -0.2,
+                        fontFamily: 'Inter',
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Icon(
@@ -1469,12 +1546,13 @@ class _ParkingInProgressCard extends StatelessWidget {
     final isConfirmed = booking.isConfirmed && !hasEntryScan;
 
     // ── Overtime detection ─────────────────────────────────────────────────
-    final isOvertime = isActive &&
+    final isOvertime =
+        isActive &&
         actualExit == null &&
         endTime != null &&
         now.isAfter(endTime);
 
-    final remaining = endTime == null ? null : endTime.difference(now);
+    final remaining = endTime?.difference(now);
     final overstay = endTime == null ? Duration.zero : now.difference(endTime);
     final estimatedPenalty = isOvertime ? _estimatedPenalty(overstay) : 0.0;
 
@@ -1482,10 +1560,10 @@ class _ParkingInProgressCard extends StatelessWidget {
     final statusLabel = isOvertime
         ? 'OVERTIME — EXIT IMMEDIATELY'
         : isActive
-            ? 'Parking in progress'
-            : isConfirmed
-                ? 'Reserved, waiting for entry'
-                : 'Payment pending';
+        ? 'Parking in progress'
+        : isConfirmed
+        ? 'Reserved, waiting for entry'
+        : 'Payment pending';
 
     // ── Card gradient — danger red in overtime, default navy otherwise ─────
     final cardGradient = isOvertime
@@ -1500,8 +1578,9 @@ class _ParkingInProgressCard extends StatelessWidget {
             colors: [Color(0xFF0F172A), Color(0xFF1E293B), Color(0xFF0B1220)],
           );
 
-    final accentColor =
-        isOvertime ? Color(0xFFFF4444) : Theme.of(context).colorScheme.tertiary;
+    final accentColor = isOvertime
+        ? Color(0xFFFF4444)
+        : Theme.of(context).colorScheme.tertiary;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -1509,7 +1588,10 @@ class _ParkingInProgressCard extends StatelessWidget {
         gradient: cardGradient,
         borderRadius: BorderRadius.circular(24),
         border: isOvertime
-            ? Border.all(color: const Color(0xFFFF4444).withValues(alpha: 0.45), width: 1.5)
+            ? Border.all(
+                color: const Color(0xFFFF4444).withValues(alpha: 0.45),
+                width: 1.5,
+              )
             : null,
         boxShadow: [
           BoxShadow(
@@ -1537,8 +1619,11 @@ class _ParkingInProgressCard extends StatelessWidget {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.warning_amber_rounded,
-                      color: Colors.white, size: 16),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'PENALTY ACCRUING — SCAN EXIT QR NOW',
@@ -1609,19 +1694,20 @@ class _ParkingInProgressCard extends StatelessWidget {
                     // Status badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: accentColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
-                            color: accentColor.withValues(alpha: 0.4)),
+                          color: accentColor.withValues(alpha: 0.4),
+                        ),
                       ),
                       child: Text(
                         isOvertime
                             ? 'OVERTIME'
-                            : booking.status
-                                .replaceAll('_', ' ')
-                                .toUpperCase(),
+                            : booking.status.replaceAll('_', ' ').toUpperCase(),
                         style: TextStyle(
                           color: accentColor,
                           fontSize: 10,
@@ -1645,14 +1731,17 @@ class _ParkingInProgressCard extends StatelessWidget {
                               overstayText: _formatDuration(overstay),
                             )
                           : _MetricTile(
-                              label: isActive ? 'Time remaining' : 'Entry status',
+                              label: isActive
+                                  ? 'Time remaining'
+                                  : 'Entry status',
                               value: isActive
                                   ? (remaining != null
-                                      ? _formatDuration(
-                                          remaining.isNegative
-                                              ? Duration.zero
-                                              : remaining)
-                                      : '--:--:--')
+                                        ? _formatDuration(
+                                            remaining.isNegative
+                                                ? Duration.zero
+                                                : remaining,
+                                          )
+                                        : '--:--:--')
                                   : 'Waiting for scan',
                             ),
                     ),
@@ -1710,13 +1799,13 @@ class _ParkingInProgressCard extends StatelessWidget {
                   isOvertime
                       ? 'Your booked time has ended. A penalty of ₹${estimatedPenalty.toStringAsFixed(2)} has accrued (20% of booking amount per started hour). Ask the guard to scan your exit QR now to stop further charges.'
                       : isActive
-                          ? 'Your parking session is live. Use the route button if you need directions back to the spot.'
-                          : 'Your slot is reserved. Keep this card handy until the entry scan starts your countdown.',
+                      ? 'Your parking session is live. Use the route button if you need directions back to the spot.'
+                      : 'Your slot is reserved. Keep this card handy until the entry scan starts your countdown.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.82),
-                        height: 1.35,
-                        fontFamily: 'Inter',
-                      ),
+                    color: Colors.white.withValues(alpha: 0.82),
+                    height: 1.35,
+                    fontFamily: 'Inter',
+                  ),
                 ),
                 const SizedBox(height: 18),
 
@@ -1725,7 +1814,8 @@ class _ParkingInProgressCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: booking.societyLatitude != null &&
+                        onPressed:
+                            booking.societyLatitude != null &&
                                 booking.societyLongitude != null
                             ? onNavigate
                             : null,
@@ -1734,7 +1824,8 @@ class _ParkingInProgressCard extends StatelessWidget {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
                           side: BorderSide(
-                              color: Colors.white.withValues(alpha: 0.35)),
+                            color: Colors.white.withValues(alpha: 0.35),
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -1785,9 +1876,10 @@ class _OvertimeCounterState extends State<_OvertimeCounter>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _opacity = Tween<double>(begin: 0.45, end: 1.0).animate(
-      CurvedAnimation(parent: _pulse, curve: Curves.easeInOut),
-    );
+    _opacity = Tween<double>(
+      begin: 0.45,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut));
   }
 
   @override
@@ -1803,8 +1895,9 @@ class _OvertimeCounterState extends State<_OvertimeCounter>
       decoration: BoxDecoration(
         color: const Color(0xFFFF2222).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(18),
-        border:
-            Border.all(color: const Color(0xFFFF4444).withValues(alpha: 0.35)),
+        border: Border.all(
+          color: const Color(0xFFFF4444).withValues(alpha: 0.35),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1813,12 +1906,13 @@ class _OvertimeCounterState extends State<_OvertimeCounter>
             children: [
               AnimatedBuilder(
                 animation: _opacity,
-                builder: (_, child) => Opacity(
-                  opacity: _opacity.value,
-                  child: child,
+                builder: (_, child) =>
+                    Opacity(opacity: _opacity.value, child: child),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xFFFF4444),
+                  size: 13,
                 ),
-                child: const Icon(Icons.warning_amber_rounded,
-                    color: Color(0xFFFF4444), size: 13),
               ),
               const SizedBox(width: 5),
               const Text(
@@ -1836,11 +1930,14 @@ class _OvertimeCounterState extends State<_OvertimeCounter>
           const SizedBox(height: 6),
           AnimatedBuilder(
             animation: _opacity,
-            builder: (_, __) => Text(
+            builder: (_, _) => Text(
               widget.overstayText,
               style: TextStyle(
                 color: Color.lerp(
-                    const Color(0xFFFF6B6B), const Color(0xFFFFAAAA), _opacity.value),
+                  const Color(0xFFFF6B6B),
+                  const Color(0xFFFFAAAA),
+                  _opacity.value,
+                ),
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
                 fontFamily: 'Inter',
@@ -1868,8 +1965,9 @@ class _PenaltyTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFFF2222).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(18),
-        border:
-            Border.all(color: const Color(0xFFFF4444).withValues(alpha: 0.25)),
+        border: Border.all(
+          color: const Color(0xFFFF4444).withValues(alpha: 0.25),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1927,10 +2025,7 @@ class _InfoPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1973,15 +2068,19 @@ class _HomeScreenGradientButton extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         gradient: hasCallback ? AppColors.gradPrimary : null,
-        color: hasCallback ? null : Theme.of(context).colorScheme.outlineVariant,
+        color: hasCallback
+            ? null
+            : Theme.of(context).colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: hasCallback ? [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ] : null,
+        boxShadow: hasCallback
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,
@@ -2095,4 +2194,3 @@ class _MiniPill extends StatelessWidget {
     );
   }
 }
-

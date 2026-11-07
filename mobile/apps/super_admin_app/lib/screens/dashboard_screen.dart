@@ -41,17 +41,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
             if (state.error != null &&
                 state.dashboardData == null &&
                 state.societies.isEmpty) {
-              return AppErrorWidget(
-                  message: state.error!, onRetry: _loadData);
+              return AppErrorWidget(message: state.error!, onRetry: _loadData);
             }
 
             return RefreshIndicator(
               color: Theme.of(context).colorScheme.tertiary,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest,
               onRefresh: () async => _loadData(),
               child: ListView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 0,
+                ),
                 children: [
                   // ── Top Bar ──────────────────────────────────────────────────
                   Padding(
@@ -76,7 +79,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(
                                 'Platform Control Center',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: -0.4,
@@ -109,13 +114,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         _BarAction(
                           icon: Icons.logout_rounded,
                           tooltip: 'Sign out',
-                          onPressed: () =>
-                              context.read<AuthBloc>().add(const AuthLoggedOut()),
+                          onPressed: () => context.read<AuthBloc>().add(
+                            const AuthLoggedOut(),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Container(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                  Container(
+                    height: 1,
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                   const SizedBox(height: 24),
 
                   // ── Onboard Society action ───────────────────────────────────
@@ -123,17 +132,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () => context.go('/societies/create'),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 12),
+                        horizontal: 18,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999),
-                        border:
-                            Border.all(color: Theme.of(context).colorScheme.onSurface, width: 1),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.add_circle_outline_rounded,
-                              color: Theme.of(context).colorScheme.onSurface, size: 18),
+                          Icon(
+                            Icons.add_circle_outline_rounded,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 18,
+                          ),
                           SizedBox(width: 8),
                           Text(
                             'ONBOARD NEW SOCIETY',
@@ -197,12 +213,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildMetricGrid(SocietiesState state) {
     final data = state.dashboardData;
-    final totalSocieties =
-        data?['total_societies'] ?? state.societies.length;
-    final activeSocieties = data?['active_societies'] ??
+    final totalSocieties = data?['total_societies'] ?? state.societies.length;
+    final activeSocieties =
+        data?['active_societies'] ??
         state.societies.where((s) => s.isActive).length;
     final totalBookings = data?['total_bookings'] ?? 0;
-    final totalSlots = data?['total_slots'] ??
+    final totalSlots =
+        data?['total_slots'] ??
         state.societies.fold<int>(0, (sum, s) => sum + (s.totalSlots ?? 0));
     final totalRevenue = data?['total_revenue'] ?? '0';
 
@@ -256,7 +273,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         child: const EmptyStateWidget(
           icon: Icons.apartment_outlined,
@@ -281,7 +300,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               border: Border(
-                  bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1)),
+                bottom: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 1,
+                ),
+              ),
             ),
             child: Row(
               children: [
@@ -325,10 +348,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           // Rows
-          ...recent.mapIndexed((i, society) => _SocietyRow(
-                society: society,
-                isLast: i == recent.length - 1,
-              )),
+          ...recent.mapIndexed(
+            (i, society) =>
+                _SocietyRow(society: society, isLast: i == recent.length - 1),
+          ),
         ],
       ),
     );
@@ -355,9 +378,15 @@ class _BarAction extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
-        child: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          size: 18,
+        ),
       ),
     );
   }
@@ -379,7 +408,11 @@ class _SocietyRow extends StatelessWidget {
           border: isLast
               ? null
               : Border(
-                  bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1)),
+                  bottom: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
+                  ),
+                ),
         ),
         child: Row(
           children: [
@@ -431,7 +464,9 @@ class _SocietyRow extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: society.isActive
                         ? Theme.of(context).colorScheme.tertiary
-                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.38),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -441,7 +476,9 @@ class _SocietyRow extends StatelessWidget {
                   style: TextStyle(
                     color: society.isActive
                         ? Theme.of(context).colorScheme.tertiary
-                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.38),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,

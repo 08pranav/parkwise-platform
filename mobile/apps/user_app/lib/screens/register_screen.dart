@@ -40,8 +40,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
         password: _passwordController.text,
-        societyJoinCode: _joinCodeController.text.trim().isEmpty 
-            ? null 
+        societyJoinCode: _joinCodeController.text.trim().isEmpty
+            ? null
             : _joinCodeController.text.trim(),
       ),
     );
@@ -218,7 +218,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             size: 20,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         validator: (value) {
@@ -241,7 +243,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         suffix: GestureDetector(
                           onTap: () {
                             setState(() {
-                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
                             });
                           },
                           child: Icon(
@@ -249,7 +252,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             size: 20,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         validator: (value) {
@@ -281,16 +286,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Text(
                             'Already have an account? ',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
                           ),
                           GestureDetector(
                             onTap: () => context.go('/login'),
                             child: Text(
                               'Sign In',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontWeight: FontWeight.w700,
                                   ),
                             ),
@@ -331,7 +342,9 @@ class _GradientButton extends StatelessWidget {
       height: 52,
       decoration: BoxDecoration(
         gradient: isEnabled ? AppColors.gradPrimary : null,
-        color: isEnabled ? null : Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: isEnabled
+            ? null
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         boxShadow: isEnabled
             ? [

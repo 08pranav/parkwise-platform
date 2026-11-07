@@ -49,3 +49,33 @@ jobs:
         run: python manage.py makemigrations --check --dry-run
         env:
           DJANGO_SETTINGS_MODULE: parking_platform.settings.test
+
+  flutter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analyze every package
+        run: |
+          for d in packages/core apps/user_app apps/owner_app apps/admin_app apps/guard_app apps/super_admin_app; do
+            (cd $d && flutter analyze --fatal-infos) || exit 1
+          done
+      - name: Test every package
+        run: |
+          for d in packages/core apps/user_app apps/owner_app apps/admin_app apps/guard_app apps/super_admin_app; do
+            (cd $d && flutter test) || exit 1
+          done
+      - name: Web builds
+        run: |
+          for app in user_app owner_app admin_app guard_app super_admin_app; do
+            (cd apps/$app && flutter build web --release --dart-define=API_BASE_URL=https://api.example.com)
+          done

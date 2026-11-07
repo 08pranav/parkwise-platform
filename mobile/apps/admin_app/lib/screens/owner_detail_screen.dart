@@ -119,7 +119,9 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                           ),
                         ),
                         elevation: 0,
-                        color: isDark ? AppColors.surfaceDark : AppColors.surfaceBright,
+                        color: isDark
+                            ? AppColors.surfaceDark
+                            : AppColors.surfaceBright,
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Column(
@@ -129,7 +131,8 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 24,
-                                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                                    backgroundColor: AppColors.primary
+                                        .withValues(alpha: 0.1),
                                     child: Text(
                                       _getInitials(widget.ownerName),
                                       style: const TextStyle(
@@ -143,15 +146,20 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           widget.ownerName,
-                                          style: textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.w800,
-                                            color: isDark ? Colors.white : AppColors.textPrimaryLight,
-                                            fontFamily: 'Inter',
-                                          ),
+                                          style: textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w800,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : AppColors
+                                                          .textPrimaryLight,
+                                                fontFamily: 'Inter',
+                                              ),
                                         ),
                                         const SizedBox(height: 6),
                                         Container(
@@ -160,20 +168,26 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: AppColors.success.withValues(alpha: 0.12),
-                                            borderRadius: BorderRadius.circular(20),
+                                            color: AppColors.success.withValues(
+                                              alpha: 0.12,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
                                             border: Border.all(
-                                              color: AppColors.success.withValues(alpha: 0.3),
+                                              color: AppColors.success
+                                                  .withValues(alpha: 0.3),
                                             ),
                                           ),
                                           child: Text(
                                             'APPROVED',
-                                            style: textTheme.bodySmall?.copyWith(
-                                              color: AppColors.success,
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: 9,
-                                              letterSpacing: 0.5,
-                                            ),
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  color: AppColors.success,
+                                                  fontWeight: FontWeight.w800,
+                                                  fontSize: 9,
+                                                  letterSpacing: 0.5,
+                                                ),
                                           ),
                                         ),
                                       ],
@@ -182,7 +196,12 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                                 ],
                               ),
                               const SizedBox(height: 16),
-                              Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.outlineVariant,
+                              ),
                               const SizedBox(height: 16),
                               _DetailRow(
                                 icon: Icons.email_outlined,
@@ -204,7 +223,9 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                         'Owner Slots',
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : AppColors.textPrimaryLight,
+                          color: isDark
+                              ? Colors.white
+                              : AppColors.textPrimaryLight,
                           fontFamily: 'Inter',
                         ),
                       ),
@@ -216,80 +237,92 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                           subtitle: 'This owner has not added any slots yet.',
                         )
                       else
-                        ..._slots.map(
-                          (slot) {
-                            final slotColor = slot.approvalStatus == 'approved'
-                                ? AppColors.success
-                                : slot.approvalStatus == 'rejected'
-                                ? Theme.of(context).colorScheme.error
-                                : AppColors.warning;
+                        ..._slots.map((slot) {
+                          final slotColor = slot.approvalStatus == 'approved'
+                              ? AppColors.success
+                              : slot.approvalStatus == 'rejected'
+                              ? Theme.of(context).colorScheme.error
+                              : AppColors.warning;
 
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                  color: Theme.of(context).colorScheme.outlineVariant,
-                                  width: 1,
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.outlineVariant,
+                                width: 1,
+                              ),
+                            ),
+                            elevation: 0,
+                            color: isDark
+                                ? AppColors.surfaceDark
+                                : AppColors.surfaceBright,
+                            child: ListTile(
+                              onTap: () => context.push('/slots/${slot.id}'),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
+                              leading: Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: slotColor.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    slot.slotType == 'bike'
+                                        ? Icons.two_wheeler_rounded
+                                        : Icons.directions_car_rounded,
+                                    color: slotColor,
+                                  ),
                                 ),
                               ),
-                              elevation: 0,
-                              color: isDark ? AppColors.surfaceDark : AppColors.surfaceBright,
-                              child: ListTile(
-                                onTap: () => context.push('/slots/${slot.id}'),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                leading: Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: slotColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      slot.slotType == 'bike'
-                                          ? Icons.two_wheeler_rounded
-                                          : Icons.directions_car_rounded,
-                                      color: slotColor,
+                              title: Text(
+                                'Slot ${slot.slotNumber}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Type: ${slot.slotType.toUpperCase()} | Rate: \u20B9${slot.hourlyRate}/hr',
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                title: Text(
-                                  'Slot ${slot.slotNumber}',
-                                  style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Inter'),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Type: ${slot.slotType.toUpperCase()} | Rate: \u20B9${slot.hourlyRate}/hr',
-                                        style: TextStyle(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                          fontSize: 12,
-                                        ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Status: ${slot.approvalStatus.toUpperCase()}',
+                                      style: TextStyle(
+                                        color: slotColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
                                       ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Status: ${slot.approvalStatus.toUpperCase()}',
-                                        style: TextStyle(
-                                          color: slotColor,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                trailing: Icon(
-                                  Icons.chevron_right_rounded,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                              trailing: Icon(
+                                Icons.chevron_right_rounded,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          );
+                        }),
                     ],
                   ),
                 ),
@@ -315,7 +348,11 @@ class _DetailRow extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
-        Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        Icon(
+          icon,
+          size: 20,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(

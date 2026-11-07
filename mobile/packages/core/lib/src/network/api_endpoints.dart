@@ -54,7 +54,6 @@ class ApiEndpoints {
   static String bookingQr(String id) => '/api/v1/bookings/$id/qr/';
   static String bookingOvertime(String id) => '/api/v1/bookings/$id/overtime/';
 
-
   // Payments
   static const paymentInitiate = '/api/v1/payments/initiate/';
   static const paymentVerify = '/api/v1/payments/verify/';

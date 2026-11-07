@@ -30,13 +30,16 @@ class _GuardHomeContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-             // ── Top bar ───────────────────────────────────────────────────────
+            // ── Top bar ───────────────────────────────────────────────────────
             Container(
               height: 64,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant, width: 1),
+                  bottom: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
@@ -87,7 +90,9 @@ class _GuardHomeContent extends StatelessWidget {
                               isDark
                                   ? Icons.light_mode_rounded
                                   : Icons.dark_mode_rounded,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               size: 20,
                             ),
                           ),
@@ -197,7 +202,9 @@ class _GuardHomeContent extends StatelessWidget {
                                 label: 'Shift Status',
                                 value: user != null ? 'Active' : 'Inactive',
                                 icon: Icons.work_history_rounded,
-                                valueColor: Theme.of(context).colorScheme.tertiary,
+                                valueColor: Theme.of(
+                                  context,
+                                ).colorScheme.tertiary,
                                 showPulse: user != null,
                               ),
                             ),
@@ -221,20 +228,30 @@ class _GuardHomeContent extends StatelessWidget {
                           return Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(16),
-                              border:
-                                  Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                              border: Border.all(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.outlineVariant,
+                              ),
                             ),
                             child: Column(
                               children: [
-                                Icon(Icons.block_rounded,
-                                    color: Theme.of(context).colorScheme.error, size: 36),
+                                Icon(
+                                  Icons.block_rounded,
+                                  color: Theme.of(context).colorScheme.error,
+                                  size: 36,
+                                ),
                                 const SizedBox(height: 12),
                                 Text(
                                   'Scan access is disabled',
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -244,7 +261,9 @@ class _GuardHomeContent extends StatelessWidget {
                                 Text(
                                   'Contact your admin to enable gate scanning.',
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                     fontSize: 13,
                                   ),
                                   textAlign: TextAlign.center,
@@ -309,7 +328,9 @@ class _GuardHomeContent extends StatelessWidget {
                             : Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.outlineVariant.withValues(alpha: 0.6),
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -327,21 +348,31 @@ class _GuardHomeContent extends StatelessWidget {
                             child: Icon(
                               Icons.qr_code_2_rounded,
                               size: 80,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.03),
                             ),
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  14,
+                                  16,
+                                  12,
+                                ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'RECENT ACTIVITY',
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700,
                                         letterSpacing: 1.0,
@@ -351,7 +382,9 @@ class _GuardHomeContent extends StatelessWidget {
                                     Text(
                                       _timeNow(),
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                         fontSize: 11,
                                         fontFamily: 'Inter',
                                       ),
@@ -359,7 +392,13 @@ class _GuardHomeContent extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.6)),
+                              Divider(
+                                height: 1,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outlineVariant
+                                    .withValues(alpha: 0.6),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Row(
@@ -368,7 +407,9 @@ class _GuardHomeContent extends StatelessWidget {
                                       width: 4,
                                       height: 44,
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.tertiary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.tertiary,
                                         borderRadius: BorderRadius.circular(99),
                                       ),
                                     ),
@@ -381,7 +422,9 @@ class _GuardHomeContent extends StatelessWidget {
                                           Text(
                                             'Awaiting first scan',
                                             style: TextStyle(
-                                              color: Theme.of(context).colorScheme.onSurface,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               fontFamily: 'Inter',
@@ -391,7 +434,9 @@ class _GuardHomeContent extends StatelessWidget {
                                           Text(
                                             'Use the scan buttons above to log gate activity.',
                                             style: TextStyle(
-                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
                                               fontSize: 12,
                                               fontFamily: 'Inter',
                                             ),
@@ -419,10 +464,13 @@ class _GuardHomeContent extends StatelessWidget {
 
   String _capitalize(String text) {
     if (text.isEmpty) return text;
-    return text.split(' ').map((word) {
-      if (word.isEmpty) return word;
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    return text
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   String _timeNow() {
@@ -448,7 +496,9 @@ class _GuardHomeContent extends StatelessWidget {
               Navigator.of(ctx).pop();
               context.read<AuthBloc>().add(const AuthLoggedOut());
             },
-            style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Sign Out'),
           ),
         ],
@@ -478,12 +528,14 @@ class _StatusTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark 
+        color: isDark
             ? Theme.of(context).colorScheme.surfaceContainerLow
             : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.6),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.6),
         ),
         boxShadow: [
           BoxShadow(
@@ -501,7 +553,9 @@ class _StatusTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -523,8 +577,7 @@ class _StatusTile extends StatelessWidget {
                   ),
                 ),
               ),
-              if (showPulse)
-                const _GlowingDot(),
+              if (showPulse) const _GlowingDot(),
             ],
           ),
           const SizedBox(height: 12),
@@ -564,9 +617,10 @@ class _GlowingDotState extends State<_GlowingDot>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.4,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -588,7 +642,9 @@ class _GlowingDotState extends State<_GlowingDot>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: AppColors.success.withValues(alpha: 0.6 * _animation.value),
+                color: AppColors.success.withValues(
+                  alpha: 0.6 * _animation.value,
+                ),
                 blurRadius: 6,
                 spreadRadius: 2,
               ),
@@ -616,7 +672,7 @@ class _ScanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     if (isEntry) {
       return Container(
         decoration: BoxDecoration(
@@ -670,7 +726,9 @@ class _ScanCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).colorScheme.surfaceContainerLow : Colors.white,
+        color: isDark
+            ? Theme.of(context).colorScheme.surfaceContainerLow
+            : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.4),
@@ -697,7 +755,9 @@ class _ScanCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.08),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.tertiary.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

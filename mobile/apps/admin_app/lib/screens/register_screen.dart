@@ -33,8 +33,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureConfirmPassword = true;
 
   void _applyLocationDetails(LocationSuggestionModel location) {
-    _societyAddressController.text =
-        location.address.isNotEmpty ? location.address : location.label;
+    _societyAddressController.text = location.address.isNotEmpty
+        ? location.address
+        : location.label;
     _cityController.text = location.city;
     _stateController.text = location.state;
     _pincodeController.text = location.pincode;
@@ -63,9 +64,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final pickedPoint = await Navigator.of(context).push<LatLng>(
         MaterialPageRoute(
-          builder: (_) => SocietyLocationPickerScreen(
-            initialLocation: _selectedLocation,
-          ),
+          builder: (_) =>
+              SocietyLocationPickerScreen(initialLocation: _selectedLocation),
         ),
       );
 
@@ -423,18 +423,18 @@ class _LocationSummaryCard extends StatelessWidget {
           children: [
             Text(
               location.title,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(location.subtitle),
             const SizedBox(height: 4),
             Text(
               'Coordinates: ${location.latitude.toStringAsFixed(6)}, ${location.longitude.toStringAsFixed(6)}',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),

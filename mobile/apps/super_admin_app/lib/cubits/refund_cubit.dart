@@ -49,8 +49,7 @@ class RefundState {
       lookupError: clearLookup ? null : (lookupError ?? this.lookupError),
       isSubmitting: isSubmitting ?? this.isSubmitting,
       lastRefund: lastRefund ?? this.lastRefund,
-      submitError:
-          clearSubmitError ? null : (submitError ?? this.submitError),
+      submitError: clearSubmitError ? null : (submitError ?? this.submitError),
       isLoadingHistory: isLoadingHistory ?? this.isLoadingHistory,
       history: history ?? this.history,
       historyError: historyError ?? this.historyError,
@@ -152,12 +151,7 @@ class RefundCubit extends Cubit<RefundState> {
     } on ApiException catch (e) {
       emit(state.copyWith(isLoadingHistory: false, historyError: e.message));
     } catch (e) {
-      emit(
-        state.copyWith(
-          isLoadingHistory: false,
-          historyError: e.toString(),
-        ),
-      );
+      emit(state.copyWith(isLoadingHistory: false, historyError: e.toString()));
     }
   }
 }

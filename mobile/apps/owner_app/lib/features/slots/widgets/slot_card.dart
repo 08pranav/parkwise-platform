@@ -53,12 +53,16 @@ class SlotCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text('₹${slot.hourlyRate}/hour'
-                '${slot.availableFrom != null ? ' · ${slot.availableFrom}–${slot.availableTo}' : ''}'),
+            Text(
+              '₹${slot.hourlyRate}/hour'
+              '${slot.availableFrom != null ? ' · ${slot.availableFrom}–${slot.availableTo}' : ''}',
+            ),
             if (slot.approvalNotes.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text(slot.approvalNotes,
-                  style: TextStyle(color: scheme.onSurfaceVariant)),
+              Text(
+                slot.approvalNotes,
+                style: TextStyle(color: scheme.onSurfaceVariant),
+              ),
             ],
             const SizedBox(height: 8),
             SwitchListTile(

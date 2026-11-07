@@ -61,12 +61,15 @@ class _MySlotsView extends StatelessWidget {
       body: BlocBuilder<SlotsCubit, SlotsState>(
         builder: (context, state) => switch (state) {
           SlotsLoading() => const LoadingWidget(),
-          SlotsFailure(:final message) =>
-            AppErrorWidget(message: message, onRetry: cubit.load),
+          SlotsFailure(:final message) => AppErrorWidget(
+            message: message,
+            onRetry: cubit.load,
+          ),
           SlotsLoaded(:final slots) => RefreshIndicator(
-              onRefresh: cubit.load,
-              child: slots.isEmpty
-                  ? ListView(children: const [
+            onRefresh: cubit.load,
+            child: slots.isEmpty
+                ? ListView(
+                    children: const [
                       SizedBox(height: 120),
                       EmptyStateWidget(
                         icon: Icons.local_parking_rounded,
@@ -74,23 +77,25 @@ class _MySlotsView extends StatelessWidget {
                         subtitle:
                             'Add your spare slot. Your society admin approves it before visitors can book.',
                       ),
-                    ])
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-                      itemCount: slots.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
-                      itemBuilder: (context, i) => SlotCard(
-                        slot: slots[i],
-                        onToggle: (value) async {
-                          final error = await cubit.setActive(slots[i], value);
-                          if (error != null && context.mounted) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text(error)));
-                          }
-                        },
-                      ),
+                    ],
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                    itemCount: slots.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, i) => SlotCard(
+                      slot: slots[i],
+                      onToggle: (value) async {
+                        final error = await cubit.setActive(slots[i], value);
+                        if (error != null && context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(error)));
+                        }
+                      },
                     ),
-            ),
+                  ),
+          ),
         },
       ),
     );

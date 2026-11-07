@@ -105,7 +105,11 @@ class _FilterTabs extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected
@@ -181,7 +185,9 @@ class _BookingCard extends StatelessWidget {
         ),
       ],
       border: Border.all(
-        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.8),
       ),
       borderRadius: 16,
       onTap: () => context.push('/bookings/${booking.id}'),
@@ -196,10 +202,10 @@ class _BookingCard extends StatelessWidget {
                 Text(
                   '#${booking.bookingNumber}',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Inter',
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Inter',
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 _PaymentChip(
                   label: booking.paymentStatusLabel,
@@ -211,15 +217,18 @@ class _BookingCard extends StatelessWidget {
             Text(
               'Booking ${booking.status.replaceAll('_', ' ').toUpperCase()}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.2,
-                    fontFamily: 'Inter',
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.2,
+                fontFamily: 'Inter',
+              ),
             ),
             const SizedBox(height: 12),
             if (booking.societyName != null)
-              _DetailRow(icon: Icons.apartment_rounded, text: booking.societyName!),
+              _DetailRow(
+                icon: Icons.apartment_rounded,
+                text: booking.societyName!,
+              ),
             if (booking.slotNumber != null)
               _DetailRow(
                 icon: Icons.grid_view_rounded,
@@ -233,7 +242,8 @@ class _BookingCard extends StatelessWidget {
             if (startDt != null && endDt != null)
               _DetailRow(
                 icon: Icons.access_time_rounded,
-                text: '${timeFormat.format(startDt)} - ${timeFormat.format(endDt)}',
+                text:
+                    '${timeFormat.format(startDt)} - ${timeFormat.format(endDt)}',
               ),
             const SizedBox(height: 12),
             Row(
@@ -242,10 +252,10 @@ class _BookingCard extends StatelessWidget {
                 Text(
                   '₹${booking.amountPaid ?? booking.amount}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontFamily: 'Inter',
-                      ),
+                    fontWeight: FontWeight.w900,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontFamily: 'Inter',
+                  ),
                 ),
                 Icon(
                   Icons.arrow_forward_ios_rounded,
@@ -301,15 +311,19 @@ class _DetailRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontFamily: 'Inter',
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontFamily: 'Inter',
+              ),
             ),
           ),
         ],

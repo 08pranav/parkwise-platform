@@ -124,7 +124,9 @@ class _SlotInfoCard extends StatelessWidget {
         ),
       ],
       border: Border.all(
-        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.8),
       ),
       borderRadius: 16,
       padding: const EdgeInsets.all(16),
@@ -134,10 +136,10 @@ class _SlotInfoCard extends StatelessWidget {
           Text(
             'Slot Details',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontFamily: 'Inter',
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w800,
+              fontFamily: 'Inter',
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 12),
           _InfoRow(
@@ -159,7 +161,11 @@ class _SlotInfoCard extends StatelessWidget {
             value: slot.slotType.toUpperCase(),
           ),
           if (slot.floor.isNotEmpty)
-            _InfoRow(icon: Icons.layers_rounded, label: 'Floor', value: slot.floor),
+            _InfoRow(
+              icon: Icons.layers_rounded,
+              label: 'Floor',
+              value: slot.floor,
+            ),
           _InfoRow(
             icon: Icons.currency_rupee_rounded,
             label: 'Hourly Rate',
@@ -197,27 +203,33 @@ class _InfoRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.25),
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            child: Icon(
+              icon,
+              size: 16,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(width: 12),
           Text(
             '$label: ',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Inter',
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Inter',
+            ),
           ),
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontFamily: 'Inter',
-                ),
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
+              fontFamily: 'Inter',
+            ),
           ),
         ],
       ),
@@ -246,7 +258,9 @@ class _DateTimeSection extends StatelessWidget {
           ),
         ],
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.8),
         ),
         borderRadius: 16,
         padding: const EdgeInsets.all(16),
@@ -256,10 +270,10 @@ class _DateTimeSection extends StatelessWidget {
             Text(
               'Booking Window',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontFamily: 'Inter',
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                fontWeight: FontWeight.w800,
+                fontFamily: 'Inter',
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             const SizedBox(height: 12),
             _InfoRow(
@@ -280,10 +294,10 @@ class _DateTimeSection extends StatelessWidget {
             Text(
               'This booking uses the slot availability window you selected in search.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: 'Inter',
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Inter',
+              ),
             ),
           ],
         ),
@@ -302,7 +316,9 @@ class _DateTimeSection extends StatelessWidget {
         ),
       ],
       border: Border.all(
-        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.8),
       ),
       borderRadius: 16,
       padding: const EdgeInsets.all(16),
@@ -312,10 +328,10 @@ class _DateTimeSection extends StatelessWidget {
           Text(
             'Date & Time',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontFamily: 'Inter',
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w800,
+              fontFamily: 'Inter',
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 12),
           ListTile(
@@ -323,7 +339,9 @@ class _DateTimeSection extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -367,7 +385,9 @@ class _DateTimeSection extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -420,7 +440,9 @@ class _DateTimeSection extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -494,7 +516,9 @@ class _VehicleSelector extends StatelessWidget {
         ),
       ],
       border: Border.all(
-        color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.8),
+        color: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.8),
       ),
       borderRadius: 16,
       padding: const EdgeInsets.all(16),
@@ -504,19 +528,19 @@ class _VehicleSelector extends StatelessWidget {
           Text(
             'Select Vehicle',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontFamily: 'Inter',
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.w800,
+              fontFamily: 'Inter',
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             'This slot accepts only ${requiredType.toUpperCase()} vehicles.',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
-                  fontFamily: 'Inter',
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontStyle: FontStyle.italic,
+              fontFamily: 'Inter',
+            ),
           ),
           const SizedBox(height: 12),
           if (state.vehicles.isEmpty)
@@ -527,9 +551,9 @@ class _VehicleSelector extends StatelessWidget {
                   Text(
                     'No vehicles found. Add a vehicle first.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontFamily: 'Inter',
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                   const SizedBox(height: 8),
                   TextButton.icon(
@@ -549,9 +573,9 @@ class _VehicleSelector extends StatelessWidget {
                     'No ${requiredType.toUpperCase()} vehicle found. Add one in Settings to continue.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontFamily: 'Inter',
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontFamily: 'Inter',
+                    ),
                   ),
                   const SizedBox(height: 8),
                   TextButton.icon(
@@ -616,19 +640,21 @@ class _AmountDisplay extends StatelessWidget {
                 Text(
                   'Estimated Amount',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Inter',
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Inter',
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '*Dynamic surge pricing may apply at checkout based on society occupancy and location.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-                        fontSize: 10,
-                        fontFamily: 'Inter',
-                      ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                    fontSize: 10,
+                    fontFamily: 'Inter',
+                  ),
                 ),
               ],
             ),
@@ -637,10 +663,10 @@ class _AmountDisplay extends StatelessWidget {
           Text(
             amount != null ? '₹${amount.toStringAsFixed(2)}*' : '--',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontFamily: 'Inter',
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Inter',
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
           ),
         ],
       ),
@@ -669,15 +695,19 @@ class _CheckoutGradientButton extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         gradient: hasCallback ? AppColors.gradPrimary : null,
-        color: hasCallback ? null : Theme.of(context).colorScheme.outlineVariant,
+        color: hasCallback
+            ? null
+            : Theme.of(context).colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: hasCallback ? [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ] : null,
+        boxShadow: hasCallback
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,

@@ -39,6 +39,9 @@ export 'src/theme/app_theme.dart';
 export 'src/theme/app_colors.dart';
 export 'src/theme/theme_notifier.dart';
 
+// Demo
+export 'src/demo/demo_mode.dart';
+
 // Widgets
 export 'src/widgets/loading_widget.dart';
 export 'src/widgets/error_widget.dart';

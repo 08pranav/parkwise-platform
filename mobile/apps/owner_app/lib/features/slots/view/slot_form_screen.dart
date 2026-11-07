@@ -35,8 +35,10 @@ class _SlotFormScreenState extends State<SlotFormScreen> {
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}:00';
 
   Future<void> _pick(bool isFrom) async {
-    final picked =
-        await showTimePicker(context: context, initialTime: isFrom ? _from : _to);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: isFrom ? _from : _to,
+    );
     if (picked != null) setState(() => isFrom ? _from = picked : _to = picked);
   }
 
@@ -66,7 +68,11 @@ class _SlotFormScreenState extends State<SlotFormScreen> {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not save the slot. Check the details and try again.')),
+          const SnackBar(
+            content: Text(
+              'Could not save the slot. Check the details and try again.',
+            ),
+          ),
         );
       }
     }
@@ -107,16 +113,19 @@ class _SlotFormScreenState extends State<SlotFormScreen> {
                     SegmentedButton<String>(
                       segments: const [
                         ButtonSegment(
-                            value: 'car',
-                            label: Text('Car'),
-                            icon: Icon(Icons.directions_car_rounded)),
+                          value: 'car',
+                          label: Text('Car'),
+                          icon: Icon(Icons.directions_car_rounded),
+                        ),
                         ButtonSegment(
-                            value: 'bike',
-                            label: Text('Bike'),
-                            icon: Icon(Icons.two_wheeler_rounded)),
+                          value: 'bike',
+                          label: Text('Bike'),
+                          icon: Icon(Icons.two_wheeler_rounded),
+                        ),
                       ],
                       selected: {_type},
-                      onSelectionChanged: (s) => setState(() => _type = s.first),
+                      onSelectionChanged: (s) =>
+                          setState(() => _type = s.first),
                     ),
                     const SizedBox(height: 14),
                     AppTextField(
@@ -127,7 +136,9 @@ class _SlotFormScreenState extends State<SlotFormScreen> {
                       prefixIcon: Icons.currency_rupee,
                       validator: (v) {
                         final n = double.tryParse(v ?? '');
-                        return (n == null || n <= 0) ? 'Enter a rate above 0' : null;
+                        return (n == null || n <= 0)
+                            ? 'Enter a rate above 0'
+                            : null;
                       },
                     ),
                     const SizedBox(height: 14),

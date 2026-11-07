@@ -132,7 +132,9 @@ class _SocietyCard extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: society.isActive
               ? AppColors.success.withValues(alpha: 0.1)
-              : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
+              : Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
           child: Icon(
             Icons.apartment,
             color: society.isActive
@@ -150,7 +152,10 @@ class _SocietyCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${society.city}, ${society.state}',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 2),
             Row(
@@ -191,7 +196,9 @@ class _SocietyCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: society.isActive
                 ? AppColors.success.withValues(alpha: 0.1)
-                : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
+                : Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(

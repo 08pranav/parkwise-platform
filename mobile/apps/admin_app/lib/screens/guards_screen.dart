@@ -43,11 +43,11 @@ class _GuardsScreenState extends State<GuardsScreen> {
 
     try {
       final result = await context.read<GuardsCubit>().createGuard(
-            fullName: _fullNameController.text.trim(),
-            phone: _phoneController.text.trim(),
-            canScanEntry: _canScanEntry,
-            canScanExit: _canScanExit,
-          );
+        fullName: _fullNameController.text.trim(),
+        phone: _phoneController.text.trim(),
+        canScanEntry: _canScanEntry,
+        canScanExit: _canScanExit,
+      );
 
       if (result != null && mounted) {
         await _showCredentialsDialog(
@@ -83,7 +83,9 @@ class _GuardsScreenState extends State<GuardsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Credentials generated successfully for this gate device:'),
+            const Text(
+              'Credentials generated successfully for this gate device:',
+            ),
             const SizedBox(height: 16),
             _CredentialField(label: 'Email', value: device.email),
             const SizedBox(height: 12),
@@ -91,7 +93,10 @@ class _GuardsScreenState extends State<GuardsScreen> {
             const SizedBox(height: 16),
             Text(
               'Share these credentials securely with the gate operator or device setup team.',
-              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -163,10 +168,10 @@ class _GuardsScreenState extends State<GuardsScreen> {
 
     try {
       await context.read<GuardsCubit>().updateGuardPermissions(
-            guardId: guard.id,
-            canScanEntry: canScanEntry,
-            canScanExit: canScanExit,
-          );
+        guardId: guard.id,
+        canScanEntry: canScanEntry,
+        canScanExit: canScanExit,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Guard scan access updated.')),
@@ -194,7 +199,9 @@ class _GuardsScreenState extends State<GuardsScreen> {
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            style: FilledButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Delete'),
           ),
         ],
@@ -206,23 +213,23 @@ class _GuardsScreenState extends State<GuardsScreen> {
     try {
       await context.read<GuardsCubit>().deleteGuard(guard.id);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Device deactivated.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Device deactivated.')));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete device.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to delete device.')));
     }
   }
 
   Future<void> _copyText({required String label, required String text}) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label copied to clipboard.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$label copied to clipboard.')));
   }
 
   Future<void> _showGuardCredentialsDialog(UserModel guard) async {
@@ -230,7 +237,9 @@ class _GuardsScreenState extends State<GuardsScreen> {
     if (password == null || password.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No credentials available for this guard.')),
+        const SnackBar(
+          content: Text('No credentials available for this guard.'),
+        ),
       );
       return;
     }
@@ -257,7 +266,10 @@ class _GuardsScreenState extends State<GuardsScreen> {
             const SizedBox(height: 16),
             Text(
               'These credentials belong to the selected guard card. Copy them now or later from this same card.',
-              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -320,8 +332,10 @@ class _GuardsScreenState extends State<GuardsScreen> {
                   canScanEntry: _canScanEntry,
                   canScanExit: _canScanExit,
                   isSubmitting: state.isSubmitting,
-                  onEntryChanged: (value) => setState(() => _canScanEntry = value),
-                  onExitChanged: (value) => setState(() => _canScanExit = value),
+                  onEntryChanged: (value) =>
+                      setState(() => _canScanEntry = value),
+                  onExitChanged: (value) =>
+                      setState(() => _canScanExit = value),
                   onSubmit: _submit,
                 ),
                 const SizedBox(height: 24),
@@ -339,10 +353,11 @@ class _GuardsScreenState extends State<GuardsScreen> {
                     builder: (guard) => _GuardApprovalCard(
                       guard: guard,
                       isSubmitting: state.isSubmitting,
-                      onViewCredentials: guard.temporaryPassword != null &&
-                          guard.temporaryPassword!.isNotEmpty
-                        ? () => _showGuardCredentialsDialog(guard)
-                        : null,
+                      onViewCredentials:
+                          guard.temporaryPassword != null &&
+                              guard.temporaryPassword!.isNotEmpty
+                          ? () => _showGuardCredentialsDialog(guard)
+                          : null,
                       onApprove: () =>
                           context.read<GuardsCubit>().approveGuard(guard.id),
                       onReject: () =>
@@ -358,7 +373,8 @@ class _GuardsScreenState extends State<GuardsScreen> {
                     guards: state.approvedGuards,
                     builder: (guard) => _GuardInfoCard(
                       guard: guard,
-                      onViewCredentials: guard.temporaryPassword != null &&
+                      onViewCredentials:
+                          guard.temporaryPassword != null &&
                               guard.temporaryPassword!.isNotEmpty
                           ? () => _showGuardCredentialsDialog(guard)
                           : null,
@@ -376,7 +392,8 @@ class _GuardsScreenState extends State<GuardsScreen> {
                       guards: state.rejectedGuards,
                       builder: (guard) => _GuardInfoCard(
                         guard: guard,
-                        onViewCredentials: guard.temporaryPassword != null &&
+                        onViewCredentials:
+                            guard.temporaryPassword != null &&
                                 guard.temporaryPassword!.isNotEmpty
                             ? () => _showGuardCredentialsDialog(guard)
                             : null,
@@ -430,9 +447,9 @@ class _CreateGuardCard extends StatelessWidget {
             children: [
               Text(
                 'Create New Gate Device',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               AppTextField(
@@ -518,16 +535,16 @@ class _GuardSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
           subtitle,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 12),
         if (guards.isEmpty)
@@ -570,9 +587,9 @@ class _GuardApprovalCard extends StatelessWidget {
           children: [
             Text(
               guard.fullName,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(guard.email),
@@ -604,7 +621,9 @@ class _GuardApprovalCard extends StatelessWidget {
                     label: const Text('Reject'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Theme.of(context).colorScheme.error,
-                      side: BorderSide(color: Theme.of(context).colorScheme.error),
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ),
                 ),
@@ -659,8 +678,8 @@ class _GuardInfoCard extends StatelessWidget {
                   child: Text(
                     guard.fullName,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 _StatusChip(label: statusLabel, color: color),
@@ -684,8 +703,8 @@ class _GuardInfoCard extends StatelessWidget {
               Text(
                 guard.approvalNotes,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
             const SizedBox(height: 12),
@@ -711,7 +730,9 @@ class _GuardInfoCard extends StatelessWidget {
                   label: const Text('Delete Device'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,
-                    side: BorderSide(color: Theme.of(context).colorScheme.error),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
               ],
@@ -756,9 +777,9 @@ class _StatusChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -802,7 +823,9 @@ class _CredentialField extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
           ),
           child: Row(
             children: [

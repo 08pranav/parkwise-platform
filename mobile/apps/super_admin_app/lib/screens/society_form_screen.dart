@@ -259,8 +259,9 @@ class _SocietyFormScreenState extends State<SocietyFormScreen> {
     setState(() {
       _selectedLocation = location;
       _locationSearchController.text = location.label;
-      _addressController.text =
-          location.address.isNotEmpty ? location.address : location.label;
+      _addressController.text = location.address.isNotEmpty
+          ? location.address
+          : location.label;
       _cityController.text = location.city;
       _stateController.text = location.state;
       _pincodeController.text = location.pincode;
@@ -378,9 +379,9 @@ class _SocietyFormScreenState extends State<SocietyFormScreen> {
               const SizedBox(height: 8),
               Text(
                 'Search for the society address or pin the exact spot on the map. These coordinates power user-side parking search.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -410,7 +411,9 @@ class _SocietyFormScreenState extends State<SocietyFormScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
                   child: Column(
                     children: _locationSuggestions
@@ -615,9 +618,9 @@ class _LocationSummaryCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Lat ${location.latitude.toStringAsFixed(6)}  |  Lng ${location.longitude.toStringAsFixed(6)}',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

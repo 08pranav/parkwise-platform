@@ -52,6 +52,7 @@ class ApiEndpoints {
   static String booking(String id) => '/api/v1/bookings/$id/';
   static String bookingCancel(String id) => '/api/v1/bookings/$id/cancel/';
   static String bookingQr(String id) => '/api/v1/bookings/$id/qr/';
+  static String bookingQrToken(String id) => '/api/v1/bookings/$id/qr-token/';
   static String bookingOvertime(String id) => '/api/v1/bookings/$id/overtime/';
 
   // Payments

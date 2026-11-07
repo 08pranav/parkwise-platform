@@ -29,6 +29,21 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/admin/demo/fast-forward/:
+    post:
+      operationId: v1_admin_demo_fast_forward_create
+      description: |-
+        Demo only: move a booking N minutes into the past so an overstay can be shown live.
+
+        Both the booking window and the check-in time shift together, so an active booking
+        looks as if the driver arrived earlier and is now past the end time.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/admin/refunds/:
     get:
       operationId: v1_admin_refunds_retrieve
@@ -66,6 +81,18 @@ paths:
       - v1
       security:
       - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/reset-demo/:
+    post:
+      operationId: v1_admin_reset_demo_create
+      description: Wipe and reseed the demo data. Disabled unless DEMO_MODE is on;
+        guarded by a bearer token.
+      tags:
+      - v1
+      security:
+      - {}
       responses:
         '200':
           description: No response body
@@ -713,6 +740,25 @@ paths:
   /api/v1/bookings/{id}/qr/:
     get:
       operationId: v1_bookings_qr_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/bookings/{id}/qr-token/:
+    get:
+      operationId: v1_bookings_qr_token_retrieve
+      description: The QR payload as text, for manual entry at the gate. Only the
+        booking's owner may read it.
       parameters:
       - in: path
         name: id

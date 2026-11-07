@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:core/core.dart';
 
 import '../cubits/bookings_cubit.dart';
+import '../widgets/copy_qr_code_button.dart';
 import '../widgets/embedded_checkout.dart';
 
 class BookingDetailScreen extends StatefulWidget {
@@ -754,7 +755,9 @@ class _QrSection extends StatelessWidget {
                 ),
               ),
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
+          CopyQrCodeButton(bookingId: booking.id),
+          const SizedBox(height: 4),
           Text(
             booking.bookingNumber,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(

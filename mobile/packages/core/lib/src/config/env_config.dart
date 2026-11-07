@@ -51,4 +51,21 @@ class EnvConfig {
   );
 
   bool get isDev => environment == Environment.dev;
+
+  /// Backend origin injected at build time: `--dart-define=API_BASE_URL=https://...`.
+  static const _apiBaseUrlOverride = String.fromEnvironment('API_BASE_URL');
+
+  /// Whether the public demo UI (one-tap role logins, banner) is enabled:
+  /// `--dart-define=DEMO_MODE=true`.
+  static const demoMode = bool.fromEnvironment('DEMO_MODE');
+
+  /// The config every app should use. Falls back to the local dev server when
+  /// `API_BASE_URL` is not provided.
+  static final EnvConfig current = _apiBaseUrlOverride.isEmpty
+      ? dev
+      : EnvConfig._(
+          environment: Environment.prod,
+          apiBaseUrl: _apiBaseUrlOverride,
+          mapTilerApiKey: _mapTilerApiKey,
+        );
 }

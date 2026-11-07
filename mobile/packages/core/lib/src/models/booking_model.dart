@@ -89,7 +89,6 @@ class BookingModel {
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) =>
-
       _$BookingModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$BookingModelToJson(this);

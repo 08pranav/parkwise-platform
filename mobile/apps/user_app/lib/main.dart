@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -13,41 +12,9 @@ final getIt = GetIt.instance;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final themeNotifier = await ThemeNotifier.create();
-
-  final storage = SecureStorageService();
-  final tokenManager = TokenManager(storage);
-
-  final bootstrapDio = Dio(
-    BaseOptions(
-      baseUrl: EnvConfig.dev.apiBaseUrl,
-      connectTimeout: AppConstants.connectionTimeout,
-      receiveTimeout: AppConstants.receiveTimeout,
-      contentType: 'application/json',
-    ),
-  );
-
-  final authService = AuthService(bootstrapDio, tokenManager);
-
-  final authBloc = AuthBloc(
-    authService: authService,
-    tokenManager: tokenManager,
-  );
-
-  final dio = DioFactory.create(
-    config: EnvConfig.dev,
-    tokenManager: tokenManager,
-    authBloc: authBloc,
-  );
-  final apiClient = ApiClient(dio);
-
-  if (getIt.isRegistered<ApiClient>()) {
-    getIt.unregister<ApiClient>();
-  }
-  getIt.registerSingleton<ApiClient>(apiClient);
-  getIt.registerSingleton<ThemeNotifier>(themeNotifier);
-
-  authBloc.setApiClient(apiClient);
+  await setupCoreDependencies(GetIt.I);
+  final authBloc = GetIt.I<AuthBloc>();
+  final themeNotifier = GetIt.I<ThemeNotifier>();
   authBloc.add(const AuthCheckRequested());
 
   runApp(ParkingApp(authBloc: authBloc, themeNotifier: themeNotifier));
@@ -91,6 +58,12 @@ class _ParkingAppState extends State<ParkingApp> {
         builder: (context, _) => MaterialApp.router(
           title: 'ParkEase',
           debugShowCheckedModeBanner: false,
+          builder: (context, child) => DemoModeWrapper(
+            account: DemoAccount.resident,
+            hint:
+                'Stripe test card 4242 4242 4242 4242 · Razorpay test UPI success@razorpay',
+            child: child!,
+          ),
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: widget.themeNotifier.themeMode,

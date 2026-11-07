@@ -69,9 +69,11 @@ class SlotDetailScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: stateColor.withOpacity(0.1),
+                      color: stateColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: stateColor.withOpacity(0.3)),
+                      border: Border.all(
+                        color: stateColor.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -109,7 +111,10 @@ class SlotDetailScreen extends StatelessWidget {
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const Divider(height: 24),
-                          _DetailRow(label: 'Slot Number', value: slot.slotNumber),
+                          _DetailRow(
+                            label: 'Slot Number',
+                            value: slot.slotNumber,
+                          ),
                           _DetailRow(
                             label: 'Floor',
                             value: slot.floor.isNotEmpty ? slot.floor : '-',
@@ -126,8 +131,12 @@ class SlotDetailScreen extends StatelessWidget {
                             label: 'Ownership',
                             value: slot.ownershipType.toUpperCase(),
                           ),
-                          if (slot.ownerName != null && slot.ownerName!.isNotEmpty)
-                            _DetailRow(label: 'Owner Name', value: slot.ownerName!),
+                          if (slot.ownerName != null &&
+                              slot.ownerName!.isNotEmpty)
+                            _DetailRow(
+                              label: 'Owner Name',
+                              value: slot.ownerName!,
+                            ),
                           _DetailRow(
                             label: 'Approval',
                             value: slot.approvalStatus.toUpperCase(),
@@ -192,13 +201,20 @@ class SlotDetailScreen extends StatelessWidget {
                             );
                           }
                         },
-                        icon: Icon(Icons.close, color: Theme.of(context).colorScheme.error),
+                        icon: Icon(
+                          Icons.close,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         label: Text(
                           'Reject Slot',
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Theme.of(context).colorScheme.error),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ),
                     ),
@@ -244,13 +260,16 @@ class SlotDetailScreen extends StatelessWidget {
                               ),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(context, true),
                                   style: TextButton.styleFrom(
-                                    foregroundColor: Theme.of(context).colorScheme.error,
+                                    foregroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.error,
                                   ),
                                   child: const Text('Block'),
                                 ),
@@ -276,13 +295,20 @@ class SlotDetailScreen extends StatelessWidget {
                             }
                           }
                         },
-                        icon: Icon(Icons.block, color: Theme.of(context).colorScheme.error),
+                        icon: Icon(
+                          Icons.block,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         label: Text(
                           'Block Slot',
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Theme.of(context).colorScheme.error),
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ),
                     ),
@@ -309,7 +335,12 @@ class _DetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Text(
+            label,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),

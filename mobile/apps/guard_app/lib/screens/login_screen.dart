@@ -26,11 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLogin() {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(
-          AuthLoginRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          ),
-        );
+      AuthLoginRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -45,8 +45,9 @@ class _LoginScreenState extends State<LoginScreen> {
               context.read<AuthBloc>().add(const AuthLoggedOut());
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content:
-                      Text('This app can only be used with approved gate accounts.'),
+                  content: Text(
+                    'This app can only be used with approved gate accounts.',
+                  ),
                   backgroundColor: Theme.of(context).colorScheme.errorContainer,
                 ),
               );
@@ -76,18 +77,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.25),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.shield_rounded,
-                                size: 14, color: Theme.of(context).colorScheme.tertiary),
+                            Icon(
+                              Icons.shield_rounded,
+                              size: 14,
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
                             SizedBox(width: 6),
                             Text(
                               'PARKWISE · GATE',
@@ -153,7 +164,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       prefixIcon: Icons.lock_outline_rounded,
                       suffix: GestureDetector(
                         onTap: () => setState(
-                            () => _obscurePassword = !_obscurePassword),
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                         child: Icon(
                           _obscurePassword
                               ? Icons.visibility_off_outlined

@@ -27,7 +27,8 @@ class _ScanScreenState extends State<ScanScreen> {
     if (value.startsWith('http://') || value.startsWith('https://')) {
       final uri = Uri.tryParse(value);
       if (uri != null) {
-        final token = uri.queryParameters['qr_token'] ?? uri.queryParameters['token'];
+        final token =
+            uri.queryParameters['qr_token'] ?? uri.queryParameters['token'];
         if (token != null && token.isNotEmpty) {
           return token.trim();
         }

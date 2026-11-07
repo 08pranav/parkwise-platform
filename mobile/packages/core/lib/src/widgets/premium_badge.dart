@@ -5,14 +5,13 @@ class PremiumBadge extends StatelessWidget {
   final String label;
   final String? status;
 
-  const PremiumBadge({
-    super.key,
-    required this.label,
-    this.status,
-  });
+  const PremiumBadge({super.key, required this.label, this.status});
 
   Color _resolveColor(String statusStr) {
-    final lower = statusStr.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ');
+    final lower = statusStr
+        .toLowerCase()
+        .replaceAll('_', ' ')
+        .replaceAll('-', ' ');
     if (lower.contains('active') ||
         lower.contains('available') ||
         lower.contains('approved') ||
@@ -49,12 +48,9 @@ class PremiumBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: color.withOpacity(0.25),
-          width: 1.0,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.0),
       ),
       child: Text(
         label.replaceAll('_', ' ').toUpperCase(),

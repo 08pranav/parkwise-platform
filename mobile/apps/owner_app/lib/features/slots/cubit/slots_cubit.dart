@@ -31,7 +31,7 @@ class SlotsFailure extends SlotsState {
 
 class SlotsCubit extends Cubit<SlotsState> {
   SlotsCubit(this._repository, {required this.user})
-      : super(const SlotsLoading());
+    : super(const SlotsLoading());
 
   final SlotsRepository _repository;
   final UserModel user;
@@ -44,9 +44,11 @@ class SlotsCubit extends Cubit<SlotsState> {
     }
     emit(const SlotsLoading());
     try {
-      emit(SlotsLoaded(
-        await _repository.mySlots(societyId: societyId, ownerId: user.id),
-      ));
+      emit(
+        SlotsLoaded(
+          await _repository.mySlots(societyId: societyId, ownerId: user.id),
+        ),
+      );
     } catch (e) {
       emit(SlotsFailure(_message(e)));
     }
@@ -69,6 +71,8 @@ class SlotsCubit extends Cubit<SlotsState> {
 
   String _message(Object e) {
     final inner = e is DioException ? e.error : e;
-    return inner is ApiException ? inner.message : 'Something went wrong. Please try again.';
+    return inner is ApiException
+        ? inner.message
+        : 'Something went wrong. Please try again.';
   }
 }

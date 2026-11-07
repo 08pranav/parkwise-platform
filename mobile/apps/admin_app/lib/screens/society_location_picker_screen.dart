@@ -46,7 +46,7 @@ class _SocietyLocationPickerScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pin Society Location')), 
+      appBar: AppBar(title: const Text('Pin Society Location')),
       body: Column(
         children: [
           Expanded(

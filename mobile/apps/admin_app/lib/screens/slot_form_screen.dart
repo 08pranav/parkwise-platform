@@ -170,7 +170,7 @@ class _SlotFormScreenState extends State<SlotFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _slotType,
+                initialValue: _slotType,
                 decoration: const InputDecoration(
                   labelText: 'Slot Type',
                   prefixIcon: Icon(Icons.category),
@@ -204,7 +204,7 @@ class _SlotFormScreenState extends State<SlotFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _ownershipType,
+                initialValue: _ownershipType,
                 decoration: const InputDecoration(
                   labelText: 'Ownership Type',
                   prefixIcon: Icon(Icons.business),

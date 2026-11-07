@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../network/api_client.dart';
 import '../network/api_endpoints.dart';
 import '../network/api_exceptions.dart';
-import '../theme/app_colors.dart';
 import 'empty_state_widget.dart';
 import 'error_widget.dart';
 import 'loading_widget.dart';
@@ -213,7 +212,7 @@ class _NotificationCard extends StatelessWidget {
       child: ListTile(
         onTap: onTap,
         leading: CircleAvatar(
-          backgroundColor: accentColor.withOpacity(0.12),
+          backgroundColor: accentColor.withValues(alpha: 0.12),
           child: Icon(_iconFor(notification.type), color: accentColor),
         ),
         title: Text(

@@ -165,7 +165,9 @@ class _BookingListScreenState extends State<BookingListScreen> {
                                 Icon(
                                   Icons.copy_rounded,
                                   size: 12,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 6),
                                 Flexible(
@@ -174,7 +176,9 @@ class _BookingListScreenState extends State<BookingListScreen> {
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontFamily: 'monospace',
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
@@ -253,12 +257,19 @@ class _BookingInfoRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
             ),
           ),
         ],

@@ -38,9 +38,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _loadJoinCodeFromProfile() async {
     setState(() => _isJoinCodeLoading = true);
     try {
-      final response = await context.read<ApiClient>().get(ApiEndpoints.profile);
+      final response = await context.read<ApiClient>().get(
+        ApiEndpoints.profile,
+      );
       final data = response.data;
-      final societyId = data is Map<String, dynamic> ? data['society'] as String? : null;
+      final societyId = data is Map<String, dynamic>
+          ? data['society'] as String?
+          : null;
       if (societyId == null || societyId.isEmpty) {
         if (!mounted) return;
         setState(() {
@@ -109,7 +113,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return RefreshIndicator(
               onRefresh: () async => _loadData(),
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 children: [
                   PremiumHeader(
                     title: 'Society Dashboard',
@@ -128,9 +135,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         builder: (context, _) {
                           final isDark = GetIt.I<ThemeNotifier>().isDark;
                           return IconButton(
-                            icon: Icon(isDark
-                                ? Icons.light_mode_rounded
-                                : Icons.dark_mode_rounded),
+                            icon: Icon(
+                              isDark
+                                  ? Icons.light_mode_rounded
+                                  : Icons.dark_mode_rounded,
+                            ),
                             onPressed: GetIt.I<ThemeNotifier>().toggle,
                             tooltip: isDark ? 'Light mode' : 'Dark mode',
                           );
@@ -146,7 +155,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 12),
                   _AdminActionsCard(
-                    joinCode: dashboard.joinCode.isNotEmpty ? dashboard.joinCode : _joinCode,
+                    joinCode: dashboard.joinCode.isNotEmpty
+                        ? dashboard.joinCode
+                        : _joinCode,
                     isJoinCodeLoading: _isJoinCodeLoading,
                   ),
                   const SizedBox(height: 24),
@@ -216,10 +227,16 @@ class _AdminActionsCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.vpn_key_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                child: Icon(
+                  Icons.vpn_key_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -251,9 +268,7 @@ class _AdminActionsCard extends StatelessWidget {
                 tooltip: 'Copy code',
                 onPressed: joinCode?.isNotEmpty == true
                     ? () async {
-                        await Clipboard.setData(
-                          ClipboardData(text: joinCode!),
-                        );
+                        await Clipboard.setData(ClipboardData(text: joinCode!));
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Join code copied')),
@@ -265,7 +280,11 @@ class _AdminActionsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Divider(height: 1, thickness: 1.0, color: Theme.of(context).colorScheme.outlineVariant),
+          Divider(
+            height: 1,
+            thickness: 1.0,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
           const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerLeft,
@@ -317,15 +336,12 @@ class _ActionButton extends StatelessWidget {
       label: Text(label),
       style: TextButton.styleFrom(
         foregroundColor: primary,
-        backgroundColor: primary.withOpacity(0.06),
+        backgroundColor: primary.withValues(alpha: 0.06),
         minimumSize: const Size(120, 42),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: primary.withOpacity(0.12),
-            width: 1,
-          ),
+          side: BorderSide(color: primary.withValues(alpha: 0.12), width: 1),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -435,7 +451,11 @@ class _EmptyCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             message,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
@@ -475,7 +495,11 @@ class _ParkedVehicleCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          Divider(height: 1, thickness: 1.0, color: Theme.of(context).colorScheme.outlineVariant),
+          Divider(
+            height: 1,
+            thickness: 1.0,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
           const SizedBox(height: 14),
           _InfoRow(
             icon: Icons.person_outline_rounded,
@@ -547,7 +571,11 @@ class _GateActivityCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          Divider(height: 1, thickness: 1.0, color: Theme.of(context).colorScheme.outlineVariant),
+          Divider(
+            height: 1,
+            thickness: 1.0,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
           const SizedBox(height: 14),
           if (activity.vehicleNumber.isNotEmpty)
             _InfoRow(
@@ -613,7 +641,11 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -645,7 +677,11 @@ class _CopyableInfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: InkWell(
@@ -666,10 +702,10 @@ class _CopyableInfoRow extends StatelessWidget {
                     child: Text(
                       '$label: $value',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontFamily: 'monospace',
-                            decoration: TextDecoration.underline,
-                            decorationStyle: TextDecorationStyle.dashed,
-                          ),
+                        fontFamily: 'monospace',
+                        decoration: TextDecoration.underline,
+                        decorationStyle: TextDecorationStyle.dashed,
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-
 class AppErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
@@ -16,7 +14,11 @@ class AppErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
+            ),
             const SizedBox(height: 16),
             Text(
               message,

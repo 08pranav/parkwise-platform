@@ -90,9 +90,12 @@ class _OwnersScreenState extends State<OwnersScreen> {
                       children: [
                         Text(
                           'Manage approved parking owners and view their slots.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                         ),
                         const SizedBox(height: 16),
                         if (_owners.isEmpty)
@@ -188,21 +191,29 @@ class _OwnerCard extends StatelessWidget {
                       name,
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : AppColors.textPrimaryLight,
+                        color: isDark
+                            ? Colors.white
+                            : AppColors.textPrimaryLight,
                         fontFamily: 'Inter',
                       ),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.email_outlined, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        Icon(
+                          Icons.email_outlined,
+                          size: 14,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             owner['user_email'] ?? '',
                             style: TextStyle(
                               fontSize: 12.5,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               fontFamily: 'Inter',
                             ),
                             maxLines: 1,
@@ -214,14 +225,20 @@ class _OwnerCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.phone_outlined, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        Icon(
+                          Icons.phone_outlined,
+                          size: 14,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             owner['user_phone'] ?? '',
                             style: TextStyle(
                               fontSize: 12.5,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               fontFamily: 'Inter',
                             ),
                           ),

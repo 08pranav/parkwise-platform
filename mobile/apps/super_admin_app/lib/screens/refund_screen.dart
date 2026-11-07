@@ -10,8 +10,18 @@ import '../cubits/refund_cubit.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 String _formatDateTime(DateTime d) {
   final months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
   final h = d.hour % 12 == 0 ? 12 : d.hour % 12;
   final m = d.minute.toString().padLeft(2, '0');
@@ -57,8 +67,7 @@ class _RefundScreenState extends State<RefundScreen>
           children: [
             // ── Top bar ──────────────────────────────────────────────────────
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 children: [
                   Expanded(
@@ -91,18 +100,24 @@ class _RefundScreenState extends State<RefundScreen>
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 6),
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.error.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3)),
+                        color: AppColors.error.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.shield_rounded,
-                            color: AppColors.error, size: 13),
+                        Icon(
+                          Icons.shield_rounded,
+                          color: AppColors.error,
+                          size: 13,
+                        ),
                         const SizedBox(width: 5),
                         Text(
                           'SUPER ADMIN',
@@ -121,11 +136,13 @@ class _RefundScreenState extends State<RefundScreen>
               ),
             ),
             Container(
-                height: 1, color: cs.outlineVariant, margin: const EdgeInsets.symmetric(horizontal: 20)),
+              height: 1,
+              color: cs.outlineVariant,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+            ),
             // ── Tabs ─────────────────────────────────────────────────────────
             Container(
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: cs.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
@@ -156,10 +173,7 @@ class _RefundScreenState extends State<RefundScreen>
             Expanded(
               child: TabBarView(
                 controller: _tabs,
-                children: const [
-                  _IssueRefundTab(),
-                  _HistoryTab(),
-                ],
+                children: const [_IssueRefundTab(), _HistoryTab()],
               ),
             ),
           ],
@@ -228,7 +242,8 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
     }
     if (amount > actualMax + 0.001) {
       _showError(
-          'Amount ₹${amount.toStringAsFixed(2)} exceeds max refundable ₹${actualMax.toStringAsFixed(2)}.');
+        'Amount ₹${amount.toStringAsFixed(2)} exceeds max refundable ₹${actualMax.toStringAsFixed(2)}.',
+      );
       return;
     }
     final reason = _reasonCtrl.text.trim();
@@ -252,10 +267,10 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
     if (confirmed != true || !mounted) return;
 
     final ok = await context.read<RefundCubit>().initiateRefund(
-          bookingId: bookingId,
-          refundAmount: amount,
-          reason: reason,
-        );
+      bookingId: bookingId,
+      refundAmount: amount,
+      reason: reason,
+    );
 
     if (!mounted) return;
     if (ok) {
@@ -263,15 +278,19 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
       _reasonCtrl.clear();
       _bookingIdCtrl.clear();
       setState(() => _isFullRefund = true);
-      _showSuccess('Refund of ₹${amount.toStringAsFixed(2)} issued successfully.');
+      _showSuccess(
+        'Refund of ₹${amount.toStringAsFixed(2)} issued successfully.',
+      );
     }
   }
 
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg,
-            style: const TextStyle(fontFamily: 'Inter', fontSize: 13)),
+        content: Text(
+          msg,
+          style: const TextStyle(fontFamily: 'Inter', fontSize: 13),
+        ),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -283,8 +302,10 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
   void _showSuccess(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg,
-            style: const TextStyle(fontFamily: 'Inter', fontSize: 13)),
+        content: Text(
+          msg,
+          style: const TextStyle(fontFamily: 'Inter', fontSize: 13),
+        ),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -300,7 +321,8 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
         // When lookup succeeds, pre-fill amount with full refundable
         if (state.lookupData != null && !state.isLookingUp) {
           final max = _parseDecimal(state.lookupData!['max_refundable']);
-          final already = _parseDecimal(state.lookupData!['already_refunded']) ?? 0;
+          final already =
+              _parseDecimal(state.lookupData!['already_refunded']) ?? 0;
           if (max != null) {
             final net = max - already;
             if (_isFullRefund) {
@@ -319,7 +341,9 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionLabel(
-                      icon: Icons.search_rounded, label: 'LOOKUP BOOKING'),
+                    icon: Icons.search_rounded,
+                    label: 'LOOKUP BOOKING',
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -328,7 +352,8 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
                           controller: _bookingIdCtrl,
                           decoration: const InputDecoration(
                             labelText: 'Booking ID (UUID)',
-                            hintText: 'e.g. 3fa85f64-5717-4562-b3fc-2c963f66afa6',
+                            hintText:
+                                'e.g. 3fa85f64-5717-4562-b3fc-2c963f66afa6',
                           ),
                           onFieldSubmitted: (_) => _lookup(),
                         ),
@@ -368,8 +393,9 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _SectionLabel(
-                        icon: Icons.currency_rupee_rounded,
-                        label: 'REFUND DETAILS'),
+                      icon: Icons.currency_rupee_rounded,
+                      label: 'REFUND DETAILS',
+                    ),
                     const SizedBox(height: 14),
 
                     // Full / Partial toggle
@@ -386,11 +412,15 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
                       focusNode: _amountFocusNode,
                       enabled: !_isFullRefund,
                       maxRefundable: () {
-                        final max = _parseDecimal(
-                                state.lookupData!['max_refundable']) ??
+                        final max =
+                            _parseDecimal(
+                              state.lookupData!['max_refundable'],
+                            ) ??
                             0;
-                        final already = _parseDecimal(
-                                state.lookupData!['already_refunded']) ??
+                        final already =
+                            _parseDecimal(
+                              state.lookupData!['already_refunded'],
+                            ) ??
                             0;
                         return max - already;
                       }(),
@@ -440,7 +470,9 @@ class _HistoryTab extends StatelessWidget {
     return BlocBuilder<RefundCubit, RefundState>(
       builder: (context, state) {
         if (state.isLoadingHistory && state.history.isEmpty) {
-          return const Center(child: LoadingWidget(message: 'Loading history…'));
+          return const Center(
+            child: LoadingWidget(message: 'Loading history…'),
+          );
         }
         if (state.historyError != null && state.history.isEmpty) {
           return Center(
@@ -461,14 +493,17 @@ class _HistoryTab extends StatelessWidget {
         }
         return RefreshIndicator(
           color: Theme.of(context).colorScheme.tertiary,
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest,
           onRefresh: () => context.read<RefundCubit>().loadHistory(),
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             itemCount: state.history.length,
             separatorBuilder: (_, index) => const SizedBox(height: 10),
-            itemBuilder: (_, i) =>
-                _RefundHistoryTile(data: state.history[i] as Map<String, dynamic>),
+            itemBuilder: (_, i) => _RefundHistoryTile(
+              data: state.history[i] as Map<String, dynamic>,
+            ),
           ),
         );
       },
@@ -548,7 +583,9 @@ class _LookupButton extends StatelessWidget {
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(
-                    color: cs.onPrimary, strokeWidth: 2),
+                  color: cs.onPrimary,
+                  strokeWidth: 2,
+                ),
               )
             : Icon(Icons.search_rounded, color: cs.onPrimary, size: 20),
       ),
@@ -567,8 +604,7 @@ class _InlineError extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border:
-            Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -607,7 +643,9 @@ class _BookingSnapshotCard extends StatelessWidget {
   Color _statusColor(String? s) {
     if (s == null) return AppColors.textDisabled;
     if (s.contains('cancelled') || s.contains('failed')) return AppColors.error;
-    if (s.contains('confirmed') || s.contains('active') || s.contains('completed')) {
+    if (s.contains('confirmed') ||
+        s.contains('active') ||
+        s.contains('completed')) {
       return AppColors.success;
     }
     if (s.contains('partial')) return AppColors.warning;
@@ -617,8 +655,10 @@ class _BookingSnapshotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final maxRefundable = double.tryParse(data['max_refundable']?.toString() ?? '0') ?? 0;
-    final alreadyRefunded = double.tryParse(data['already_refunded']?.toString() ?? '0') ?? 0;
+    final maxRefundable =
+        double.tryParse(data['max_refundable']?.toString() ?? '0') ?? 0;
+    final alreadyRefunded =
+        double.tryParse(data['already_refunded']?.toString() ?? '0') ?? 0;
     final netRefundable = maxRefundable - alreadyRefunded;
     final bookingStatus = data['booking_status']?.toString() ?? '';
     final paymentProvider = data['payment_provider']?.toString() ?? '';
@@ -643,8 +683,11 @@ class _BookingSnapshotCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 12, 8),
             child: Row(
               children: [
-                Icon(Icons.check_circle_rounded,
-                    color: AppColors.success, size: 16),
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.success,
+                  size: 16,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -666,8 +709,11 @@ class _BookingSnapshotCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: cs.outlineVariant),
                     ),
-                    child: Icon(Icons.close_rounded,
-                        color: cs.onSurfaceVariant, size: 14),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: cs.onSurfaceVariant,
+                      size: 14,
+                    ),
                   ),
                 ),
               ],
@@ -696,7 +742,8 @@ class _BookingSnapshotCard extends StatelessWidget {
                 _SnapshotRow(
                   icon: Icons.schedule_rounded,
                   label: 'Period',
-                  value: '${_fmt(data['start_time'])} → ${_fmt(data['end_time'])}',
+                  value:
+                      '${_fmt(data['start_time'])} → ${_fmt(data['end_time'])}',
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -737,8 +784,7 @@ class _BookingSnapshotCard extends StatelessWidget {
                           color: cs.onSurface,
                         ),
                       ),
-                      Container(
-                          width: 1, height: 36, color: cs.outlineVariant),
+                      Container(width: 1, height: 36, color: cs.outlineVariant),
                       Expanded(
                         child: _AmountChip(
                           label: 'Already Refunded',
@@ -746,8 +792,7 @@ class _BookingSnapshotCard extends StatelessWidget {
                           color: AppColors.warning,
                         ),
                       ),
-                      Container(
-                          width: 1, height: 36, color: cs.outlineVariant),
+                      Container(width: 1, height: 36, color: cs.outlineVariant),
                       Expanded(
                         child: _AmountChip(
                           label: 'Max Refundable',
@@ -761,8 +806,7 @@ class _BookingSnapshotCard extends StatelessWidget {
                 // Past refunds on this booking
                 if ((data['past_refunds'] as List?)?.isNotEmpty == true) ...[
                   const SizedBox(height: 12),
-                  _PastRefundsList(
-                      refunds: data['past_refunds'] as List),
+                  _PastRefundsList(refunds: data['past_refunds'] as List),
                 ],
               ],
             ),
@@ -830,8 +874,11 @@ class _AmountChip extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
-  const _AmountChip(
-      {required this.label, required this.value, required this.color});
+  const _AmountChip({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -890,18 +937,17 @@ class _PastRefundsList extends StatelessWidget {
           final m = r as Map<String, dynamic>;
           return Container(
             margin: const EdgeInsets.only(bottom: 4),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.warning.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                  color: AppColors.warning.withValues(alpha: 0.25)),
+                color: AppColors.warning.withValues(alpha: 0.25),
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.undo_rounded,
-                    color: AppColors.warning, size: 13),
+                Icon(Icons.undo_rounded, color: AppColors.warning, size: 13),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -917,7 +963,9 @@ class _PastRefundsList extends StatelessWidget {
                 if (m['is_full_refund'] == true)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.error.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
@@ -944,8 +992,10 @@ class _PastRefundsList extends StatelessWidget {
 class _RefundTypeToggle extends StatelessWidget {
   final bool isFullRefund;
   final ValueChanged<bool> onChanged;
-  const _RefundTypeToggle(
-      {required this.isFullRefund, required this.onChanged});
+  const _RefundTypeToggle({
+    required this.isFullRefund,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1011,17 +1061,18 @@ class _ToggleOption extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  size: 14,
-                  color: selected ? selectedColor : cs.onSurfaceVariant),
+              Icon(
+                icon,
+                size: 14,
+                color: selected ? selectedColor : cs.onSurfaceVariant,
+              ),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
                   color: selected ? selectedColor : cs.onSurfaceVariant,
                   fontSize: 12,
-                  fontWeight:
-                      selected ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   fontFamily: 'Inter',
                 ),
               ),
@@ -1056,8 +1107,7 @@ class _AmountField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode,
           enabled: enabled,
-          keyboardType:
-              const TextInputType.numberWithOptions(decimal: true),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
@@ -1135,13 +1185,14 @@ class _SubmitButton extends StatelessWidget {
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2),
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     )
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        Icon(Icons.undo_rounded,
-                            color: Colors.white, size: 16),
+                        Icon(Icons.undo_rounded, color: Colors.white, size: 16),
                         SizedBox(width: 8),
                         Text(
                           'Issue Refund',
@@ -1181,8 +1232,11 @@ class _EmptyLookupHint extends StatelessWidget {
               color: cs.primary.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.manage_search_rounded,
-                color: cs.primary, size: 32),
+            child: Icon(
+              Icons.manage_search_rounded,
+              color: cs.primary,
+              size: 32,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -1243,8 +1297,11 @@ class _ConfirmDialog extends StatelessWidget {
               color: AppColors.error.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.warning_amber_rounded,
-                color: AppColors.error, size: 20),
+            child: const Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.error,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 10),
           const Text(
@@ -1274,9 +1331,10 @@ class _ConfirmDialog extends StatelessWidget {
           _DialogRow(label: 'Booking', value: '#$bookingNumber'),
           _DialogRow(label: 'Customer', value: userName),
           _DialogRow(
-              label: 'Refund Amount',
-              value: '₹${amount.toStringAsFixed(2)}',
-              valueColor: AppColors.error),
+            label: 'Refund Amount',
+            value: '₹${amount.toStringAsFixed(2)}',
+            valueColor: AppColors.error,
+          ),
           _DialogRow(label: 'Reason', value: reason),
         ],
       ),
@@ -1297,14 +1355,12 @@ class _ConfirmDialog extends StatelessWidget {
           style: FilledButton.styleFrom(
             backgroundColor: AppColors.error,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           child: const Text(
             'Confirm Refund',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-            ),
+            style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700),
           ),
         ),
       ],
@@ -1316,8 +1372,7 @@ class _DialogRow extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
-  const _DialogRow(
-      {required this.label, required this.value, this.valueColor});
+  const _DialogRow({required this.label, required this.value, this.valueColor});
 
   @override
   Widget build(BuildContext context) {
@@ -1378,17 +1433,14 @@ class _RefundHistoryTile extends StatelessWidget {
     final statusStr = (data['status'] ?? '').toString();
     final isSucceeded = statusStr == 'succeeded';
 
-    final accentColor =
-        isSucceeded ? AppColors.success : AppColors.error;
+    final accentColor = isSucceeded ? AppColors.success : AppColors.error;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: accentColor.withValues(alpha: 0.25),
-        ),
+        border: Border.all(color: accentColor.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1397,8 +1449,7 @@ class _RefundHistoryTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: accentColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(6),
@@ -1417,8 +1468,10 @@ class _RefundHistoryTile extends StatelessWidget {
               const SizedBox(width: 6),
               if (isFullRefund)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -1450,8 +1503,11 @@ class _RefundHistoryTile extends StatelessWidget {
           // Booking & provider
           Row(
             children: [
-              Icon(Icons.receipt_long_rounded,
-                  size: 12, color: cs.onSurfaceVariant),
+              Icon(
+                Icons.receipt_long_rounded,
+                size: 12,
+                color: cs.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -1465,8 +1521,7 @@ class _RefundHistoryTile extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: cs.surface,
                   borderRadius: BorderRadius.circular(4),
@@ -1490,8 +1545,7 @@ class _RefundHistoryTile extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.notes_rounded,
-                    size: 12, color: cs.onSurfaceVariant),
+                Icon(Icons.notes_rounded, size: 12, color: cs.onSurfaceVariant),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
@@ -1512,8 +1566,11 @@ class _RefundHistoryTile extends StatelessWidget {
           // Issued by & date
           Row(
             children: [
-              Icon(Icons.person_outline_rounded,
-                  size: 12, color: cs.onSurfaceVariant),
+              Icon(
+                Icons.person_outline_rounded,
+                size: 12,
+                color: cs.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Text(
                 data['initiated_by_email'] ?? '—',
@@ -1524,8 +1581,11 @@ class _RefundHistoryTile extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Icon(Icons.access_time_rounded,
-                  size: 11, color: cs.onSurfaceVariant),
+              Icon(
+                Icons.access_time_rounded,
+                size: 11,
+                color: cs.onSurfaceVariant,
+              ),
               const SizedBox(width: 3),
               Text(
                 _fmt(data['created_at']),

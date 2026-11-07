@@ -36,7 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     bool canCheckBiometrics;
     try {
-      canCheckBiometrics = await _localAuth.canCheckBiometrics ||
+      canCheckBiometrics =
+          await _localAuth.canCheckBiometrics ||
           await _localAuth.isDeviceSupported();
     } on PlatformException catch (_) {
       canCheckBiometrics = false;
@@ -50,7 +51,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _authenticateWithBiometrics() async {
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Biometric login is not available on web.')),
+        const SnackBar(
+          content: Text('Biometric login is not available on web.'),
+        ),
       );
       return;
     }
@@ -93,11 +96,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLogin() {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(
-          AuthLoginRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          ),
-        );
+      AuthLoginRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -182,7 +185,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Welcome Back',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.w800,
                               letterSpacing: -0.5,
                             ),
@@ -191,8 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         'Please sign in to continue your booking',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(height: 28),
 
@@ -224,13 +228,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: _obscurePassword,
                         suffix: GestureDetector(
                           onTap: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                           child: Icon(
                             _obscurePassword
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             size: 18,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         validator: (value) {
@@ -260,10 +267,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: state is AuthLoading
                                       ? null
                                       : _authenticateWithBiometrics,
-                                  icon: const Icon(Icons.fingerprint_rounded, size: 20),
+                                  icon: const Icon(
+                                    Icons.fingerprint_rounded,
+                                    size: 20,
+                                  ),
                                   label: const Text('BIOMETRIC SIGN IN'),
                                   style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(double.infinity, 52),
+                                    minimumSize: const Size(
+                                      double.infinity,
+                                      52,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
@@ -283,7 +296,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             "Don't have an account? ",
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               fontSize: 13,
                               fontFamily: 'Inter',
                             ),
@@ -336,7 +351,9 @@ class _GradientButton extends StatelessWidget {
       height: 52,
       decoration: BoxDecoration(
         gradient: isEnabled ? AppColors.gradPrimary : null,
-        color: isEnabled ? null : Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: isEnabled
+            ? null
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         boxShadow: isEnabled
             ? [

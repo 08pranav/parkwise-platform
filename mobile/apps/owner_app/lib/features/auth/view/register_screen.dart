@@ -32,14 +32,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     context.read<AuthBloc>().add(
-          AuthRegisterRequested(
-            fullName: _name.text.trim(),
-            email: _email.text.trim(),
-            phone: _phone.text.trim(),
-            password: _password.text,
-            societyJoinCode: _joinCode.text.trim(),
-          ),
-        );
+      AuthRegisterRequested(
+        fullName: _name.text.trim(),
+        email: _email.text.trim(),
+        phone: _phone.text.trim(),
+        password: _password.text,
+        societyJoinCode: _joinCode.text.trim(),
+      ),
+    );
   }
 
   @override
@@ -86,7 +86,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hint: 'you@example.com',
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icons.email_outlined,
-                        validator: (v) => _required(v, 'Email') ??
+                        validator: (v) =>
+                            _required(v, 'Email') ??
                             (v!.contains('@') ? null : 'Enter a valid email'),
                       ),
                       const SizedBox(height: 14),

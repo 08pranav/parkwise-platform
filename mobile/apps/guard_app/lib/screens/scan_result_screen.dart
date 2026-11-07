@@ -39,14 +39,19 @@ class ScanResultScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: (isSuccess ? AppColors.success : Theme.of(context).colorScheme.error)
-                              .withValues(alpha: 0.1),
+                          color:
+                              (isSuccess
+                                      ? AppColors.success
+                                      : Theme.of(context).colorScheme.error)
+                                  .withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           isSuccess ? Icons.check_circle : Icons.cancel,
                           size: 96,
-                          color: isSuccess ? AppColors.success : Theme.of(context).colorScheme.error,
+                          color: isSuccess
+                              ? AppColors.success
+                              : Theme.of(context).colorScheme.error,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -54,10 +59,13 @@ class ScanResultScreen extends StatelessWidget {
                       // Status text
                       Text(
                         isSuccess ? '$scanType Approved' : '$scanType Denied',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isSuccess ? AppColors.success : Theme.of(context).colorScheme.error,
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isSuccess
+                                  ? AppColors.success
+                                  : Theme.of(context).colorScheme.error,
+                            ),
                       ),
                       const SizedBox(height: 32),
 
@@ -67,7 +75,7 @@ class ScanResultScreen extends StatelessWidget {
 
                       if (!isSuccess && errorMessage != null)
                         _ErrorDetails(message: errorMessage!),
-                      
+
                       const SizedBox(height: 24),
                     ],
                   ),
@@ -205,11 +213,17 @@ class _ErrorDetails extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.error.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         children: [
-          Icon(Icons.info_outline, color: Theme.of(context).colorScheme.error, size: 28),
+          Icon(
+            Icons.info_outline,
+            color: Theme.of(context).colorScheme.error,
+            size: 28,
+          ),
           const SizedBox(height: 12),
           Text(
             message,
@@ -239,9 +253,9 @@ class _DetailRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         Flexible(
           child: Text(

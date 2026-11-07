@@ -1,7 +1,62 @@
+import 'package:core/core.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:admin_app/screens/login_screen.dart';
+
+AuthBloc buildBloc() {
+  final tokens = TokenManager(SecureStorageService());
+  return AuthBloc(
+    authService: AuthService(Dio(), tokens),
+    tokenManager: tokens,
+  );
+}
+
+Future<AuthBloc> pumpLogin(WidgetTester tester) async {
+  tester.view.physicalSize = const Size(900, 1600);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  final bloc = buildBloc();
+  addTearDown(bloc.close);
+  await tester.pumpWidget(
+    MaterialApp(
+      home: BlocProvider<AuthBloc>.value(
+        value: bloc,
+        child: const LoginScreen(),
+      ),
+    ),
+  );
+  return bloc;
+}
 
 void main() {
-  testWidgets('App placeholder test', (WidgetTester tester) async {
-    expect(true, isTrue);
+  testWidgets('login screen renders an email and a password field', (
+    tester,
+  ) async {
+    await pumpLogin(tester);
+    expect(find.byType(TextFormField), findsAtLeastNWidgets(2));
+  });
+
+  testWidgets(
+    'submitting an empty form shows validation errors and stays put',
+    (tester) async {
+      final bloc = await pumpLogin(tester);
+      await tester.ensureVisible(find.byType(PrimaryButton).first);
+      await tester.tap(find.byType(PrimaryButton).first);
+      await tester.pump();
+      expect(find.text('Please enter your email'), findsOneWidget);
+      expect(find.text('Please enter your password'), findsOneWidget);
+      expect(bloc.state, isNot(isA<Authenticated>()));
+    },
+  );
+
+  testWidgets('an email without @ is rejected', (tester) async {
+    await pumpLogin(tester);
+    await tester.enterText(find.byType(TextFormField).first, 'not-an-email');
+    await tester.ensureVisible(find.byType(PrimaryButton).first);
+    await tester.tap(find.byType(PrimaryButton).first);
+    await tester.pump();
+    expect(find.text('Please enter a valid email'), findsOneWidget);
   });
 }

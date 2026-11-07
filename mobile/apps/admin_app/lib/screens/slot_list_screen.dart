@@ -43,7 +43,9 @@ class _SlotListScreenState extends State<SlotListScreen> {
         title: const Text('Parking Slots'),
         actions: [
           IconButton(
-            icon: Icon(_isGridView ? Icons.list_rounded : Icons.grid_view_rounded),
+            icon: Icon(
+              _isGridView ? Icons.list_rounded : Icons.grid_view_rounded,
+            ),
             onPressed: () => setState(() => _isGridView = !_isGridView),
             tooltip: _isGridView ? 'Switch to List' : 'Switch to Grid',
           ),
@@ -91,7 +93,8 @@ class _SlotListScreenState extends State<SlotListScreen> {
                           itemBuilder: (context, index) {
                             return _SlotCard(
                               slot: slots[index],
-                              onTap: () => context.go('/slots/${slots[index].id}'),
+                              onTap: () =>
+                                  context.go('/slots/${slots[index].id}'),
                             );
                           },
                         ),
@@ -165,7 +168,11 @@ class _SlotListScreenState extends State<SlotListScreen> {
                 },
               ),
               const SizedBox(width: 16),
-              Container(width: 1, height: 24, color: Theme.of(context).colorScheme.outlineVariant),
+              Container(
+                width: 1,
+                height: 24,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
               const SizedBox(width: 16),
               _FilterChip(
                 label: 'Car',
@@ -241,22 +248,22 @@ class _FilterChip extends StatelessWidget {
       labelStyle: TextStyle(
         fontSize: 12,
         fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-        color: selected ? activeColor : Theme.of(context).colorScheme.onSurfaceVariant,
+        color: selected
+            ? activeColor
+            : Theme.of(context).colorScheme.onSurfaceVariant,
         fontFamily: 'Inter',
       ),
       selected: selected,
       onSelected: (_) => onSelected(),
-      selectedColor: activeColor.withOpacity(0.12),
+      selectedColor: activeColor.withValues(alpha: 0.12),
       checkmarkColor: activeColor,
       side: BorderSide(
         color: selected
-            ? activeColor.withOpacity(0.4)
+            ? activeColor.withValues(alpha: 0.4)
             : Theme.of(context).colorScheme.outlineVariant,
         width: 1,
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       showCheckmark: true,
     );
   }
@@ -295,7 +302,7 @@ class _SlotCard extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: stateColor.withOpacity(0.1),
+            color: stateColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -319,7 +326,10 @@ class _SlotCard extends StatelessWidget {
               'Floor: ${slot.floor.isNotEmpty ? slot.floor : '-'} | '
               '${slot.slotType.toUpperCase()} | '
               '\u20B9${slot.hourlyRate}/hr',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
             ),
             if (slot.ownerName != null && slot.ownerName!.isNotEmpty)
               Padding(
@@ -361,9 +371,9 @@ class _SlotCard extends StatelessWidget {
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: stateColor.withOpacity(0.1),
+            color: stateColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: stateColor.withOpacity(0.3)),
+            border: Border.all(color: stateColor.withValues(alpha: 0.3)),
           ),
           child: Text(
             slot.state.toUpperCase(),
@@ -404,8 +414,8 @@ class _SlotGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final stateColor = _stateColor();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgTint = stateColor.withOpacity(isDark ? 0.12 : 0.08);
-    final borderTint = stateColor.withOpacity(isDark ? 0.3 : 0.2);
+    final bgTint = stateColor.withValues(alpha: isDark ? 0.12 : 0.08);
+    final borderTint = stateColor.withValues(alpha: isDark ? 0.3 : 0.2);
 
     return InkWell(
       onTap: onTap,
@@ -450,7 +460,9 @@ class _SlotGridTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: isDark ? Colors.white : AppColors.textPrimaryLight,
+                        color: isDark
+                            ? Colors.white
+                            : AppColors.textPrimaryLight,
                         fontFamily: 'Inter',
                       ),
                     ),

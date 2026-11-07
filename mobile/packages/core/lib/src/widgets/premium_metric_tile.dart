@@ -48,7 +48,11 @@ class PremiumMetricTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(icon, size: 18, color: Theme.of(context).colorScheme.tertiary),
+              Icon(
+                icon,
+                size: 18,
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -71,7 +75,9 @@ class PremiumMetricTile extends StatelessWidget {
                 Text(
                   trend!,
                   style: TextStyle(
-                    color: isTrendPositive ? AppColors.tertiary : Theme.of(context).colorScheme.error,
+                    color: isTrendPositive
+                        ? AppColors.tertiary
+                        : Theme.of(context).colorScheme.error,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     fontFamily: 'Inter',

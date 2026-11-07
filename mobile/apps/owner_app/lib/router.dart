@@ -24,7 +24,8 @@ GoRouter createRouter() {
       final authState = authBloc.state;
       final signedIn =
           authState is Authenticated && authState.user.role == 'user';
-      final onPublicRoute = state.matchedLocation == '/login' ||
+      final onPublicRoute =
+          state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
 
       if (!signedIn && !onPublicRoute) return '/login';

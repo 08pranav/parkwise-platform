@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 
 class PremiumHeader extends StatelessWidget {
   final String title;
@@ -33,9 +32,13 @@ class PremiumHeader extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.only(right: 12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.04),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
                     ),
                     child: Icon(
                       Icons.arrow_back_ios_new_rounded,
@@ -74,15 +77,16 @@ class PremiumHeader extends StatelessWidget {
               ),
               if (actions != null) ...[
                 const SizedBox(width: 8),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: actions!,
-                ),
+                Row(mainAxisSize: MainAxisSize.min, children: actions!),
               ],
             ],
           ),
           const SizedBox(height: 16),
-          Divider(height: 1, thickness: 1.0, color: Theme.of(context).colorScheme.outlineVariant),
+          Divider(
+            height: 1,
+            thickness: 1.0,
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ],
       ),
     );

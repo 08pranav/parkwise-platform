@@ -63,14 +63,17 @@ class GuardsCubit extends Cubit<GuardsState> {
   final SecureStorageService _storage;
 
   GuardsCubit(this._apiClient)
-      : _storage = SecureStorageService(),
-        super(const GuardsState());
+    : _storage = SecureStorageService(),
+      super(const GuardsState());
 
   Future<void> loadSavedGuardCredentials() async {
     final email = await _storage.getGuardEmail();
     final password = await _storage.getGuardPassword();
 
-    if (email == null || email.isEmpty || password == null || password.isEmpty) {
+    if (email == null ||
+        email.isEmpty ||
+        password == null ||
+        password.isEmpty) {
       final legacyEmail = await _storage.getEmail();
       final legacyPassword = await _storage.getPassword();
 
@@ -101,12 +104,7 @@ class GuardsCubit extends Cubit<GuardsState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        savedGuardEmail: email,
-        savedGuardPassword: password,
-      ),
-    );
+    emit(state.copyWith(savedGuardEmail: email, savedGuardPassword: password));
   }
 
   Future<void> loadGuards() async {
@@ -135,14 +133,10 @@ class GuardsCubit extends Cubit<GuardsState> {
       if (!hasSavedGuardCredentials) {
         final latestGuardWithPassword = guards.firstWhere(
           (guard) =>
-              (guard.temporaryPassword != null && guard.temporaryPassword!.isNotEmpty),
-          orElse: () => UserModel(
-            id: '',
-            email: '',
-            phone: '',
-            fullName: '',
-            role: '',
-          ),
+              (guard.temporaryPassword != null &&
+              guard.temporaryPassword!.isNotEmpty),
+          orElse: () =>
+              UserModel(id: '', email: '', phone: '', fullName: '', role: ''),
         );
 
         if (latestGuardWithPassword.id.isNotEmpty) {
@@ -186,13 +180,17 @@ class GuardsCubit extends Cubit<GuardsState> {
       );
 
       final data = response.data as Map<String, dynamic>;
-      final deviceJson = (data['device'] as Map<String, dynamic>?) ??
+      final deviceJson =
+          (data['device'] as Map<String, dynamic>?) ??
           (data['guard'] as Map<String, dynamic>);
       final guard = UserModel.fromJson(deviceJson);
       final credentials = data['credentials'] as Map<String, dynamic>;
       final password = credentials['temporary_password'] as String;
 
-      await _storage.saveGuardCredentials(email: guard.email, password: password);
+      await _storage.saveGuardCredentials(
+        email: guard.email,
+        password: password,
+      );
 
       emit(
         state.copyWith(
@@ -252,8 +250,9 @@ class GuardsCubit extends Cubit<GuardsState> {
           isSubmitting: false,
           clearLatest: shouldClearSaved,
           savedGuardEmail: shouldClearSaved ? null : state.savedGuardEmail,
-          savedGuardPassword:
-              shouldClearSaved ? null : state.savedGuardPassword,
+          savedGuardPassword: shouldClearSaved
+              ? null
+              : state.savedGuardPassword,
         ),
       );
       await loadGuards();

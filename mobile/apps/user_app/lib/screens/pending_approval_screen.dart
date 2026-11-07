@@ -120,9 +120,9 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
         Expanded(

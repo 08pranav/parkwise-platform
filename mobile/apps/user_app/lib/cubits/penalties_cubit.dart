@@ -81,10 +81,7 @@ class PenaltiesCubit extends Cubit<PenaltiesState> {
     try {
       final response = await _apiClient.post(
         ApiEndpoints.penaltyPay(penaltyId),
-        data: {
-          'gateway': gateway,
-          'embedded': embedded,
-        },
+        data: {'gateway': gateway, 'embedded': embedded},
       );
       final data = response.data as Map<String, dynamic>;
       return PaymentModel.fromJson(data);

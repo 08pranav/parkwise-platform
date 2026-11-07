@@ -62,11 +62,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Brand Logo Area
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+                          border: Border.all(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

@@ -81,7 +81,7 @@ Honest caveat: three Flutter screens are still very large (`home_screen.dart` 2,
 - 65 commits on `main` in the new repository (the original history was kept; original authors and dates preserved).
 - Live check: `scripts/smoke-live.mjs` runs 31 checks against the deployed API: all five roles sign in, a real Stripe test-card payment, QR entry, replay rejected, forced overstay with a penalty, a real Stripe refund, a Razorpay order and a signed Razorpay webhook. All 31 passed on the last run.
 - Android: five signed release APKs (53 to 69 MB each) in the v1.0.0 GitHub release, checked by package metadata, permissions and signature (not installed on a physical device).
-- Videos and a GIF: **not available** yet. Screenshots: in `docs/screenshots/` once the screenshot script has been run on the final build.
+- Videos and a GIF: **not available** yet. Screenshots: 13 in `docs/screenshots/`, taken from the live site (fictional data).
 
 ## 8. Skills demonstrated
 

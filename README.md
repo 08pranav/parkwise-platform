@@ -41,6 +41,21 @@ the booking is checked against the society, the time window and its payment, ent
 the same code is refused. If the car leaves late, the overstay penalty is calculated and charged. Society admins
 approve residents and slots, owners list spare slots, and a super admin onboards societies and issues refunds.
 
+## Screenshots
+
+<p>
+  <img src="docs/screenshots/user-search-results.png" alt="Resident: societies near the destination" width="230">
+  <img src="docs/screenshots/user-society-detail.png" alt="Resident: society detail with matching slots" width="230">
+  <img src="docs/screenshots/guard-home.png" alt="Guard: gate operations" width="230">
+  <img src="docs/screenshots/owner-slots.png" alt="Slot owner: my slots with approval status" width="230">
+</p>
+<p>
+  <img src="docs/screenshots/super-admin-dashboard.png" alt="Super admin dashboard" width="460">
+  <img src="docs/screenshots/admin-bookings.png" alt="Society admin: bookings" width="460">
+</p>
+
+More in [docs/screenshots/](docs/screenshots), taken from the live demo with fictional data.
+
 ## Roles and features
 
 | Resident / visitor (`user_app`) | |
@@ -181,7 +196,7 @@ The reference is generated from the OpenAPI schema: [docs/API_DOCUMENTATION.md](
 - Wallet balance and OTP password reset (carried over from the first prototype, see [ADR 0001](docs/decisions/0001-app-structure.md)).
 - Break up the largest Flutter screens into feature folders (`home_screen`, `refund_screen`, `booking_detail_screen` are still 1,400 to 2,200 lines).
 - Describe every endpoint's request and response in the OpenAPI schema (some views have no serializer yet).
-- A narrated demo video, GIF and per-role screenshots (the recording tooling in `demo/` is in place; the video itself is not recorded yet).
+- A narrated demo video and GIF (the recording tooling and field map in `demo/` are in place; the video itself is not recorded yet).
 - Real-money payments need live keys, tax invoices and a production database plan.
 
 ## Team

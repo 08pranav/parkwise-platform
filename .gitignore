@@ -48,3 +48,13 @@ htmlcov/
 # Temporary Scratch Scripts
 backend/scratch/
 scratch/
+# Deployment secrets and signing material
+.env.deploy
+.env.*
+!.env.example
+!*.env.example
+*.jks
+*.keystore
+key.properties
+**/android/key.properties
+.vercel/

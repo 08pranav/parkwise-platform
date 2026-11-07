@@ -61,3 +61,4 @@ key.properties
 dist/
 scripts/node_modules/
 scripts/package-lock.json
+dist-apk/

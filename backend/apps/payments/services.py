@@ -1,18 +1,25 @@
+import hashlib
+import hmac
 import json
+import logging
 from decimal import Decimal
 from urllib.parse import urlparse
 
 import razorpay
 import stripe
 from django.conf import settings
-from django.db import transaction
+from django.db import models, transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.bookings.models import Booking
+from apps.bookings.services import slot_is_available
+from apps.bookings.state_machine import transition
 from apps.societies.models import ParkingSlot
 
-from .models import Payment, Refund
+from .models import Payment, PaymentEvent, Refund
+
+logger = logging.getLogger(__name__)
 
 MONEY_MULTIPLIER = Decimal("100")
 
@@ -26,47 +33,24 @@ def _get_stripe_client():
 
 
 def sync_razorpay_order_status(razorpay_order_id):
-    """
-    Polls the Razorpay API to check if an order has been paid.
-    Useful for auto-verification if the frontend callback fails.
+    """Poll Razorpay for an order and capture the local payment if it was paid.
+
+    Fallback for when the client callback and the webhook both failed to arrive.
     """
     client = _get_razorpay_client()
     try:
-        # Fetch the order from Razorpay
         client.order.fetch(razorpay_order_id)
-        # Fetch payments for this order
-        payments = client.order.payments(razorpay_order_id)
-
-        if not payments or not payments.get("items"):
+        items = (client.order.payments(razorpay_order_id) or {}).get("items") or []
+        captured = next((p for p in items if p["status"] == "captured"), None)
+        if captured is None:
             return False
-
-        # Look for a captured payment
-        captured_payment = next((p for p in payments["items"] if p["status"] == "captured"), None)
-
-        if captured_payment:
-            from apps.bookings.models import Booking
-
-            from .models import Payment
-
-            with transaction.atomic():
-                payment_obj = Payment.objects.select_for_update().get(
-                    razorpay_order_id=razorpay_order_id
-                )
-                if payment_obj.status != Payment.Status.CAPTURED:
-                    payment_obj.status = Payment.Status.CAPTURED
-                    payment_obj.razorpay_payment_id = captured_payment["id"]
-                    payment_obj.razorpay_signature = "auto_verified"
-                    payment_obj.save()
-
-                    if payment_obj.booking:
-                        booking = payment_obj.booking
-                        booking.status = Booking.Status.CONFIRMED
-                        booking.save()
-            return True
-    except Exception as e:
-        print(f"Error syncing Razorpay order {razorpay_order_id}: {e}")
-
-    return False
+        with transaction.atomic():
+            payment = Payment.objects.select_for_update().get(razorpay_order_id=razorpay_order_id)
+            _capture_payment(payment, razorpay_payment_id=captured["id"])
+        return True
+    except Exception:
+        logger.exception("Could not sync Razorpay order %s", razorpay_order_id)
+        return False
 
 
 def _get_razorpay_client():
@@ -108,20 +92,83 @@ def _payment_intent_id(payment_intent):
     return getattr(payment_intent, "id", None)
 
 
+SETTLED_STATUSES = (
+    Payment.Status.CAPTURED,
+    Payment.Status.REFUNDED,
+    Payment.Status.PARTIALLY_REFUNDED,
+)
+
+
+def _capture_payment(payment, **fields):
+    """Mark ``payment`` captured and apply its effects. Safe to call any number of times.
+
+    The caller holds a row lock on ``payment``. A payment that is already settled
+    is returned untouched, so duplicate webhooks, the client callback and the
+    polling fallback can all arrive in any order.
+    """
+    if payment.status in SETTLED_STATUSES:
+        return payment
+
+    for name, value in fields.items():
+        setattr(payment, name, value)
+    payment.status = Payment.Status.CAPTURED
+    payment.save(update_fields=["status", "updated_at", *fields])
+
+    _mark_booking_as_confirmed(payment)
+    _mark_penalty_as_paid(payment)
+    return payment
+
+
 def _mark_booking_as_confirmed(payment):
+    """Confirm the booking a captured payment belongs to.
+
+    * pending_payment -> confirmed, slot reserved.
+    * expired, but the slot is still free for that window -> revived to confirmed.
+    * expired/cancelled and the slot is gone -> the customer paid for nothing, so a
+      full refund is issued once this transaction commits.
+    """
     if not payment.booking_id:
         return payment
 
     booking = Booking.objects.select_for_update().get(id=payment.booking_id)
     if booking.status == Booking.Status.PENDING_PAYMENT:
-        booking.status = Booking.Status.CONFIRMED
-        booking.save(update_fields=["status", "updated_at"])
-
-        slot = ParkingSlot.objects.select_for_update().get(id=booking.slot_id)
-        slot.state = ParkingSlot.SlotState.RESERVED
-        slot.save(update_fields=["state", "updated_at"])
+        transition(booking, Booking.Status.CONFIRMED)
+        _reserve_slot(booking)
+    elif booking.status == Booking.Status.EXPIRED and _slot_still_free(booking):
+        transition(booking, Booking.Status.CONFIRMED)
+        _reserve_slot(booking)
+    elif booking.status in (Booking.Status.EXPIRED, Booking.Status.CANCELLED):
+        payment_id = payment.id
+        transaction.on_commit(lambda: _auto_refund_late_payment(payment_id))
 
     return payment
+
+
+def _reserve_slot(booking):
+    slot = ParkingSlot.objects.select_for_update().get(id=booking.slot_id)
+    slot.state = ParkingSlot.SlotState.RESERVED
+    slot.save(update_fields=["state", "updated_at"])
+
+
+def _slot_still_free(booking):
+    slot = ParkingSlot.objects.select_related("society").get(id=booking.slot_id)
+    return slot_is_available(
+        slot, booking.vehicle.vehicle_type, booking.start_time, booking.end_time
+    )
+
+
+def _auto_refund_late_payment(payment_id):
+    payment = Payment.objects.get(id=payment_id)
+    try:
+        issue_refund(
+            payment,
+            payment.amount,
+            "Automatic refund: payment received after the booking could no longer be honoured.",
+            update_booking=False,
+        )
+    except ValidationError:
+        # The failed Refund row is the audit trail; a super admin can retry it.
+        logger.exception("Automatic refund failed for payment %s", payment_id)
 
 
 def _mark_penalty_as_paid(payment):
@@ -338,63 +385,35 @@ def verify_checkout_session(checkout_session_id, user=None):
     )
 
     with transaction.atomic():
-        payment_query = Payment.objects.select_for_update()
         try:
-            payment = payment_query.get(stripe_checkout_session_id=checkout_session_id)
+            payment = Payment.objects.select_for_update().get(
+                stripe_checkout_session_id=checkout_session_id
+            )
         except Payment.DoesNotExist as exc:
             raise ValidationError("Payment not found.") from exc
 
         if user is not None and payment.booking and payment.booking.user_id != user.id:
             raise ValidationError("Payment does not belong to this user.")
 
-        payment.provider = Payment.Provider.STRIPE
-        payment.currency = (checkout_session.currency or payment.currency or "inr").upper()
-        payment.stripe_payment_intent_id = _payment_intent_id(checkout_session.payment_intent)
-
-        if payment.status == Payment.Status.CAPTURED:
-            payment.save(
-                update_fields=[
-                    "provider",
-                    "currency",
-                    "stripe_payment_intent_id",
-                    "updated_at",
-                ]
-            )
-            return payment
+        provider_fields = {
+            "provider": Payment.Provider.STRIPE,
+            "currency": (checkout_session.currency or payment.currency or "inr").upper(),
+            "stripe_payment_intent_id": _payment_intent_id(checkout_session.payment_intent),
+        }
 
         if checkout_session.payment_status != "paid":
-            payment.status = Payment.Status.FAILED
-            payment.save(
-                update_fields=[
-                    "provider",
-                    "currency",
-                    "stripe_payment_intent_id",
-                    "status",
-                    "updated_at",
-                ]
-            )
+            # Never downgrade a payment that is already settled.
+            if payment.status == Payment.Status.CREATED:
+                payment.status = Payment.Status.FAILED
+                payment.save(update_fields=["status", "updated_at"])
             raise ValidationError("Stripe checkout has not completed successfully.")
 
-        payment.status = Payment.Status.CAPTURED
-        payment.save(
-            update_fields=[
-                "provider",
-                "currency",
-                "stripe_payment_intent_id",
-                "status",
-                "updated_at",
-            ]
-        )
-
-        _mark_booking_as_confirmed(payment)
-        _mark_penalty_as_paid(payment)
-        return payment
+        return _capture_payment(payment, **provider_fields)
 
 
 def verify_razorpay_payment(razorpay_order_id, razorpay_payment_id, razorpay_signature, user=None):
     client = _get_razorpay_client()
 
-    # Verify signature
     try:
         client.utility.verify_payment_signature(
             {
@@ -407,102 +426,242 @@ def verify_razorpay_payment(razorpay_order_id, razorpay_payment_id, razorpay_sig
         raise ValidationError("Invalid Razorpay signature.") from exc
 
     with transaction.atomic():
-        payment_query = Payment.objects.select_for_update()
         try:
-            payment = payment_query.get(razorpay_order_id=razorpay_order_id)
+            payment = Payment.objects.select_for_update().get(razorpay_order_id=razorpay_order_id)
         except Payment.DoesNotExist as exc:
             raise ValidationError("Payment not found for this order ID.") from exc
 
         if user is not None and payment.booking and payment.booking.user_id != user.id:
             raise ValidationError("Payment does not belong to this user.")
 
-        if payment.status == Payment.Status.CAPTURED:
-            return payment
+        return _capture_payment(
+            payment,
+            razorpay_payment_id=razorpay_payment_id,
+            razorpay_signature=razorpay_signature,
+        )
 
-        payment.razorpay_payment_id = razorpay_payment_id
-        payment.status = Payment.Status.CAPTURED
-        payment.save(update_fields=["razorpay_payment_id", "status", "updated_at"])
 
-        _mark_booking_as_confirmed(payment)
-        _mark_penalty_as_paid(payment)
-        return payment
+def _record_event(provider, event_id, event_type, payload):
+    """Store a webhook delivery. Returns False when this event was already processed."""
+    _, created = PaymentEvent.objects.get_or_create(
+        provider=provider,
+        event_id=event_id,
+        defaults={"event_type": event_type, "payload": payload},
+    )
+    return created
 
 
 def handle_stripe_webhook(request_body, signature):
-    stripe_client = _get_stripe_client()
-
+    """Verify and apply a Stripe webhook. Fails closed: no secret means no processing."""
     if not settings.STRIPE_WEBHOOK_SECRET:
-        # In development without webhook secret, parse event directly (INSECURE - for testing only)
-        import json
+        raise ValidationError("Stripe webhook secret is not configured.")
 
-        event = json.loads(request_body)
-    else:
-        # Production: verify webhook signature
+    stripe_client = _get_stripe_client()
+    try:
         event = stripe_client.Webhook.construct_event(
             payload=request_body,
             sig_header=signature,
             secret=settings.STRIPE_WEBHOOK_SECRET,
         )
+    except (ValueError, stripe.SignatureVerificationError) as exc:
+        raise ValidationError("Invalid Stripe webhook signature.") from exc
 
     event_type = event.get("type")
     event_object = event.get("data", {}).get("object", {})
 
-    if event_type == "checkout.session.completed":
-        verify_checkout_session(event_object["id"])
+    # Recording and processing share one transaction: if processing fails, the
+    # record rolls back and Stripe's retry is processed instead of skipped.
+    with transaction.atomic():
+        if not _record_event(Payment.Provider.STRIPE, event["id"], event_type, dict(event)):
+            return "duplicate"
+
+        if event_type in ("checkout.session.completed", "checkout.session.async_payment_succeeded"):
+            verify_checkout_session(event_object["id"])
+        elif event_type == "payment_intent.payment_failed":
+            _fail_payment(stripe_payment_intent_id=event_object.get("id"))
+    return "processed"
+
+
+def _fail_payment(**lookup):
+    """Mark a payment failed only if it is still waiting; a captured payment is never downgraded."""
+    if not all(lookup.values()):
         return
+    payment = Payment.objects.select_for_update().filter(**lookup).first()
+    if payment is not None and payment.status == Payment.Status.CREATED:
+        payment.status = Payment.Status.FAILED
+        payment.save(update_fields=["status", "updated_at"])
 
-    if event_type == "payment_intent.payment_failed":
-        payment_intent_id = event_object.get("id")
-        if not payment_intent_id:
-            return
 
-        with transaction.atomic():
-            payment = (
-                Payment.objects.select_for_update()
-                .filter(stripe_payment_intent_id=payment_intent_id)
-                .first()
-            )
-            if payment is None:
-                return
+def handle_razorpay_webhook(request_body, signature, event_id):
+    """Verify (HMAC-SHA256 over the raw body) and apply a Razorpay webhook."""
+    secret = settings.RAZORPAY_WEBHOOK_SECRET
+    if not secret:
+        raise ValidationError("Razorpay webhook secret is not configured.")
 
-            payment.status = Payment.Status.FAILED
-            payment.save(update_fields=["status", "updated_at"])
+    expected = hmac.new(secret.encode(), request_body, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, signature or ""):
+        raise ValidationError("Invalid Razorpay webhook signature.")
+
+    event = json.loads(request_body)
+    event_type = event.get("event", "")
+    entity = event.get("payload", {}).get("payment", {}).get("entity", {})
+    order_id = entity.get("order_id")
+    payment_id = entity.get("id")
+    # Razorpay's event id header is the dedupe key; fall back to a content hash.
+    event_id = event_id or hashlib.sha256(request_body).hexdigest()
+
+    with transaction.atomic():
+        if not _record_event(Payment.Provider.RAZORPAY, event_id, event_type, event):
+            return "duplicate"
+
+        if event_type in ("payment.captured", "order.paid") and order_id:
+            payment = Payment.objects.select_for_update().filter(razorpay_order_id=order_id).first()
+            if payment is not None:
+                _capture_payment(payment, razorpay_payment_id=payment_id)
+        elif event_type == "payment.failed" and order_id:
+            _fail_payment(razorpay_order_id=order_id)
+    return "processed"
 
 
 def serialize_stripe_event(request_body):
     return json.loads(request_body)
 
 
+def _begin_refund(payment_id, amount, reason, initiated_by, booking):
+    """Validate and reserve the refund amount. Returns a ``pending`` Refund row.
+
+    The payment row is locked, and pending refunds count against what is left to
+    refund, so two concurrent requests cannot both refund the same money.
+    """
+    amount = Decimal(str(amount))
+    if amount <= Decimal("0"):
+        raise ValidationError("Refund amount must be greater than zero.")
+
+    with transaction.atomic():
+        payment = Payment.objects.select_for_update().get(id=payment_id)
+        if payment.status not in SETTLED_STATUSES or payment.status == Payment.Status.REFUNDED:
+            raise ValidationError("This payment cannot be refunded.")
+
+        already = payment.refunds.exclude(status=Refund.Status.FAILED).aggregate(
+            total=models.Sum("refund_amount")
+        )["total"] or Decimal("0")
+        remaining = payment.amount - already
+        if amount > remaining:
+            raise ValidationError(
+                f"Refund amount (₹{amount}) exceeds the refundable balance (₹{remaining})."
+            )
+
+        return Refund.objects.create(
+            payment=payment,
+            booking=booking,
+            initiated_by=initiated_by,
+            refund_amount=amount,
+            reason=reason,
+            status=Refund.Status.PENDING,
+            is_full_refund=amount == remaining and already == Decimal("0"),
+        )
+
+
+def _call_provider_refund(refund, initiated_by):
+    payment = refund.payment
+    booking = refund.booking
+    meta = {
+        "booking_id": str(booking.id) if booking else "",
+        "booking_number": booking.booking_number if booking else "",
+        "refund_id": str(refund.id),
+        "reason": refund.reason[:200],
+    }
+    if initiated_by is not None:
+        meta["admin_user"] = str(initiated_by.id)
+
+    if payment.provider == Payment.Provider.STRIPE:
+        if not payment.stripe_payment_intent_id:
+            raise ValidationError("Stripe payment intent ID is missing - cannot process refund.")
+        result = _get_stripe_client().Refund.create(
+            payment_intent=payment.stripe_payment_intent_id,
+            amount=_amount_in_smallest_unit(refund.refund_amount),
+            reason="requested_by_customer",
+            metadata=meta,
+            idempotency_key=f"refund-{refund.id}",
+        )
+        return result.id
+    if payment.provider == Payment.Provider.RAZORPAY:
+        if not payment.razorpay_payment_id:
+            raise ValidationError("Razorpay payment ID is missing - cannot process refund.")
+        result = _get_razorpay_client().payment.refund(
+            payment.razorpay_payment_id,
+            {"amount": _amount_in_smallest_unit(refund.refund_amount), "notes": meta},
+        )
+        return result.get("id", "")
+    raise ValidationError(f"Unknown payment provider '{payment.provider}'.")
+
+
+def issue_refund(payment, amount, reason, initiated_by=None, booking=None, update_booking=True):
+    """Refund ``amount`` of ``payment``: reserve, call the gateway, then settle.
+
+    Every attempt leaves a ``Refund`` row (pending -> succeeded | failed), so a
+    gateway error is never lost and a half-finished refund is visible to admins.
+    """
+    booking = booking or payment.booking
+    refund = _begin_refund(payment.id, amount, reason, initiated_by, booking)
+
+    try:
+        provider_refund_id = _call_provider_refund(refund, initiated_by)
+    except Exception as exc:
+        refund.status = Refund.Status.FAILED
+        refund.reason = f"{refund.reason} [gateway error: {str(exc)[:150]}]"
+        refund.save(update_fields=["status", "reason", "updated_at"])
+        if isinstance(exc, ValidationError):
+            raise
+        raise ValidationError("The payment provider rejected the refund.") from exc
+
+    with transaction.atomic():
+        payment = Payment.objects.select_for_update().get(id=payment.id)
+        refund.status = Refund.Status.SUCCEEDED
+        refund.provider_refund_id = provider_refund_id
+        refund.save(update_fields=["status", "provider_refund_id", "updated_at"])
+
+        refunded = payment.refunds.filter(status=Refund.Status.SUCCEEDED).aggregate(
+            total=models.Sum("refund_amount")
+        )["total"]
+        fully = refunded >= payment.amount
+        payment.status = Payment.Status.REFUNDED if fully else Payment.Status.PARTIALLY_REFUNDED
+        payment.save(update_fields=["status", "updated_at"])
+        refund.is_full_refund = fully
+        refund.save(update_fields=["is_full_refund", "updated_at"])
+
+        if update_booking and booking is not None:
+            _apply_refund_to_booking(booking.id, fully)
+
+    return refund
+
+
+def _apply_refund_to_booking(booking_id, fully_refunded):
+    booking = Booking.objects.select_for_update().get(id=booking_id)
+    target = Booking.Status.CANCELLED if fully_refunded else Booking.Status.PARTIALLY_REFUNDED
+    if booking.status != target:
+        transition(booking, target)
+
+    # Release the slot on a full refund, or when the driver has not arrived yet.
+    before_start = booking.start_time is not None and timezone.now() < booking.start_time
+    if (fully_refunded or before_start) and booking.slot_id:
+        slot = ParkingSlot.objects.select_for_update().get(id=booking.slot_id)
+        if slot.state in (ParkingSlot.SlotState.RESERVED, ParkingSlot.SlotState.OCCUPIED):
+            slot.state = ParkingSlot.SlotState.AVAILABLE
+            slot.save(update_fields=["state", "updated_at"])
+
+
 def process_refund(booking_id, refund_amount, reason, admin_user):
-    """
-    Super-admin only: issue a partial or full refund for a booking.
-
-    Steps:
-      1. Fetch the booking and its latest CAPTURED payment.
-      2. Validate refund_amount <= payment.amount.
-      3. Call Stripe or Razorpay to issue the refund.
-      4. Create a Refund record in the DB.
-      5. Update Payment status (REFUNDED or PARTIALLY_REFUNDED).
-      6. Update Booking status (CANCELLED for full; PARTIALLY_REFUNDED for partial).
-      7. Free the parking slot if the booking was fully refunded and slot is still reserved/occupied.
-    """
-    refund_amount = Decimal(str(refund_amount))
-
-    # ------------------------------------------------------------------
-    # 1. Load the booking
-    # ------------------------------------------------------------------
+    """Super-admin refund (partial or full) for a booking's captured payment."""
     try:
         booking = Booking.objects.select_related("slot").get(id=booking_id)
     except Booking.DoesNotExist as exc:
         raise ValidationError("Booking not found.") from exc
 
-    # ------------------------------------------------------------------
-    # 2. Find the latest captured payment for this booking
-    # ------------------------------------------------------------------
     payment = (
         Payment.objects.filter(
             booking=booking,
-            status=Payment.Status.CAPTURED,
+            status__in=[Payment.Status.CAPTURED, Payment.Status.PARTIALLY_REFUNDED],
         )
         .order_by("-created_at")
         .first()
@@ -510,114 +669,4 @@ def process_refund(booking_id, refund_amount, reason, admin_user):
     if payment is None:
         raise ValidationError("No captured payment found for this booking. Refund is not possible.")
 
-    # ------------------------------------------------------------------
-    # 3. Validate amount
-    # ------------------------------------------------------------------
-    if refund_amount <= Decimal("0"):
-        raise ValidationError("Refund amount must be greater than zero.")
-
-    if refund_amount > payment.amount:
-        raise ValidationError(
-            f"Refund amount (₹{refund_amount}) exceeds the captured payment "
-            f"amount (₹{payment.amount})."
-        )
-
-    is_full_refund = refund_amount == payment.amount
-
-    # ------------------------------------------------------------------
-    # 4. Call the payment gateway
-    # ------------------------------------------------------------------
-    provider_refund_id = ""
-
-    if payment.provider == Payment.Provider.STRIPE:
-        stripe_client = _get_stripe_client()
-        if not payment.stripe_payment_intent_id:
-            raise ValidationError("Stripe payment intent ID is missing – cannot process refund.")
-        stripe_refund = stripe_client.Refund.create(
-            payment_intent=payment.stripe_payment_intent_id,
-            amount=_amount_in_smallest_unit(refund_amount),  # paise
-            reason="requested_by_customer",
-            metadata={
-                "booking_id": str(booking.id),
-                "booking_number": booking.booking_number,
-                "admin_user": str(admin_user.id),
-                "admin_email": admin_user.email,
-                "reason": reason[:200],
-            },
-        )
-        provider_refund_id = stripe_refund.id
-
-    elif payment.provider == Payment.Provider.RAZORPAY:
-        rz_client = _get_razorpay_client()
-        if not payment.razorpay_payment_id:
-            raise ValidationError("Razorpay payment ID is missing – cannot process refund.")
-        rz_refund = rz_client.payment.refund(
-            payment.razorpay_payment_id,
-            {
-                "amount": _amount_in_smallest_unit(refund_amount),
-                "notes": {
-                    "booking_id": str(booking.id),
-                    "booking_number": booking.booking_number,
-                    "admin_user": str(admin_user.id),
-                    "reason": reason[:200],
-                },
-            },
-        )
-        provider_refund_id = rz_refund.get("id", "")
-
-    else:
-        raise ValidationError(
-            f"Unknown payment provider '{payment.provider}'. Cannot process refund."
-        )
-
-    # ------------------------------------------------------------------
-    # 5. Persist everything atomically
-    # ------------------------------------------------------------------
-    with transaction.atomic():
-        # Create Refund record
-        refund_record = Refund.objects.create(
-            payment=payment,
-            booking=booking,
-            initiated_by=admin_user,
-            refund_amount=refund_amount,
-            reason=reason,
-            provider_refund_id=provider_refund_id,
-            status=Refund.Status.SUCCEEDED,
-            is_full_refund=is_full_refund,
-        )
-
-        # Update payment status
-        if is_full_refund:
-            payment.status = Payment.Status.REFUNDED
-        else:
-            payment.status = Payment.Status.PARTIALLY_REFUNDED
-        payment.save(update_fields=["status", "updated_at"])
-
-        # Update booking status
-        booking_obj = Booking.objects.select_for_update().get(id=booking.id)
-        if is_full_refund:
-            booking_obj.status = Booking.Status.CANCELLED
-        else:
-            booking_obj.status = Booking.Status.PARTIALLY_REFUNDED
-        booking_obj.save(update_fields=["status", "updated_at"])
-
-        # Release the slot if:
-        #   (a) it is a full refund, OR
-        #   (b) the refund is issued BEFORE the booking's start time —
-        #       the driver hasn't parked yet, so the slot can go back to
-        #       available regardless of whether the refund is partial.
-        refund_before_start = (
-            booking_obj.start_time is not None and timezone.now() < booking_obj.start_time
-        )
-        should_release_slot = is_full_refund or refund_before_start
-
-        if should_release_slot and booking_obj.slot_id:
-            slot = ParkingSlot.objects.select_for_update().get(id=booking_obj.slot_id)
-            if slot.state in (
-                ParkingSlot.SlotState.RESERVED,
-                ParkingSlot.SlotState.OCCUPIED,
-            ):
-                slot.state = ParkingSlot.SlotState.AVAILABLE
-                slot.save(update_fields=["state", "updated_at"])
-
-    return refund_record
+    return issue_refund(payment, refund_amount, reason, initiated_by=admin_user, booking=booking)

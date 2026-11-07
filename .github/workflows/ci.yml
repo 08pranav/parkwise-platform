@@ -6,9 +6,27 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: parking_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
     defaults:
       run:
         working-directory: backend
+    env:
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_NAME: parking_test
+      DB_USER: postgres
+      DB_PASSWORD: postgres
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,6 +36,16 @@ jobs:
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: ruff check .
       - run: ruff format --check .
-      - run: python manage.py check
+      - name: Tests with coverage
+        run: pytest --cov=apps --cov-report=term
+      - name: Production settings pass the deploy checks
         env:
-          DJANGO_SETTINGS_MODULE: parking_platform.settings.development
+          DJANGO_SETTINGS_MODULE: parking_platform.settings.production
+          SECRET_KEY: ci-only-secret-key-with-plenty-of-length-and-variety-0123456789-abcdefXYZ
+          QR_SIGNING_SECRET: ci-only-qr-secret
+          ALLOWED_HOSTS: api.example.com
+        run: python manage.py check --deploy --fail-level WARNING
+      - name: Migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+        env:
+          DJANGO_SETTINGS_MODULE: parking_platform.settings.test

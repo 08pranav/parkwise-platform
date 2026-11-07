@@ -96,3 +96,27 @@ class Refund(models.Model):
 
     def __str__(self):
         return f"Refund ₹{self.refund_amount} for Payment {self.payment_id} - {self.status}"
+
+
+class PaymentEvent(models.Model):
+    """Every webhook delivery we accept, keyed by the provider's event id.
+
+    The unique ``(provider, event_id)`` pair makes webhook handling idempotent
+    (providers redeliver) and doubles as an audit trail of what was received.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    provider = models.CharField(max_length=20, choices=Payment.Provider.choices)
+    event_id = models.CharField(max_length=255)
+    event_type = models.CharField(max_length=100)
+    payload = models.JSONField(default=dict)
+    received_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-received_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["provider", "event_id"], name="unique_provider_event"),
+        ]
+
+    def __str__(self):
+        return f"{self.provider}:{self.event_type}:{self.event_id}"

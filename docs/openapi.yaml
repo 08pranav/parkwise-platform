@@ -1,0 +1,2971 @@
+openapi: 3.0.3
+info:
+  title: Parking Slot Booking API
+  version: 1.0.0
+  description: API for parking slot booking, payment, and QR-based entry/exit
+paths:
+  /api/health/:
+    get:
+      operationId: health_retrieve
+      description: |-
+        Liveness/readiness probe used by Render and the keep-warm workflow.
+
+        503 when the database is unreachable (the API cannot serve). When only Redis is
+        down the API still serves requests, so it answers 200 with ``status: degraded``.
+      tags:
+      - health
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/dashboard/:
+    get:
+      operationId: v1_admin_dashboard_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/refunds/:
+    get:
+      operationId: v1_admin_refunds_retrieve
+      description: |-
+        GET  /api/v1/admin/refunds/        – list all refunds (audit trail)
+        POST /api/v1/admin/refunds/        – initiate a refund for a booking
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_admin_refunds_create
+      description: |-
+        GET  /api/v1/admin/refunds/        – list all refunds (audit trail)
+        POST /api/v1/admin/refunds/        – initiate a refund for a booking
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/refunds/lookup/:
+    get:
+      operationId: v1_admin_refunds_lookup_retrieve
+      description: |-
+        GET /api/v1/admin/refunds/lookup/?booking_id=<uuid>
+
+        Returns a snapshot of the booking and its latest captured payment so
+        the super admin can review the details before issuing a refund.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/societies/{society_id}/stats/:
+    get:
+      operationId: v1_admin_societies_stats_retrieve
+      parameters:
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/society/dashboard/:
+    get:
+      operationId: v1_admin_society_dashboard_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/society/guards/:
+    get:
+      operationId: v1_admin_society_guards_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/society/guards/{guard_id}/approve/:
+    post:
+      operationId: v1_admin_society_guards_approve_create
+      parameters:
+      - in: path
+        name: guard_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/admin/society/guards/{guard_id}/reject/:
+    post:
+      operationId: v1_admin_society_guards_reject_create
+      parameters:
+      - in: path
+        name: guard_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/guard/register/:
+    post:
+      operationId: v1_auth_guard_register_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuardRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardRegistration'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardRegistration'
+          description: ''
+  /api/v1/auth/guards/:
+    get:
+      operationId: v1_auth_guards_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGuardProfileList'
+          description: ''
+    post:
+      operationId: v1_auth_guards_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardCredential'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuardCredential'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardCredential'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardCredential'
+          description: ''
+  /api/v1/auth/guards/{id}/:
+    get:
+      operationId: v1_auth_guards_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardProfile'
+          description: ''
+    put:
+      operationId: v1_auth_guards_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardPermissionUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GuardPermissionUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GuardPermissionUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardPermissionUpdate'
+          description: ''
+    patch:
+      operationId: v1_auth_guards_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGuardPermissionUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGuardPermissionUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGuardPermissionUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardPermissionUpdate'
+          description: ''
+    delete:
+      operationId: v1_auth_guards_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /api/v1/auth/notifications/:
+    get:
+      operationId: v1_auth_notifications_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserNotificationList'
+          description: ''
+  /api/v1/auth/notifications/{id}/read/:
+    put:
+      operationId: v1_auth_notifications_read_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserNotification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserNotification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserNotification'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotification'
+          description: ''
+    patch:
+      operationId: v1_auth_notifications_read_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserNotification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserNotification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserNotification'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotification'
+          description: ''
+  /api/v1/auth/profile/:
+    get:
+      operationId: v1_auth_profile_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: v1_auth_profile_update
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: v1_auth_profile_partial_update
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: v1_auth_register_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/v1/auth/token/refresh/:
+    post:
+      operationId: v1_auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/auth/vehicles/:
+    get:
+      operationId: v1_auth_vehicles_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVehicleList'
+          description: ''
+    post:
+      operationId: v1_auth_vehicles_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+          description: ''
+  /api/v1/auth/vehicles/{id}/:
+    delete:
+      operationId: v1_auth_vehicles_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/bookings/:
+    post:
+      operationId: v1_bookings_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/bookings/{id}/:
+    get:
+      operationId: v1_bookings_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/bookings/{id}/cancel/:
+    post:
+      operationId: v1_bookings_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/bookings/{id}/overtime/:
+    get:
+      operationId: v1_bookings_overtime_retrieve
+      description: |-
+        Read-only: returns live overtime status for an active booking.
+        Does NOT create a penalty — that only happens when the exit QR is scanned.
+        The Flutter app uses this to show the red overtime counter and estimated charge.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/bookings/{id}/qr/:
+    get:
+      operationId: v1_bookings_qr_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/bookings/list/:
+    get:
+      operationId: v1_bookings_list_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookingList'
+          description: ''
+  /api/v1/payments/initiate/:
+    post:
+      operationId: v1_payments_initiate_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/manual-verify/:
+    post:
+      operationId: v1_payments_manual_verify_create
+      description: Manually verify a payment by checkout session ID
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/razorpay/verify/:
+    post:
+      operationId: v1_payments_razorpay_verify_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/razorpay/webhook/:
+    post:
+      operationId: v1_payments_razorpay_webhook_create
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/verify/:
+    post:
+      operationId: v1_payments_verify_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/payments/webhook/:
+    post:
+      operationId: v1_payments_webhook_create
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/penalties/:
+    get:
+      operationId: v1_penalties_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPenaltyList'
+          description: ''
+  /api/v1/penalties/{id}/pay/:
+    post:
+      operationId: v1_penalties_pay_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/qr/entry/:
+    post:
+      operationId: v1_qr_entry_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/qr/exit/:
+    post:
+      operationId: v1_qr_exit_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/:
+    get:
+      operationId: v1_societies_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSocietyList'
+          description: ''
+    post:
+      operationId: v1_societies_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocietyCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SocietyCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SocietyCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocietyCreate'
+          description: ''
+  /api/v1/societies/{id}/:
+    get:
+      operationId: v1_societies_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Society'
+          description: ''
+    put:
+      operationId: v1_societies_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocietyCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SocietyCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SocietyCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocietyCreate'
+          description: ''
+    patch:
+      operationId: v1_societies_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSocietyCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSocietyCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSocietyCreate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocietyCreate'
+          description: ''
+  /api/v1/societies/{society_id}/join-requests/:
+    get:
+      operationId: v1_societies_join_requests_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSocietyMembershipRequestList'
+          description: ''
+  /api/v1/societies/{society_id}/join-requests/{id}/decision/:
+    post:
+      operationId: v1_societies_join_requests_decision_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/{society_id}/slots/:
+    get:
+      operationId: v1_societies_slots_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedParkingSlotList'
+          description: ''
+    post:
+      operationId: v1_societies_slots_create
+      parameters:
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParkingSlot'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ParkingSlot'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ParkingSlot'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingSlot'
+          description: ''
+  /api/v1/societies/{society_id}/slots/{id}/:
+    get:
+      operationId: v1_societies_slots_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingSlot'
+          description: ''
+    put:
+      operationId: v1_societies_slots_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParkingSlot'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ParkingSlot'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ParkingSlot'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingSlot'
+          description: ''
+    patch:
+      operationId: v1_societies_slots_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedParkingSlot'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedParkingSlot'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedParkingSlot'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingSlot'
+          description: ''
+  /api/v1/societies/{society_id}/slots/{id}/availability/:
+    get:
+      operationId: v1_societies_slots_availability_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSlotAvailabilityWindowList'
+          description: ''
+    post:
+      operationId: v1_societies_slots_availability_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SlotAvailabilityWindow'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SlotAvailabilityWindow'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SlotAvailabilityWindow'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotAvailabilityWindow'
+          description: ''
+  /api/v1/societies/{society_id}/slots/{id}/block/:
+    post:
+      operationId: v1_societies_slots_block_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/{society_id}/slots/{id}/decision/:
+    post:
+      operationId: v1_societies_slots_decision_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/{society_id}/slots/{id}/toggle-active/:
+    post:
+      operationId: v1_societies_slots_toggle_active_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/{society_id}/slots/{id}/unblock/:
+    post:
+      operationId: v1_societies_slots_unblock_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: society_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/destinations/autocomplete/:
+    get:
+      operationId: v1_societies_destinations_autocomplete_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/destinations/reverse-geocode/:
+    get:
+      operationId: v1_societies_destinations_reverse_geocode_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/geocode/:
+    get:
+      operationId: v1_societies_geocode_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/societies/public/:
+    get:
+      operationId: v1_societies_public_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSocietyList'
+          description: ''
+  /api/v1/societies/search/:
+    post:
+      operationId: v1_societies_search_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    ApprovalStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+    Booking:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        booking_number:
+          type: string
+          readOnly: true
+        user:
+          type: string
+          format: uuid
+          readOnly: true
+        vehicle:
+          allOf:
+          - $ref: '#/components/schemas/Vehicle'
+          readOnly: true
+        slot:
+          type: string
+          format: uuid
+          readOnly: true
+        slot_number:
+          type: string
+          readOnly: true
+        society_name:
+          type: string
+          readOnly: true
+        owner_name:
+          type: string
+          readOnly: true
+        owner_email:
+          type: string
+          readOnly: true
+        owner_phone:
+          type: string
+          readOnly: true
+        society_address:
+          type: string
+          readOnly: true
+        society_city:
+          type: string
+          readOnly: true
+        society_state:
+          type: string
+          readOnly: true
+        society_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        society_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        actual_entry:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        actual_exit:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/BookingStatusEnum'
+          readOnly: true
+        base_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        surge_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        surge_multiplier:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,2})?$
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        amount_paid:
+          type: string
+          readOnly: true
+        payment_status:
+          type: string
+          readOnly: true
+        lock_expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actual_entry
+      - actual_exit
+      - amount
+      - amount_paid
+      - base_amount
+      - booking_number
+      - created_at
+      - end_time
+      - id
+      - lock_expires_at
+      - owner_email
+      - owner_name
+      - owner_phone
+      - payment_status
+      - slot
+      - slot_number
+      - society_address
+      - society_city
+      - society_latitude
+      - society_longitude
+      - society_name
+      - society_state
+      - start_time
+      - status
+      - surge_amount
+      - surge_multiplier
+      - user
+      - vehicle
+    BookingStatusEnum:
+      enum:
+      - pending_payment
+      - confirmed
+      - active
+      - completed
+      - cancelled
+      - no_show
+      - expired
+      - partially_refunded
+      type: string
+      description: |-
+        * `pending_payment` - Pending Payment
+        * `confirmed` - Confirmed
+        * `active` - Active
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+        * `no_show` - No Show
+        * `expired` - Expired
+        * `partially_refunded` - Partially Refunded
+    CustomTokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    DayOfWeekEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      type: integer
+      description: |-
+        * `0` - Monday
+        * `1` - Tuesday
+        * `2` - Wednesday
+        * `3` - Thursday
+        * `4` - Friday
+        * `5` - Saturday
+        * `6` - Sunday
+    GuardCredential:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 15
+        email:
+          type: string
+          format: email
+        can_scan_entry:
+          type: boolean
+          default: true
+        can_scan_exit:
+          type: boolean
+          default: true
+      required:
+      - full_name
+      - phone
+    GuardPermissionUpdate:
+      type: object
+      properties:
+        can_scan_entry:
+          type: boolean
+        can_scan_exit:
+          type: boolean
+    GuardProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 15
+        full_name:
+          type: string
+          maxLength: 150
+        device_name:
+          type: string
+          readOnly: true
+        can_scan_entry:
+          type: boolean
+        can_scan_exit:
+          type: boolean
+        temporary_password:
+          type: string
+          readOnly: true
+        society_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - device_name
+      - email
+      - full_name
+      - id
+      - phone
+      - society_name
+      - temporary_password
+    GuardRegistration:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          maxLength: 15
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        society_id:
+          type: string
+          format: uuid
+      required:
+      - email
+      - full_name
+      - password
+      - phone
+      - society_id
+    NotificationTypeEnum:
+      enum:
+      - join_request
+      - join_approved
+      - join_rejected
+      - slot_pending
+      - slot_approved
+      - slot_rejected
+      type: string
+      description: |-
+        * `join_request` - Join Request
+        * `join_approved` - Join Approved
+        * `join_rejected` - Join Rejected
+        * `slot_pending` - Slot Pending
+        * `slot_approved` - Slot Approved
+        * `slot_rejected` - Slot Rejected
+    OwnershipTypeEnum:
+      enum:
+      - society
+      - resident
+      type: string
+      description: |-
+        * `society` - Society
+        * `resident` - Resident
+    PaginatedBookingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Booking'
+    PaginatedGuardProfileList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardProfile'
+    PaginatedParkingSlotList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParkingSlot'
+    PaginatedPenaltyList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Penalty'
+    PaginatedSlotAvailabilityWindowList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlotAvailabilityWindow'
+    PaginatedSocietyList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Society'
+    PaginatedSocietyMembershipRequestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocietyMembershipRequest'
+    PaginatedUserNotificationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserNotification'
+    PaginatedVehicleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
+    ParkingSlot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        society:
+          type: string
+          format: uuid
+          readOnly: true
+        slot_number:
+          type: string
+          maxLength: 50
+        floor:
+          type: string
+          maxLength: 10
+        slot_type:
+          $ref: '#/components/schemas/SlotTypeEnum'
+        state:
+          allOf:
+          - $ref: '#/components/schemas/StateEnum'
+          readOnly: true
+        ownership_type:
+          $ref: '#/components/schemas/OwnershipTypeEnum'
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        hourly_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        created_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        approval_status:
+          allOf:
+          - $ref: '#/components/schemas/ApprovalStatusEnum'
+          readOnly: true
+        approval_notes:
+          type: string
+          readOnly: true
+        approved_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner_name:
+          type: string
+          readOnly: true
+        approval_owner:
+          type: string
+          readOnly: true
+        available_from_write:
+          type: string
+          format: time
+          writeOnly: true
+        available_to_write:
+          type: string
+          format: time
+          writeOnly: true
+        available_from:
+          type: string
+          readOnly: true
+        available_to:
+          type: string
+          readOnly: true
+        current_booking_number:
+          type: string
+          readOnly: true
+        current_booking_status:
+          type: string
+          readOnly: true
+        current_booking_start_time:
+          type: string
+          readOnly: true
+        current_booking_end_time:
+          type: string
+          readOnly: true
+        current_booking_actual_entry:
+          type: string
+          readOnly: true
+        current_booking_actual_exit:
+          type: string
+          readOnly: true
+        next_free_at:
+          type: string
+          readOnly: true
+        freeing_up_note:
+          type: string
+          readOnly: true
+        bookings:
+          type: string
+          readOnly: true
+      required:
+      - approval_notes
+      - approval_owner
+      - approval_status
+      - approved_at
+      - approved_by
+      - available_from
+      - available_to
+      - bookings
+      - created_at
+      - created_by
+      - current_booking_actual_entry
+      - current_booking_actual_exit
+      - current_booking_end_time
+      - current_booking_number
+      - current_booking_start_time
+      - current_booking_status
+      - freeing_up_note
+      - hourly_rate
+      - id
+      - next_free_at
+      - owner
+      - owner_name
+      - slot_number
+      - slot_type
+      - society
+      - state
+    PatchedGuardPermissionUpdate:
+      type: object
+      properties:
+        can_scan_entry:
+          type: boolean
+        can_scan_exit:
+          type: boolean
+    PatchedParkingSlot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        society:
+          type: string
+          format: uuid
+          readOnly: true
+        slot_number:
+          type: string
+          maxLength: 50
+        floor:
+          type: string
+          maxLength: 10
+        slot_type:
+          $ref: '#/components/schemas/SlotTypeEnum'
+        state:
+          allOf:
+          - $ref: '#/components/schemas/StateEnum'
+          readOnly: true
+        ownership_type:
+          $ref: '#/components/schemas/OwnershipTypeEnum'
+        owner:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        hourly_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        created_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        approval_status:
+          allOf:
+          - $ref: '#/components/schemas/ApprovalStatusEnum'
+          readOnly: true
+        approval_notes:
+          type: string
+          readOnly: true
+        approved_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        owner_name:
+          type: string
+          readOnly: true
+        approval_owner:
+          type: string
+          readOnly: true
+        available_from_write:
+          type: string
+          format: time
+          writeOnly: true
+        available_to_write:
+          type: string
+          format: time
+          writeOnly: true
+        available_from:
+          type: string
+          readOnly: true
+        available_to:
+          type: string
+          readOnly: true
+        current_booking_number:
+          type: string
+          readOnly: true
+        current_booking_status:
+          type: string
+          readOnly: true
+        current_booking_start_time:
+          type: string
+          readOnly: true
+        current_booking_end_time:
+          type: string
+          readOnly: true
+        current_booking_actual_entry:
+          type: string
+          readOnly: true
+        current_booking_actual_exit:
+          type: string
+          readOnly: true
+        next_free_at:
+          type: string
+          readOnly: true
+        freeing_up_note:
+          type: string
+          readOnly: true
+        bookings:
+          type: string
+          readOnly: true
+    PatchedSocietyCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: string
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        pincode:
+          type: string
+          maxLength: 10
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        contact_email:
+          type: string
+          format: email
+          maxLength: 254
+        contact_phone:
+          type: string
+          maxLength: 15
+        admin_full_name:
+          type: string
+          writeOnly: true
+          maxLength: 150
+        admin_email:
+          type: string
+          format: email
+          writeOnly: true
+        admin_phone:
+          type: string
+          writeOnly: true
+          maxLength: 15
+        admin_password:
+          type: string
+          writeOnly: true
+          minLength: 8
+    PatchedUserNotification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        notification_type:
+          allOf:
+          - $ref: '#/components/schemas/NotificationTypeEnum'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        payload:
+          readOnly: true
+        is_read:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedUserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 15
+        full_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserProfileRoleEnum'
+          readOnly: true
+        approval_status:
+          type: string
+          readOnly: true
+        approval_notes:
+          type: string
+          readOnly: true
+        approved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        society:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        society_name:
+          type: string
+          readOnly: true
+        flat_number:
+          type: string
+          maxLength: 20
+        floor_number:
+          type: string
+          maxLength: 10
+        can_scan_entry:
+          type: boolean
+          readOnly: true
+        can_scan_exit:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    Penalty:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        booking:
+          type: string
+          format: uuid
+          readOnly: true
+        booking_number:
+          type: string
+          readOnly: true
+        user:
+          type: string
+          format: uuid
+          readOnly: true
+        overstay_minutes:
+          type: integer
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PenaltyStatusEnum'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - booking
+      - booking_number
+      - created_at
+      - id
+      - overstay_minutes
+      - status
+      - user
+    PenaltyStatusEnum:
+      enum:
+      - unpaid
+      - paid
+      - waived
+      type: string
+      description: |-
+        * `unpaid` - Unpaid
+        * `paid` - Paid
+        * `waived` - Waived
+    Register:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 15
+        full_name:
+          type: string
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RegisterRoleEnum'
+          default: user
+        society_name:
+          type: string
+          nullable: true
+        society_address:
+          type: string
+          nullable: true
+        society_city:
+          type: string
+          nullable: true
+        society_state:
+          type: string
+          nullable: true
+        society_pincode:
+          type: string
+          nullable: true
+        society_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        society_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        society_join_code:
+          type: string
+          nullable: true
+        flat_number:
+          type: string
+          nullable: true
+        floor_number:
+          type: string
+          nullable: true
+      required:
+      - email
+      - full_name
+      - password
+      - phone
+    RegisterRoleEnum:
+      enum:
+      - user
+      - society_admin
+      type: string
+      description: |-
+        * `user` - user
+        * `society_admin` - society_admin
+    SlotAvailabilityWindow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slot:
+          type: string
+          format: uuid
+          readOnly: true
+        day_of_week:
+          allOf:
+          - $ref: '#/components/schemas/DayOfWeekEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+        start_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        is_active:
+          type: boolean
+      required:
+      - day_of_week
+      - end_time
+      - id
+      - slot
+      - start_time
+    SlotTypeEnum:
+      enum:
+      - car
+      - bike
+      type: string
+      description: |-
+        * `car` - Car
+        * `bike` - Bike
+    Society:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: string
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        pincode:
+          type: string
+          maxLength: 10
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        contact_email:
+          type: string
+          format: email
+          maxLength: 254
+        contact_phone:
+          type: string
+          maxLength: 15
+        join_code:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+        total_slots:
+          type: integer
+          readOnly: true
+        available_slots:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - available_slots
+      - city
+      - contact_email
+      - contact_phone
+      - created_at
+      - id
+      - join_code
+      - name
+      - pincode
+      - state
+      - total_slots
+    SocietyCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: string
+        city:
+          type: string
+          maxLength: 100
+        state:
+          type: string
+          maxLength: 100
+        pincode:
+          type: string
+          maxLength: 10
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        contact_email:
+          type: string
+          format: email
+          maxLength: 254
+        contact_phone:
+          type: string
+          maxLength: 15
+        admin_full_name:
+          type: string
+          writeOnly: true
+          maxLength: 150
+        admin_email:
+          type: string
+          format: email
+          writeOnly: true
+        admin_phone:
+          type: string
+          writeOnly: true
+          maxLength: 15
+        admin_password:
+          type: string
+          writeOnly: true
+          minLength: 8
+      required:
+      - address
+      - city
+      - contact_email
+      - contact_phone
+      - name
+      - pincode
+      - state
+    SocietyMembershipRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        society:
+          type: string
+          format: uuid
+          readOnly: true
+        user:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusE94Enum'
+          readOnly: true
+          default: pending
+        notes:
+          type: string
+          readOnly: true
+        reviewed_by:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user_name:
+          type: string
+          readOnly: true
+        user_email:
+          type: string
+          format: email
+          readOnly: true
+        user_phone:
+          type: string
+          readOnly: true
+        reviewed_by_name:
+          type: string
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - notes
+      - reviewed_at
+      - reviewed_by
+      - reviewed_by_name
+      - society
+      - status
+      - user
+      - user_email
+      - user_name
+      - user_phone
+    StateEnum:
+      enum:
+      - available
+      - reserved
+      - occupied
+      - blocked
+      type: string
+      description: |-
+        * `available` - Available
+        * `reserved` - Reserved
+        * `occupied` - Occupied
+        * `blocked` - Blocked
+    StatusE94Enum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    UserNotification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        notification_type:
+          allOf:
+          - $ref: '#/components/schemas/NotificationTypeEnum'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+        payload:
+          readOnly: true
+        is_read:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_read
+      - message
+      - notification_type
+      - payload
+      - title
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 15
+        full_name:
+          type: string
+          maxLength: 150
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserProfileRoleEnum'
+          readOnly: true
+        approval_status:
+          type: string
+          readOnly: true
+        approval_notes:
+          type: string
+          readOnly: true
+        approved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        society:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        society_name:
+          type: string
+          readOnly: true
+        flat_number:
+          type: string
+          maxLength: 20
+        floor_number:
+          type: string
+          maxLength: 10
+        can_scan_entry:
+          type: boolean
+          readOnly: true
+        can_scan_exit:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - approval_notes
+      - approval_status
+      - approved_at
+      - can_scan_entry
+      - can_scan_exit
+      - created_at
+      - email
+      - full_name
+      - id
+      - phone
+      - role
+      - society
+      - society_name
+    UserProfileRoleEnum:
+      enum:
+      - user
+      - society_admin
+      - guard
+      - super_admin
+      type: string
+      description: |-
+        * `user` - User
+        * `society_admin` - Society Admin
+        * `guard` - Guard
+        * `super_admin` - Super Admin
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        vehicle_type:
+          $ref: '#/components/schemas/VehicleTypeEnum'
+        registration_no:
+          type: string
+          maxLength: 20
+        make_model:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_active
+      - registration_no
+      - vehicle_type
+    VehicleTypeEnum:
+      enum:
+      - car
+      - bike
+      type: string
+      description: |-
+        * `car` - Car
+        * `bike` - Bike
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

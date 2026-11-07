@@ -1,7 +1,9 @@
 import json
+import logging
 import math
 import ssl
 from decimal import Decimal
+from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -28,16 +30,13 @@ def _request_location_json(base_url, query_params):
     )
 
     try:
-        import logging
-        import urllib.error
-
         context = ssl.create_default_context(cafile=certifi.where())
         with urlopen(
             request, timeout=settings.GEOCODING_TIMEOUT_SECONDS, context=context
         ) as response:
             return json.loads(response.read().decode("utf-8"))
-    except urllib.error.URLError as e:
-        logging.getLogger(__name__).error(f"Geocoding req failed: {e}")
+    except (URLError, TimeoutError, OSError, ValueError) as exc:
+        logging.getLogger(__name__).error("Geocoding request failed: %s", exc)
         return None
 
 

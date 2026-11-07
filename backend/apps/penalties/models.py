@@ -23,6 +23,9 @@ class Penalty(models.Model):
     class Meta:
         verbose_name_plural = "penalties"
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["booking"], name="one_penalty_per_booking"),
+        ]
 
     def __str__(self):
         return f"Penalty for {self.booking.booking_number} - {self.amount}"

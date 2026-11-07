@@ -11,5 +11,6 @@ urlpatterns = [
         name="payment-verify-razorpay",
     ),
     path("webhook/", views.StripeWebhookView.as_view(), name="payment-webhook"),
+    path("razorpay/webhook/", views.RazorpayWebhookView.as_view(), name="payment-webhook-razorpay"),
     path("manual-verify/", views.ManualPaymentVerifyView.as_view(), name="payment-manual-verify"),
 ]

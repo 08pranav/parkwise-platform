@@ -184,6 +184,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.bookings.tasks.detect_no_shows",
         "schedule": 300.0,  # every 5 minutes
     },
+    "expire-stale-pending-bookings": {
+        "task": "apps.bookings.tasks.expire_stale_pending_bookings",
+        "schedule": 60.0,  # every minute
+    },
 }
 
 # drf-spectacular

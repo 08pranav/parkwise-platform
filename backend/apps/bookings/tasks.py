@@ -2,6 +2,8 @@ from celery import shared_task
 from django.db import transaction
 from django.utils import timezone
 
+from .state_machine import transition
+
 
 @shared_task
 def expire_booking_lock(booking_id):
@@ -14,8 +16,7 @@ def expire_booking_lock(booking_id):
             return
 
         if booking.status == Booking.Status.PENDING_PAYMENT:
-            booking.status = Booking.Status.EXPIRED
-            booking.save(update_fields=["status", "updated_at"])
+            transition(booking, Booking.Status.EXPIRED)
 
 
 @shared_task
@@ -37,10 +38,34 @@ def detect_no_shows():
             if now < halfway_point:
                 continue
 
-            booking.status = Booking.Status.NO_SHOW
-            booking.save(update_fields=["status", "updated_at"])
+            transition(booking, Booking.Status.NO_SHOW)
 
             slot = ParkingSlot.objects.select_for_update().get(id=booking.slot_id)
             if slot.state == ParkingSlot.SlotState.RESERVED:
                 slot.state = ParkingSlot.SlotState.AVAILABLE
                 slot.save(update_fields=["state", "updated_at"])
+
+
+@shared_task
+def expire_stale_pending_bookings():
+    """Backstop for ``expire_booking_lock``: expire every unpaid booking whose lock has run out.
+
+    Idempotent: only rows still in ``pending_payment`` are touched, each under a row lock,
+    so running it twice (or alongside the per-booking task) changes nothing the second time.
+    """
+    from apps.bookings.models import Booking
+
+    now = timezone.now()
+    ids = list(
+        Booking.objects.filter(
+            status=Booking.Status.PENDING_PAYMENT, lock_expires_at__lte=now
+        ).values_list("id", flat=True)
+    )
+    expired = 0
+    for booking_id in ids:
+        with transaction.atomic():
+            booking = Booking.objects.select_for_update().get(id=booking_id)
+            if booking.status == Booking.Status.PENDING_PAYMENT:
+                transition(booking, Booking.Status.EXPIRED)
+                expired += 1
+    return expired

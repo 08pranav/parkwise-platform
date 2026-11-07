@@ -3,7 +3,8 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
 from apps.bookings.models import Booking
-from apps.penalties.services import create_overstay_penalty
+from apps.bookings.state_machine import transition
+from apps.penalties.services import create_overstay_penalty, overstay_minutes
 from apps.societies.models import ParkingSlot
 from utils.qr import decode_qr_token
 
@@ -98,9 +99,7 @@ def validate_entry(qr_token, guard):
                 )
 
             # Mark entry
-            booking.status = Booking.Status.ACTIVE
-            booking.actual_entry = now
-            booking.save(update_fields=["status", "actual_entry", "updated_at"])
+            transition(booking, Booking.Status.ACTIVE, actual_entry=now)
 
             slot = ParkingSlot.objects.select_for_update().get(id=booking.slot_id)
             slot.state = ParkingSlot.SlotState.OCCUPIED
@@ -141,6 +140,7 @@ def validate_exit(qr_token, guard):
 
     now = timezone.now()
     booking = None
+    penalty_info = None
 
     try:
         with transaction.atomic():
@@ -162,13 +162,16 @@ def validate_exit(qr_token, guard):
                 )
 
             # Mark exit
-            booking.status = Booking.Status.COMPLETED
-            booking.actual_exit = now
-            booking.save(update_fields=["status", "actual_exit", "updated_at"])
+            transition(booking, Booking.Status.COMPLETED, actual_exit=now)
 
             slot = ParkingSlot.objects.select_for_update().get(id=booking.slot_id)
             slot.state = ParkingSlot.SlotState.AVAILABLE
             slot.save(update_fields=["state", "updated_at"])
+
+            # Same transaction as the exit, so a crash cannot complete the
+            # booking without recording the penalty it owes.
+            late_by = overstay_minutes(booking.end_time, now)
+            penalty_info = create_overstay_penalty(booking, late_by) if late_by else None
     except ValidationError as exc:
         detail = exc.detail[0] if isinstance(exc.detail, list) else exc.detail
         _record_scan_event(
@@ -179,12 +182,6 @@ def validate_exit(qr_token, guard):
             error_message=str(detail),
         )
         raise
-
-    # Check overstay
-    penalty_info = None
-    if now > booking.end_time:
-        overstay_minutes = int((now - booking.end_time).total_seconds() / 60)
-        penalty_info = create_overstay_penalty(booking, overstay_minutes)
 
     _record_scan_event(
         booking=booking,

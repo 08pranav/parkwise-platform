@@ -1,7 +1,9 @@
-import math
+import logging
 import random
 import string
-from datetime import timedelta
+import threading
+from datetime import datetime, time, timedelta
+from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import Q
@@ -11,8 +13,11 @@ from rest_framework.exceptions import ValidationError
 from apps.societies.models import ParkingSlot, SlotAvailabilityWindow, Society
 from utils.qr import generate_qr_token
 
+from . import pricing
 from .models import Booking
+from .state_machine import transition
 
+END_OF_DAY = time(23, 59, 59)  # the latest time a window can end
 BUFFER_MINUTES = 10
 MIN_DURATION_MINUTES = 30
 MAX_DURATION_HOURS = 24
@@ -88,20 +93,44 @@ def validate_booking_window(start_time, end_time):
     return duration
 
 
-def _slot_windows(slot, day_of_week):
+def _active_windows(slot):
     prefetched = getattr(slot, "_prefetched_objects_cache", {})
     if "availability_windows" in prefetched:
-        return [
-            window
-            for window in prefetched["availability_windows"]
-            if window.is_active and window.day_of_week == day_of_week
-        ]
+        return [w for w in prefetched["availability_windows"] if w.is_active]
+    return list(SlotAvailabilityWindow.objects.filter(slot=slot, is_active=True))
 
-    return SlotAvailabilityWindow.objects.filter(
-        slot=slot,
-        day_of_week=day_of_week,
-        is_active=True,
-    )
+
+def _next_local_midnight(moment):
+    return datetime.combine(moment.date() + timedelta(days=1), time.min, tzinfo=moment.tzinfo)
+
+
+def _within_availability(slot, start_time, end_time):
+    """True when every local-day slice of [start, end] fits the slot's windows.
+
+    Windows are wall-clock times per weekday in the project time zone (IST), so
+    the booking is converted to local time and split at local midnight. A booking
+    that crosses midnight therefore needs a covering window on both days.
+    A society-owned slot with no window on a given day is open all day;
+    a resident-owned slot with no window on a day is closed.
+    """
+    windows = _active_windows(slot)
+    cursor = timezone.localtime(start_time)
+    local_end = timezone.localtime(end_time)
+    while cursor < local_end:
+        midnight = _next_local_midnight(cursor)
+        slice_end = min(local_end, midnight)
+        slice_end_time = END_OF_DAY if slice_end == midnight else slice_end.time()
+        day_windows = [w for w in windows if w.day_of_week == cursor.weekday()]
+        if day_windows:
+            covered = any(
+                w.start_time <= cursor.time() and w.end_time >= slice_end_time for w in day_windows
+            )
+            if not covered:
+                return False
+        elif slot.ownership_type == ParkingSlot.OwnershipType.RESIDENT:
+            return False
+        cursor = midnight
+    return True
 
 
 def slot_is_available(slot, vehicle_type, start_time, end_time):
@@ -111,18 +140,7 @@ def slot_is_available(slot, vehicle_type, start_time, end_time):
     if slot.slot_type != vehicle_type:
         return False
 
-    # Check availability windows (if any are defined)
-    day_of_week = start_time.weekday()
-    windows = _slot_windows(slot, day_of_week)
-    if windows:
-        in_window = any(
-            window.start_time <= start_time.time() and window.end_time >= end_time.time()
-            for window in windows
-        )
-        if not in_window:
-            return False
-    elif slot.ownership_type == ParkingSlot.OwnershipType.RESIDENT:
-        # Residents MUST have a window defined to be available
+    if not _within_availability(slot, start_time, end_time):
         return False
 
     now = timezone.now()
@@ -160,11 +178,7 @@ def get_available_slots(*, society_id, vehicle_type, start_time, end_time, for_u
     return valid_slots
 
 
-def _build_pending_booking(user, slot, vehicle, start_time, end_time):
-    duration = end_time - start_time
-    duration_hours = math.ceil(duration.total_seconds() / 3600)
-
-    # Calculate occupancy-based surge
+def _surge_for(slot, start_time, end_time):
     total_slots = ParkingSlot.objects.filter(society_id=slot.society_id, is_active=True).count()
     active_bookings = Booking.objects.filter(
         slot__society_id=slot.society_id,
@@ -172,62 +186,59 @@ def _build_pending_booking(user, slot, vehicle, start_time, end_time):
         end_time__gt=start_time,
         start_time__lt=end_time,
     ).count()
-    occupancy_rate = active_bookings / max(total_slots, 1)
+    own_rate = pricing.occupancy_rate(active_bookings, total_slots)
 
-    surge_multiplier = 1.0
-    if occupancy_rate > 0.8:
-        surge_multiplier += 0.5
-    elif occupancy_rate > 0.5:
-        surge_multiplier += 0.2
-
-    # Nearby area demand based on actual nearby societies (within ~5km radius)
-    area_demand = 0.0
-    from decimal import Decimal
-
-    if slot.society.latitude and slot.society.longitude:
-        lat_diff = Decimal("0.045")
-        lon_diff = Decimal("0.045")
-        nearby_societies = Society.objects.filter(
-            latitude__isnull=False,
-            longitude__isnull=False,
-            latitude__range=(slot.society.latitude - lat_diff, slot.society.latitude + lat_diff),
-            longitude__range=(slot.society.longitude - lon_diff, slot.society.longitude + lon_diff),
-        ).exclude(id=slot.society_id)
-
-        if nearby_societies.exists():
-            nearby_society_ids = nearby_societies.values_list("id", flat=True)
+    nearby_rate = None
+    society = slot.society
+    if society.latitude and society.longitude:
+        delta = Decimal("0.045")  # about 5 km
+        nearby_ids = list(
+            Society.objects.filter(
+                latitude__isnull=False,
+                longitude__isnull=False,
+                latitude__range=(society.latitude - delta, society.latitude + delta),
+                longitude__range=(society.longitude - delta, society.longitude + delta),
+            )
+            .exclude(id=slot.society_id)
+            .values_list("id", flat=True)
+        )
+        if nearby_ids:
             nearby_slots = ParkingSlot.objects.filter(
-                society_id__in=nearby_society_ids, is_active=True
+                society_id__in=nearby_ids, is_active=True
             ).count()
-            nearby_active_bookings = Booking.objects.filter(
-                slot__society_id__in=nearby_society_ids,
-                status__in=ACTIVE_BOOKING_STATUSES,
-                end_time__gt=start_time,
-                start_time__lt=end_time,
-            ).count()
+            if nearby_slots:
+                nearby_active = Booking.objects.filter(
+                    slot__society_id__in=nearby_ids,
+                    status__in=ACTIVE_BOOKING_STATUSES,
+                    end_time__gt=start_time,
+                    start_time__lt=end_time,
+                ).count()
+                nearby_rate = pricing.occupancy_rate(nearby_active, nearby_slots)
 
-            if nearby_slots > 0:
-                nearby_occupancy_rate = nearby_active_bookings / nearby_slots
-                if nearby_occupancy_rate > 0.8:
-                    area_demand = 0.4
-                elif nearby_occupancy_rate > 0.5:
-                    area_demand = 0.2
-                elif nearby_occupancy_rate > 0.3:
-                    area_demand = 0.1
+    return pricing.surge_multiplier(own_rate, nearby_rate)
 
-    surge_multiplier += area_demand
 
-    from decimal import Decimal
+def _enqueue_expiry(booking_id):
+    """Queue the lock-expiry task without blocking the request if Redis is down."""
+    from .tasks import expire_booking_lock
 
-    surge_multiplier_dec = Decimal(str(surge_multiplier)).quantize(Decimal("0.01"))
-    base_amount = slot.hourly_rate * Decimal(str(duration_hours))
-    surge_amount = base_amount * (surge_multiplier_dec - Decimal("1.00"))
-    amount = base_amount + surge_amount
+    def _send():
+        try:
+            expire_booking_lock.apply_async(args=[booking_id], countdown=LOCK_DURATION_SECONDS)
+        except Exception as exc:  # the periodic sweep expires the booking anyway
+            logging.getLogger(__name__).warning("Could not queue expiry task: %s", exc)
+
+    threading.Thread(target=_send, daemon=True).start()
+
+
+def _build_pending_booking(user, slot, vehicle, start_time, end_time):
+    multiplier = _surge_for(slot, start_time, end_time)
+    base_amount, surge_amount, amount = pricing.price(
+        slot.hourly_rate, end_time - start_time, multiplier
+    )
 
     booking_number = _generate_booking_number()
-    now = timezone.now()
-
-    booking = Booking(
+    booking = Booking.objects.create(
         booking_number=booking_number,
         user=user,
         vehicle=vehicle,
@@ -237,32 +248,15 @@ def _build_pending_booking(user, slot, vehicle, start_time, end_time):
         status=Booking.Status.PENDING_PAYMENT,
         base_amount=base_amount,
         surge_amount=surge_amount,
-        surge_multiplier=surge_multiplier_dec,
+        surge_multiplier=multiplier,
         amount=amount,
         qr_code_token=booking_number,
-        lock_expires_at=now + timedelta(seconds=LOCK_DURATION_SECONDS),
+        lock_expires_at=timezone.now() + timedelta(seconds=LOCK_DURATION_SECONDS),
     )
-    booking.save()
     booking.qr_code_token = generate_qr_token(booking)
     booking.save(update_fields=["qr_code_token"])
 
-    import logging
-    import threading
-
-    from .tasks import expire_booking_lock
-
-    def trigger_celery_task():
-        try:
-            expire_booking_lock.apply_async(
-                args=[str(booking.id)],
-                countdown=LOCK_DURATION_SECONDS,
-            )
-        except Exception as e:
-            logging.warning("Failed to queue expire_booking_lock task: %s", e)
-
-    # Run in background thread so it doesn't block the API response if Redis is down
-    threading.Thread(target=trigger_celery_task, daemon=True).start()
-
+    transaction.on_commit(lambda: _enqueue_expiry(str(booking.id)))
     return booking
 
 
@@ -342,8 +336,7 @@ def cancel_booking(booking, user):
         booking = Booking.objects.select_for_update().get(id=booking.id)
         was_confirmed = booking.status == Booking.Status.CONFIRMED
 
-        booking.status = Booking.Status.CANCELLED
-        booking.save(update_fields=["status", "updated_at"])
+        transition(booking, Booking.Status.CANCELLED)
 
         # Free slot if it was reserved
         if was_confirmed:

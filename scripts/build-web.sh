@@ -11,7 +11,8 @@ build() { # <app dir> <base-href path>
   (cd "$ROOT/mobile/apps/$1" && flutter build web --release \
     --base-href "/$2/" \
     --dart-define=API_BASE_URL="$API_BASE_URL" \
-    --dart-define=DEMO_MODE="$DEMO_MODE")
+    --dart-define=DEMO_MODE="$DEMO_MODE" \
+    ${MAPTILER_API_KEY:+--dart-define=MAPTILER_API_KEY="$MAPTILER_API_KEY"})
   mkdir -p "$OUT/$2" && cp -R "$ROOT/mobile/apps/$1/build/web/." "$OUT/$2/"
 }
 

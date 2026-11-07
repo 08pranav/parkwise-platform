@@ -308,8 +308,8 @@ def seed(*, reset=False):
     _payment(completed)
 
     overstayed = _booking(
-        resident,
-        car,
+        second,
+        car2,
         car_slots[1],
         now - 2 * day,
         now - 2 * day + 2 * h,
@@ -320,7 +320,7 @@ def seed(*, reset=False):
     _payment(overstayed, provider=Payment.Provider.RAZORPAY)
     Penalty.objects.create(
         booking=overstayed,
-        user=resident,
+        user=second,
         overstay_minutes=80,
         amount=(overstayed.amount * Decimal("0.20") * 2).quantize(Decimal("0.01")),
     )

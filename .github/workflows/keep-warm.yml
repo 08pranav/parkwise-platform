@@ -9,5 +9,5 @@ jobs:
     steps:
       - name: Hit the health check so the free Render service stays awake
         env:
-          API_URL: ${{ secrets.API_URL }}
-        run: curl -fsS --max-time 60 "$API_URL/api/health/"
+          API_URL: https://parkwise-api-77gc.onrender.com
+        run: curl -fsS --max-time 90 --retry 2 --retry-all-errors "$API_URL/api/health/"

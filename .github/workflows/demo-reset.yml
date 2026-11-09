@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Wake the API, then reset the demo data
         env:
-          API_URL: ${{ secrets.API_URL }}
+          API_URL: https://parkwise-api-77gc.onrender.com
           DEMO_RESET_TOKEN: ${{ secrets.DEMO_RESET_TOKEN }}
         run: |
           for i in $(seq 1 12); do

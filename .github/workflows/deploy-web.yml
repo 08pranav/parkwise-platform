@@ -18,7 +18,7 @@ jobs:
           cache: true
       - name: Build every app against the live API
         env:
-          API_URL: ${{ secrets.API_URL }}
+          API_URL: https://parkwise-api-77gc.onrender.com
           MAPTILER_API_KEY: ${{ secrets.MAPTILER_API_KEY }}
         run: |
           scripts/build-web.sh "$API_URL" true

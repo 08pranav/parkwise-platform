@@ -10,7 +10,7 @@ from .factories import BookingFactory, SlotFactory, WindowFactory
 
 IST = ZoneInfo("Asia/Kolkata")
 UTC = ZoneInfo("UTC")
-MONDAY = date(2026, 11, 9)
+MONDAY = date(2031, 1, 6)
 
 
 def ist(day_offset, hour, minute=0):

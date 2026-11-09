@@ -56,7 +56,7 @@ Names only. Values live in `.env.deploy` (git-ignored) and in the Render dashboa
 
 **Web build (compile-time `--dart-define`)**: `API_BASE_URL`, `DEMO_MODE`, `MAPTILER_API_KEY`.
 
-**GitHub Actions secrets**: `API_URL`, `DEMO_RESET_TOKEN`, `VERCEL_TOKEN`, `MAPTILER_API_KEY`,
+**GitHub Actions secrets**: `DEMO_RESET_TOKEN`, `VERCEL_TOKEN`, `MAPTILER_API_KEY`,
 `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 
 ## Webhooks

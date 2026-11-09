@@ -202,7 +202,7 @@ Code: https://github.com/08pranav/parkwise-platform
 "ParkWise: smart parking for housing societies. Chapters: 00:03 Meet ParkWise, 00:24 Sign in, 00:54 Resident: book,
 pay, get a QR, 02:37 Guard: scan in, scan out, 04:24 Slot owner, 05:09 Society admin, 06:23 Super admin: refunds.
 Built by Pranav Koradiya, Santo Xavier and Junaid Momin at Specter Technology and Games Pvt. Ltd., mentored by
-Dr. Sanket Jack." The ready-to-paste posts are in [LINKEDIN_HANDOFF.md](LINKEDIN_HANDOFF.md).
+Dr. Sanket Jack."
 
 ### Tagging
 

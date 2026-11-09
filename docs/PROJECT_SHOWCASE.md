@@ -63,9 +63,9 @@ Full list with tests: [EDGE_CASES.md](EDGE_CASES.md). The ones that make the bes
 | Old backend (Python lines) | 1,495 | 0 (deleted) | same |
 | Backend Python lines | 6,688 | 9,766 (of which 2,222 are tests, 6,100 app code excluding migrations) | `git ls-tree` + `wc -l` at the reconciled commit vs `HEAD` |
 | Flutter app lines | 20,819 | 22,753 (includes the new owner app and 655 lines of tests) | same |
-| Backend tests | 0 (six empty `tests.py` stubs) | 236 | `pytest` |
+| Backend tests | 0 (six empty `tests.py` stubs) | 238 | `pytest` |
 | Backend coverage | none | 96.6% of `services.py`, 74.2% overall | `pytest --cov` |
-| Flutter tests | 1 small `core` test and 4 placeholders (`expect(true, isTrue)`) | 37 | counted `test(` and `testWidgets(` |
+| Flutter tests | 1 small `core` test and 4 placeholders (`expect(true, isTrue)`) | 40 | counted `test(` and `testWidgets(` |
 | Analyzer findings | 33 (core 10, user_app 7, admin_app 16) | 0 with `--fatal-infos` in every package | `flutter analyze` before and after |
 | Repo size (`.git`) | 46 MB (committed binaries: ngrok, Stripe CLI) | 7.8 MB | `du -sh .git`, history cleaned with `git filter-repo`, authors and dates kept |
 | Secrets in history | a Django key, a Razorpay test key, a MapTiler key, database credentials | removed and replaced with `***REMOVED***` | gitleaks plus a scan of every blob in every encoding |
@@ -81,7 +81,7 @@ Honest caveat: three Flutter screens are still very large (`home_screen.dart` 2,
 - 65 commits on `main` in the new repository (the original history was kept; original authors and dates preserved).
 - Live check: `scripts/smoke-live.mjs` runs 31 checks against the deployed API: all five roles sign in, a real Stripe test-card payment, QR entry, replay rejected, forced overstay with a penalty, a real Stripe refund, a Razorpay order and a signed Razorpay webhook. All 31 passed on the last run.
 - Android: five signed release APKs (53 to 69 MB each) in the v1.0.0 GitHub release, checked by package metadata, permissions and signature (not installed on a physical device).
-- Videos and a GIF: **not available** yet. Screenshots: 13 in `docs/screenshots/`, taken from the live site (fictional data).
+- Media: an 8-minute walkthrough with chapters, three highlight cuts (16:9, square, vertical) and seven GIFs, recorded from the live site with phone-sized screens for the phone apps (fictional data). Plus 13 screenshots in `docs/screenshots/`.
 
 ## 8. Skills demonstrated
 
@@ -97,7 +97,7 @@ services; secret scanning and git history rewriting; free-tier deployment (Rende
 - The data is a **fictional demo dataset** that resets nightly.
 - Three screens still need splitting; some endpoints lack request/response schemas in the OpenAPI docs.
 - Wallet balance and OTP password reset were in the first prototype and are not in the current product.
-- The demo videos are not produced yet; the APKs were verified by inspection, not on a device.
+- The APKs were verified by inspection, not on a device. The guard scan in the demo videos uses the manual-entry dialog because the recording browser has no camera.
 
 ## 10. Links
 
@@ -106,7 +106,7 @@ services; secret scanning and git history rewriting; free-tier deployment (Rende
 - Repository: https://github.com/08pranav/parkwise-platform
 - Edge cases: https://github.com/08pranav/parkwise-platform/blob/main/docs/EDGE_CASES.md
 - APK release: https://github.com/08pranav/parkwise-platform/releases/tag/v1.0.0
-- Videos and GIF: **not available yet**
+- Videos (full walkthrough, highlights, chapters): the v1.0.0 release page. GIFs: `docs/assets/gifs/`
 
 ## 11. LinkedIn material
 
@@ -114,7 +114,7 @@ services; secret scanning and git history rewriting; free-tier deployment (Rende
 
 1. **Problem-first:** "A society gate, a paper register and 200 cars. That's how most parking still works."
 2. **Edge-case story:** "Eight people tapped 'Book' on the same parking slot at the same millisecond. Our first version let all eight in."
-3. **Result-first:** "We turned an internship project into a deployed app with 236 tests, CI and a live demo."
+3. **Result-first:** "We turned an internship project into a deployed app with 238 tests, CI and a live demo."
 4. **Contrarian:** "The hard part of a parking app isn't the app. It's the money, the clock and the double click."
 5. **Question:** "What should happen when a customer pays for a parking slot six minutes after it was released?"
 
@@ -128,7 +128,7 @@ Residents book and pay for a slot, guards admit them with a signed QR code, and 
 It is a Django API with a Flutter app for each role: resident, slot owner, society admin, guard and super admin.
 
 When the internship ended we kept going. We merged two backends and eight Flutter apps into one backend and five apps
-on a shared package, wrote 236 backend tests, cleaned secrets and binaries out of the git history (46 MB down to 7.8 MB),
+on a shared package, wrote 238 backend tests, cleaned secrets and binaries out of the git history (46 MB down to 7.8 MB),
 set up CI, and deployed it on free tiers.
 
 What surprised us most was that the real work wasn't the screens. It was concurrency, payment webhooks, refunds and
@@ -199,11 +199,10 @@ Code: https://github.com/08pranav/parkwise-platform
 
 ### Video post caption
 
-**Not available yet** (no video has been produced). When one exists, use this structure and fill in the real timestamps:
-"ParkWise: smart parking for housing societies. Chapters: 0:00 overview, then super admin, owner and society admin,
-resident booking with surge pricing and a Stripe test payment, guard scan with replay protection, overstay penalty,
-refund, dark mode. Built by Pranav Koradiya, Santo Xavier and Junaid Momin at Specter Technology and Games Pvt. Ltd.,
-mentored by Dr. Sanket Jack."
+"ParkWise: smart parking for housing societies. Chapters: 00:03 Meet ParkWise, 00:24 Sign in, 00:54 Resident: book,
+pay, get a QR, 02:37 Guard: scan in, scan out, 04:24 Slot owner, 05:09 Society admin, 06:23 Super admin: refunds.
+Built by Pranav Koradiya, Santo Xavier and Junaid Momin at Specter Technology and Games Pvt. Ltd., mentored by
+Dr. Sanket Jack." The ready-to-paste posts are in [LINKEDIN_HANDOFF.md](LINKEDIN_HANDOFF.md).
 
 ### Tagging
 
@@ -211,14 +210,14 @@ mentored by Dr. Sanket Jack."
 - Mentor: **Dr. Sanket Jack**. Teammates: **Santo Xavier** and **Junaid Momin**. Tag each from the post editor so LinkedIn links their profiles; confirm each profile is the right person before posting.
 - Hashtags: 3 to 5 only, for example #Flutter #Django #SoftwareEngineering.
 
-### Instructions for the AI writing the post
+### Voice and rules for the post
 
 - Voice: an early-career software developer, plain and specific. First person plural ("we").
 - Credit the whole team equally: Pranav Koradiya, Santo Xavier, Junaid Momin. **Never say who did what.** For "what was your role?" the answer is "we worked across the full stack together".
 - Frame it as an internship project at Specter Technology and Games Pvt. Ltd. (Feb to Jun 2026) and thank Dr. Sanket Jack.
 - Lead with the problem, the solution, or one edge case. Use only the numbers in this file.
 - Do not overclaim: payments are test mode, the data is fictional, the service sleeps on the free tier, and some screens are still large.
-- Do not state statistics about parking in general unless the user gives a source.
+- Do not state statistics about parking in general unless you have a source for them.
 - End with the live link and the repository link, then 3 to 5 hashtags.
 
 ## 12. FAQ for recruiters and engineers
@@ -228,7 +227,7 @@ mentored by Dr. Sanket Jack."
 **What was the hardest part?** Making money and time behave: concurrency on booking, idempotent payment webhooks, refunds,
 and time zones. See EDGE_CASES.md.
 
-**How did you test it?** 236 backend tests on PostgreSQL (including multi-threaded race tests), 37 Flutter tests, and a
+**How did you test it?** 238 backend tests on PostgreSQL (including multi-threaded race tests), 40 Flutter tests, and a
 31-check live smoke test that pays with a real Stripe test card in a headless browser.
 
 **Is it production-ready?** It is production-shaped (CI, secret scanning, idempotent payments, deploy checks) but it runs
@@ -239,4 +238,4 @@ See ADR 0001.
 
 **Why Django?** Transactions and row locks, a mature ecosystem, and thin views over testable services.
 
-**What would you do next?** Split the three largest Flutter screens, finish the OpenAPI schemas, add the wallet and OTP password reset, and record the demo video.
+**What would you do next?** Split the three largest Flutter screens, finish the OpenAPI schemas, and add the wallet and OTP password reset.

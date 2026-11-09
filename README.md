@@ -17,6 +17,7 @@ Find a slot, pay online, drive in through a QR gate. Guards scan, overstays are 
 <p align="center">
   <a href="https://parkwise-alpha.vercel.app"><b>Try the live demo</b></a> ·
   <a href="https://github.com/08pranav/parkwise-platform/releases/latest"><b>Download APKs</b></a> ·
+  <a href="#demo-video"><b>Watch the demo</b></a> ·
   <a href="https://parkwise-api-77gc.onrender.com/api/docs/">API docs (Swagger)</a> ·
   <a href="docs/EDGE_CASES.md">Edge cases we solved</a>
 </p>
@@ -55,6 +56,41 @@ approve residents and slots, owners list spare slots, and a super admin onboards
 </p>
 
 More in [docs/screenshots/](docs/screenshots), taken from the live demo with fictional data.
+
+## Demo video
+
+The phone apps are shown on phone-sized screens; the landing page and super admin are shown on a desktop screen.
+
+<p>
+  <img src="docs/assets/gifs/resident-book-and-pay.gif" alt="Resident: pay with a Stripe test card and get a QR code" width="230">
+  <img src="docs/assets/gifs/guard-entry.gif" alt="Guard: entry scan approved" width="230">
+  <img src="docs/assets/gifs/guard-exit-penalty.gif" alt="Guard: exit scan with an overstay penalty" width="230">
+  <img src="docs/assets/gifs/owner-add-slot.gif" alt="Slot owner: add a slot" width="230">
+</p>
+<p>
+  <img src="docs/assets/gifs/resident-search.gif" alt="Resident: search and choose a duration" width="230">
+  <img src="docs/assets/gifs/admin-tabs.gif" alt="Society admin: slots, guards, owners, bookings" width="230">
+  <img src="docs/assets/gifs/super-refund.gif" alt="Super admin: refund a Stripe payment" width="460">
+</p>
+
+- **Full walkthrough (8 min, 1080p):** [ParkWise-full-wide.mp4](https://github.com/08pranav/parkwise-platform/releases/download/v1.0.0/ParkWise-full-wide.mp4)
+- **Highlights (about 80 s):** [16:9](https://github.com/08pranav/parkwise-platform/releases/download/v1.0.0/ParkWise-highlight-wide.mp4) ·
+  [square](https://github.com/08pranav/parkwise-platform/releases/download/v1.0.0/ParkWise-highlight-square.mp4) ·
+  [vertical](https://github.com/08pranav/parkwise-platform/releases/download/v1.0.0/ParkWise-highlight-tall.mp4)
+
+| Time | Chapter |
+|---|---|
+| 00:03 | Meet ParkWise |
+| 00:24 | Sign in |
+| 00:54 | Resident: book, pay, get a QR |
+| 02:37 | Guard: scan in, scan out |
+| 04:24 | Slot owner |
+| 05:09 | Society admin |
+| 06:23 | Super admin: refunds |
+
+Recorded from the live site with Playwright (`demo/`). The recording browser has no camera, so the guard enters the QR
+text with the app's manual-entry dialog, and the demo-only fast-forward endpoint moves a booking's clock so an overstay
+can be shown without waiting. Payments are Stripe test mode.
 
 ## Roles and features
 
@@ -181,8 +217,8 @@ All accounts use the password `Demo@12345`.
 
 ## Tests and CI
 
-- **Backend:** 236 pytest tests on PostgreSQL; 96.6% line coverage of the `services.py` modules (74% of the whole backend).
-- **Flutter:** 37 unit and widget tests across the shared package and the five apps; `flutter analyze --fatal-infos` is clean in every package.
+- **Backend:** 238 pytest tests on PostgreSQL; 96.6% line coverage of the `services.py` modules (74% of the whole backend).
+- **Flutter:** 40 unit and widget tests across the shared package and the five apps; `flutter analyze --fatal-infos` is clean in every package.
 - **CI** (GitHub Actions): ruff, pytest with Postgres and Redis, production-settings deploy checks, Flutter format/analyze/test/web build, and a gitleaks scan of the full history on every pull request.
 - **Live smoke test:** `scripts/smoke-live.mjs` signs in as every role on the deployed site, pays with a real Stripe test card in a headless browser, scans in, replays the scan, forces an overstay, and refunds, 31 checks.
 
@@ -196,7 +232,6 @@ The reference is generated from the OpenAPI schema: [docs/API_DOCUMENTATION.md](
 - Wallet balance and OTP password reset (carried over from the first prototype, see [ADR 0001](docs/decisions/0001-app-structure.md)).
 - Break up the largest Flutter screens into feature folders (`home_screen`, `refund_screen`, `booking_detail_screen` are still 1,400 to 2,200 lines).
 - Describe every endpoint's request and response in the OpenAPI schema (some views have no serializer yet).
-- A narrated demo video and GIF (the recording tooling and field map in `demo/` are in place; the video itself is not recorded yet).
 - Real-money payments need live keys, tax invoices and a production database plan.
 
 ## Team

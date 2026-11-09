@@ -4,7 +4,7 @@ Every entry below is something the code handles today and a test proves. Test na
 [`backend/tests/`](../backend/tests). Where a case came from the project's history or was found while
 testing the live deployment, the entry says so.
 
-Run them all: `make infra && make test` (236 tests; `services.py` modules are covered at 96.6%).
+Run them all: `make infra && make test` (238 tests; `services.py` modules are covered at 96.6%).
 
 ## Booking and availability
 

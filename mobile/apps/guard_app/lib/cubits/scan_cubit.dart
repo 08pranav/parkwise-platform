@@ -1,6 +1,18 @@
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+
+/// The network layer throws [ApiException] from inside a Dio interceptor, and Dio wraps it
+/// in a [DioException]. Unwrap it so the guard sees the server's own message
+/// ("This booking does not belong to your society.") and not exception class names.
+String scanErrorMessage(Object error) {
+  if (error is ApiException) return error.message;
+  if (error is DioException && error.error is ApiException) {
+    return (error.error as ApiException).message;
+  }
+  return 'Something went wrong. Check the connection and try again.';
+}
 
 // States
 abstract class ScanState extends Equatable {
@@ -53,10 +65,8 @@ class ScanCubit extends Cubit<ScanState> {
       );
       final data = response.data as Map<String, dynamic>;
       emit(ScanSuccess(data));
-    } on ApiException catch (e) {
-      emit(ScanError(e.message));
     } catch (e) {
-      emit(ScanError(e.toString()));
+      emit(ScanError(scanErrorMessage(e)));
     }
   }
 
@@ -69,10 +79,8 @@ class ScanCubit extends Cubit<ScanState> {
       );
       final data = response.data as Map<String, dynamic>;
       emit(ScanSuccess(data));
-    } on ApiException catch (e) {
-      emit(ScanError(e.message));
     } catch (e) {
-      emit(ScanError(e.toString()));
+      emit(ScanError(scanErrorMessage(e)));
     }
   }
 

@@ -68,3 +68,6 @@ demo/raw/
 demo/out/
 demo/*.mp4
 demo/*.webm
+demo/build/
+demo/cards/
+dist-media/

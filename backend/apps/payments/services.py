@@ -32,6 +32,24 @@ def _get_stripe_client():
     return stripe
 
 
+def _create_stripe_session(stripe_client, session_params):
+    """Create a Checkout Session, turning Stripe's own rejections into a clean 400.
+
+    Stripe refuses very small charges (about 50 US cents, roughly INR 43). Without this the
+    caller would get a bare 500 for a short, cheap booking.
+    """
+    try:
+        return stripe_client.checkout.Session.create(**session_params)
+    except stripe.InvalidRequestError as exc:
+        logger.warning("Stripe rejected the checkout session: %s", exc.user_message or exc)
+        raise ValidationError(
+            "Stripe cannot process this amount. Try a longer booking or pay with Razorpay."
+        ) from exc
+    except stripe.StripeError as exc:
+        logger.exception("Stripe checkout session could not be created")
+        raise ValidationError("Payment provider is unavailable. Please try again.") from exc
+
+
 def sync_razorpay_order_status(razorpay_order_id):
     """Poll Razorpay for an order and capture the local payment if it was paid.
 
@@ -240,7 +258,7 @@ def create_stripe_checkout_session(booking, request=None, embedded=False):
             cancel_url=_booking_return_url(frontend_base_url, booking.id, "checkout=cancelled"),
         )
 
-    checkout_session = stripe_client.checkout.Session.create(**session_params)
+    checkout_session = _create_stripe_session(stripe_client, session_params)
 
     payment = Payment.objects.create(
         booking=booking,
@@ -338,7 +356,7 @@ def create_stripe_penalty_checkout_session(penalty, request=None, embedded=False
             cancel_url=cancel_url,
         )
 
-    checkout_session = stripe_client.checkout.Session.create(**session_params)
+    checkout_session = _create_stripe_session(stripe_client, session_params)
 
     payment = Payment.objects.create(
         penalty=penalty,

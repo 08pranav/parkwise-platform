@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 import razorpay
+import stripe
 from rest_framework.exceptions import ValidationError
 
 from apps.payments import services as pay
@@ -99,6 +100,25 @@ class TestStripeCheckout:
             payment, _, _ = pay.create_stripe_penalty_checkout_session(penalty, embedded=True)
         assert payment.payment_type == Payment.PaymentType.PENALTY
         assert create.call_args.kwargs["line_items"][0]["price_data"]["unit_amount"] == 1200
+
+
+class TestStripeRejections:
+    def test_an_amount_stripe_refuses_becomes_a_clean_validation_error(self):
+        booking = BookingFactory(status="pending_payment")
+        too_small = stripe.InvalidRequestError("must convert to at least 50 cents", param="amount")
+        with mock.patch("stripe.checkout.Session.create", side_effect=too_small):
+            with pytest.raises(ValidationError) as caught:
+                pay.create_stripe_checkout_session(booking)
+        assert "Razorpay" in str(caught.value.detail[0])
+        assert not Payment.objects.filter(booking=booking).exists()
+
+    def test_other_stripe_failures_do_not_leak_as_a_server_error(self):
+        booking = BookingFactory(status="pending_payment")
+        with mock.patch(
+            "stripe.checkout.Session.create", side_effect=stripe.APIConnectionError("down")
+        ):
+            with pytest.raises(ValidationError):
+                pay.create_stripe_checkout_session(booking)
 
 
 class TestRazorpayOrders:

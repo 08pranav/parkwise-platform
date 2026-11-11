@@ -88,9 +88,9 @@ The phone apps are shown on phone-sized screens; the landing page and super admi
 | 05:09 | Society admin |
 | 06:23 | Super admin: refunds |
 
-Recorded from the live site with Playwright (`demo/`). The recording browser has no camera, so the guard enters the QR
-text with the app's manual-entry dialog, and the demo-only fast-forward endpoint moves a booking's clock so an overstay
-can be shown without waiting. Payments are Stripe test mode.
+Recorded from the live site. The recording browser has no camera, so the guard enters the QR text with the app's
+manual-entry dialog, and the demo-only fast-forward endpoint moves a booking's clock so an overstay can be shown
+without waiting. Payments are Stripe test mode.
 
 ## Roles and features
 
@@ -179,7 +179,7 @@ mobile/apps/             user_app, owner_app, admin_app, guard_app, super_admin_
 mobile/packages/core/    shared API client, auth, models, theme, widgets, bootstrap
 web/landing/             landing page for the demo site
 scripts/                 deploy, web build, API-docs generator, live smoke test
-docs/                    architecture, deployment, decisions, edge cases, API reference
+docs/                    architecture, deployment, edge cases, API reference
 ```
 
 ## Run it locally
@@ -229,7 +229,7 @@ The reference is generated from the OpenAPI schema: [docs/API_DOCUMENTATION.md](
 
 ## Roadmap
 
-- Wallet balance and OTP password reset (carried over from the first prototype, see [ADR 0001](docs/decisions/0001-app-structure.md)).
+- Wallet balance and OTP password reset.
 - Break up the largest Flutter screens into feature folders (`home_screen`, `refund_screen`, `booking_detail_screen` are still 1,400 to 2,200 lines).
 - Describe every endpoint's request and response in the OpenAPI schema (some views have no serializer yet).
 - Real-money payments need live keys, tax invoices and a production database plan.

@@ -62,12 +62,4 @@ dist/
 scripts/node_modules/
 scripts/package-lock.json
 dist-apk/
-demo/node_modules/
-demo/package-lock.json
-demo/raw/
-demo/out/
-demo/*.mp4
-demo/*.webm
-demo/build/
-demo/cards/
 dist-media/

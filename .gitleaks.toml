@@ -6,4 +6,3 @@ useDefault = true
 [allowlist]
 description = "Placeholders and test fixtures"
 regexes = ['''test-only-[a-z-]*secret[a-z0-9-]*''', '''change-me[a-z-]*''']
-paths = ['''docs/reconcile/REPORT\.md''']

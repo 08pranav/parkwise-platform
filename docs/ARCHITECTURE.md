@@ -112,7 +112,4 @@ stateDiagram-v2
 All timestamps are stored in UTC. Availability windows are wall-clock times in the project zone
 (Asia/Kolkata), and apps display IST. Window checks convert to local time and split at midnight.
 
-## Decisions
-
-See [`docs/decisions/`](decisions): [0001 app structure](decisions/0001-app-structure.md).
 Deployment and free-tier limits: [DEPLOYMENT.md](DEPLOYMENT.md). Failure modes and tests: [EDGE_CASES.md](EDGE_CASES.md).

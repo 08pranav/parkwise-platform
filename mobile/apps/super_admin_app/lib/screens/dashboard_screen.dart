@@ -56,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   vertical: 0,
                 ),
                 children: [
-                  // ── Top Bar ──────────────────────────────────────────────────
+                  // Top Bar
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Row(
@@ -127,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Onboard Society action ───────────────────────────────────
+                  // Onboard Society action
                   GestureDetector(
                     onTap: () => context.go('/societies/create'),
                     child: Container(
@@ -167,11 +167,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Metric Tiles ─────────────────────────────────────────────
+                  // Metric Tiles
                   _buildMetricGrid(state),
                   const SizedBox(height: 28),
 
-                  // ── Societies list ───────────────────────────────────────────
+                  // Societies list
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -30,7 +30,7 @@ class _GuardHomeContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top bar ───────────────────────────────────────────────────────
+            // Top bar
             Container(
               height: 64,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -140,7 +140,7 @@ class _GuardHomeContent extends StatelessWidget {
               ),
             ),
 
-            // ── Body ─────────────────────────────────────────────────────────
+            // Body
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),

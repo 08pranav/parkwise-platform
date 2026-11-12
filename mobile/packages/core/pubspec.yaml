@@ -1,5 +1,5 @@
 name: core
-description: Shared code for the Parking Platform mobile apps.
+description: Shared code for the ParkWise mobile apps.
 version: 0.0.1
 publish_to: none
 

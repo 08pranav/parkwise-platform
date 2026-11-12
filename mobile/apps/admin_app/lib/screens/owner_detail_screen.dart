@@ -109,7 +109,7 @@ class _OwnerDetailScreenState extends State<OwnerDetailScreen> {
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
-                      // ── Profile Detail Card ────────────────────────────────
+                      // Profile Detail Card
                       Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),

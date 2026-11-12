@@ -56,7 +56,7 @@ class _ParkingAppState extends State<ParkingApp> {
       child: ListenableBuilder(
         listenable: widget.themeNotifier,
         builder: (context, _) => MaterialApp.router(
-          title: 'ParkEase',
+          title: 'ParkWise',
           debugShowCheckedModeBanner: false,
           builder: (context, child) => DemoModeWrapper(
             account: DemoAccount.resident,

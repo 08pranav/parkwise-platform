@@ -66,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Top Gradient Brand Header ────────────────────────────────
+              // Top Gradient Brand Header
               Container(
                 padding: const EdgeInsets.fromLTRB(24, 70, 24, 50),
                 decoration: const BoxDecoration(
@@ -139,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              // ── Register Form Card ───────────────────────────────────────
+              // Register Form Card
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
                 child: Form(

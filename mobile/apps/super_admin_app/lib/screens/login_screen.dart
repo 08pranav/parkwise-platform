@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // ── Brand capsule ──────────────────────────────────────────
+                    // Brand capsule
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 36),
 
-                    // ── Headline ───────────────────────────────────────────────
+                    // Headline
                     Text(
                       'Super Admin',
                       textAlign: TextAlign.center,
@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 48),
 
-                    // ── Email ──────────────────────────────────────────────────
+                    // Email
                     AppTextField(
                       controller: _emailController,
                       label: 'EMAIL ADDRESS',
@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 14),
 
-                    // ── Password ───────────────────────────────────────────────
+                    // Password
                     AppTextField(
                       controller: _passwordController,
                       label: 'PASSWORD',
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // ── Sign In ────────────────────────────────────────────────
+                    // Sign In
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return PrimaryButton(

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import 'premium_card.dart';
 
-/// Stitch-style metric tile — uppercase label-caps text, large data value,
-/// optional icon in top-right. Matches the "Metric Tile" pattern from /new_ui.
+/// Metric tile: uppercase label-caps text, large data value,
+/// optional icon in top-right.
 class PremiumMetricTile extends StatelessWidget {
   final String label;
   final String value;

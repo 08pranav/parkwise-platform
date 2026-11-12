@@ -65,8 +65,8 @@ class DemoModeWrapper extends StatelessWidget {
                   Expanded(
                     child: Text(
                       hint == null
-                          ? 'Public demo — data resets nightly'
-                          : 'Public demo — data resets nightly · $hint',
+                          ? 'Public demo: data resets nightly'
+                          : 'Public demo: data resets nightly · $hint',
                       style: TextStyle(
                         fontSize: 12,
                         color: scheme.onTertiaryContainer,

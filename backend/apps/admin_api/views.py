@@ -325,8 +325,8 @@ class RefundLookupView(APIView):
 
 class RefundView(APIView):
     """
-    GET  /api/v1/admin/refunds/        – list all refunds (audit trail)
-    POST /api/v1/admin/refunds/        – initiate a refund for a booking
+    GET  /api/v1/admin/refunds/        - list all refunds (audit trail)
+    POST /api/v1/admin/refunds/        - initiate a refund for a booking
     """
 
     permission_classes = [permissions.IsAuthenticated, IsSuperAdmin]

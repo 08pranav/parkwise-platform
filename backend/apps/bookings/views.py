@@ -187,7 +187,7 @@ OVERSTAY_PENALTY_RATE = Decimal("0.20")  # 20% of booking amount per hour
 
 class BookingOvertimeView(APIView):
     """Read-only: returns live overtime status for an active booking.
-    Does NOT create a penalty — that only happens when the exit QR is scanned.
+    Does NOT create a penalty; that only happens when the exit QR is scanned.
     The Flutter app uses this to show the red overtime counter and estimated charge.
     """
 

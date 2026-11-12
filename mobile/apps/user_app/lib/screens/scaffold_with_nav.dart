@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Bottom navigation shell for the User app.
-/// Uses a custom NavigationBar backed by the Stitch design system —
+/// Uses a custom NavigationBar with the app theme:
 /// dark background, translucent frosted border, periwinkle-blue active icon.
 class ScaffoldWithNav extends StatelessWidget {
   final Widget child;

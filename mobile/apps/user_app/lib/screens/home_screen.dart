@@ -1527,7 +1527,7 @@ class _ParkingInProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ── Parse dates ────────────────────────────────────────────────────────
+    // Parse dates
     DateTime? endTime;
     DateTime? actualEntry;
     DateTime? actualExit;
@@ -1545,7 +1545,7 @@ class _ParkingInProgressCard extends StatelessWidget {
     final isActive = booking.isActive || hasEntryScan;
     final isConfirmed = booking.isConfirmed && !hasEntryScan;
 
-    // ── Overtime detection ─────────────────────────────────────────────────
+    // Overtime detection
     final isOvertime =
         isActive &&
         actualExit == null &&
@@ -1556,16 +1556,16 @@ class _ParkingInProgressCard extends StatelessWidget {
     final overstay = endTime == null ? Duration.zero : now.difference(endTime);
     final estimatedPenalty = isOvertime ? _estimatedPenalty(overstay) : 0.0;
 
-    // ── Status label ───────────────────────────────────────────────────────
+    // Status label
     final statusLabel = isOvertime
-        ? 'OVERTIME — EXIT IMMEDIATELY'
+        ? 'OVERTIME: EXIT IMMEDIATELY'
         : isActive
         ? 'Parking in progress'
         : isConfirmed
         ? 'Reserved, waiting for entry'
         : 'Payment pending';
 
-    // ── Card gradient — danger red in overtime, default navy otherwise ─────
+    // Card gradient — danger red in overtime, default navy otherwise
     final cardGradient = isOvertime
         ? const LinearGradient(
             begin: Alignment.topLeft,
@@ -1604,7 +1604,7 @@ class _ParkingInProgressCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // ── Overtime warning banner ──────────────────────────────────────
+          // Overtime warning banner
           if (isOvertime)
             Container(
               width: double.infinity,
@@ -1626,7 +1626,7 @@ class _ParkingInProgressCard extends StatelessWidget {
                   ),
                   SizedBox(width: 8),
                   Text(
-                    'PENALTY ACCRUING — SCAN EXIT QR NOW',
+                    'PENALTY ACCRUING: SCAN EXIT QR NOW',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -1644,7 +1644,7 @@ class _ParkingInProgressCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Header row ──────────────────────────────────────────────
+                // Header row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1721,7 +1721,7 @@ class _ParkingInProgressCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
-                // ── Timer row ────────────────────────────────────────────────
+                // Timer row
                 Row(
                   children: [
                     Expanded(
@@ -1761,7 +1761,7 @@ class _ParkingInProgressCard extends StatelessWidget {
                   ],
                 ),
 
-                // ── Slot pill when in overtime (since we use both tiles for timer/penalty) ──
+                // Slot pill when in overtime (since we use both tiles for timer/penalty)
                 if (isOvertime && booking.slotNumber != null) ...[
                   const SizedBox(height: 10),
                   _MiniPill(
@@ -1770,7 +1770,7 @@ class _ParkingInProgressCard extends StatelessWidget {
                   ),
                 ],
 
-                // ── Entry / exit pills ────────────────────────────────────────
+                // Entry / exit pills
                 if (actualEntry != null || actualExit != null) ...[
                   const SizedBox(height: 12),
                   Wrap(
@@ -1794,7 +1794,7 @@ class _ParkingInProgressCard extends StatelessWidget {
                 ],
                 const SizedBox(height: 16),
 
-                // ── Contextual body copy ──────────────────────────────────────
+                // Contextual body copy
                 Text(
                   isOvertime
                       ? 'Your booked time has ended. A penalty of ₹${estimatedPenalty.toStringAsFixed(2)} has accrued (20% of booking amount per started hour). Ask the guard to scan your exit QR now to stop further charges.'
@@ -1809,7 +1809,7 @@ class _ParkingInProgressCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
-                // ── Action buttons ───────────────────────────────────────────
+                // Action buttons
                 Row(
                   children: [
                     Expanded(

@@ -1,9 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:core/core.dart';
 
-// ──────────────────────────────────────────────────────────────────────────────
 // State
-// ──────────────────────────────────────────────────────────────────────────────
 
 class PenaltiesState {
   final bool isLoading;
@@ -33,9 +31,7 @@ class PenaltiesState {
       penalties.where((p) => p.booking == bookingId && p.isUnpaid).toList();
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
 // Cubit
-// ──────────────────────────────────────────────────────────────────────────────
 
 class PenaltiesCubit extends Cubit<PenaltiesState> {
   final ApiClient _apiClient;
@@ -72,7 +68,7 @@ class PenaltiesCubit extends Cubit<PenaltiesState> {
     }
   }
 
-  /// Initiate penalty payment — returns the PaymentModel or null on failure.
+  /// Initiate penalty payment; returns the PaymentModel or null on failure.
   Future<PaymentModel?> payPenalty(
     String penaltyId, {
     bool embedded = false,

@@ -42,7 +42,7 @@ class _GuardAppState extends State<GuardApp> {
       child: ListenableBuilder(
         listenable: widget.themeNotifier,
         builder: (context, _) => MaterialApp.router(
-          title: 'Gate App',
+          title: 'ParkWise Guard',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: widget.themeNotifier.themeMode,

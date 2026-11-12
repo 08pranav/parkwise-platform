@@ -1,9 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:core/core.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
 // State
-// ─────────────────────────────────────────────────────────────────────────────
 
 class RefundState {
   final bool isLookingUp;
@@ -57,16 +55,14 @@ class RefundState {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Cubit
-// ─────────────────────────────────────────────────────────────────────────────
 
 class RefundCubit extends Cubit<RefundState> {
   final ApiClient _apiClient;
 
   RefundCubit(this._apiClient) : super(const RefundState());
 
-  // ── Lookup ──────────────────────────────────────────────────────────────────
+  // Lookup
 
   Future<void> lookupBooking(String bookingId) async {
     final trimmed = bookingId.trim();
@@ -98,7 +94,7 @@ class RefundCubit extends Cubit<RefundState> {
 
   void clearLookup() => emit(state.copyWith(clearLookup: true));
 
-  // ── Initiate refund ─────────────────────────────────────────────────────────
+  // Initiate refund
 
   Future<bool> initiateRefund({
     required String bookingId,
@@ -139,7 +135,7 @@ class RefundCubit extends Cubit<RefundState> {
     }
   }
 
-  // ── History ─────────────────────────────────────────────────────────────────
+  // History
 
   Future<void> loadHistory() async {
     emit(state.copyWith(isLoadingHistory: true));

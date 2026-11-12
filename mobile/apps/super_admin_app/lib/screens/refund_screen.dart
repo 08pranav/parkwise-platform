@@ -5,9 +5,7 @@ import 'package:core/core.dart';
 
 import '../cubits/refund_cubit.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Lightweight date formatter (avoids adding the intl package)
-// ─────────────────────────────────────────────────────────────────────────────
 String _formatDateTime(DateTime d) {
   final months = [
     'Jan',
@@ -30,9 +28,7 @@ String _formatDateTime(DateTime d) {
       '${d.year.toString().substring(2)}, $h:$m $ampm';
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Root screen with tab switcher
-// ─────────────────────────────────────────────────────────────────────────────
 class RefundScreen extends StatefulWidget {
   const RefundScreen({super.key});
 
@@ -65,7 +61,7 @@ class _RefundScreenState extends State<RefundScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top bar ──────────────────────────────────────────────────────
+            // Top bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
@@ -140,7 +136,7 @@ class _RefundScreenState extends State<RefundScreen>
               color: cs.outlineVariant,
               margin: const EdgeInsets.symmetric(horizontal: 20),
             ),
-            // ── Tabs ─────────────────────────────────────────────────────────
+            // Tabs
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
@@ -169,7 +165,7 @@ class _RefundScreenState extends State<RefundScreen>
                 ],
               ),
             ),
-            // ── Tab views ────────────────────────────────────────────────────
+            // Tab views
             Expanded(
               child: TabBarView(
                 controller: _tabs,
@@ -183,9 +179,7 @@ class _RefundScreenState extends State<RefundScreen>
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TAB 1 – Issue Refund
-// ─────────────────────────────────────────────────────────────────────────────
+// TAB 1: Issue Refund
 class _IssueRefundTab extends StatefulWidget {
   const _IssueRefundTab();
 
@@ -335,7 +329,7 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
         return ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
-            // ── Lookup card ─────────────────────────────────────────────────
+            // Lookup card
             _SectionCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,7 +368,7 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
             ),
             const SizedBox(height: 14),
 
-            // ── Booking snapshot ─────────────────────────────────────────────
+            // Booking snapshot
             if (state.lookupData != null) ...[
               _BookingSnapshotCard(
                 data: state.lookupData!,
@@ -387,7 +381,7 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
               ),
               const SizedBox(height: 14),
 
-              // ── Refund form ────────────────────────────────────────────────
+              // Refund form
               _SectionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,9 +453,7 @@ class _IssueRefundTabState extends State<_IssueRefundTab> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TAB 2 – Refund History
-// ─────────────────────────────────────────────────────────────────────────────
+// TAB 2: Refund History
 class _HistoryTab extends StatelessWidget {
   const _HistoryTab();
 
@@ -511,9 +503,7 @@ class _HistoryTab extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Sub-widgets
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
   final Widget child;
@@ -1265,9 +1255,7 @@ class _EmptyLookupHint extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Confirm Dialog
-// ─────────────────────────────────────────────────────────────────────────────
 class _ConfirmDialog extends StatelessWidget {
   final String bookingNumber;
   final String userName;
@@ -1410,9 +1398,7 @@ class _DialogRow extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // History tile
-// ─────────────────────────────────────────────────────────────────────────────
 class _RefundHistoryTile extends StatelessWidget {
   final Map<String, dynamic> data;
   const _RefundHistoryTile({required this.data});

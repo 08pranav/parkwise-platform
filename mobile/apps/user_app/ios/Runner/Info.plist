@@ -46,8 +46,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>ParkEase uses your location to help you pick a parking destination.</string>
+	<string>ParkWise uses your location to help you pick a parking destination.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>ParkEase uses Face ID to quickly and securely log you into your account.</string>
+	<string>ParkWise uses Face ID to quickly and securely log you into your account.</string>
 </dict>
 </plist>

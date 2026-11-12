@@ -62,7 +62,7 @@ class _SuperAdminAppState extends State<SuperAdminApp> {
       child: ListenableBuilder(
         listenable: widget.themeNotifier,
         builder: (context, _) => MaterialApp.router(
-          title: 'Parking Super Admin',
+          title: 'ParkWise Super Admin',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: widget.themeNotifier.themeMode,

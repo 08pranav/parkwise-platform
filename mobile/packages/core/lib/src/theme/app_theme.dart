@@ -4,19 +4,19 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// ParkEase theme — matches the landing page white+purple design.
+/// ParkWise theme: matches the landing page white+purple design.
 /// Provides both a [lightTheme] and [darkTheme] for the system/user toggle.
 class AppTheme {
   AppTheme._();
 
-  // ── Public accessors ──────────────────────────────────────────────────────
+  // Public accessors
   static ThemeData get lightTheme => _buildLight();
   static ThemeData get darkTheme => _buildDark();
 
   /// Legacy alias so existing `AppTheme.light` calls keep compiling.
   static ThemeData get light => _buildLight();
 
-  // ── Text themes using Plus Jakarta Sans (headings) + Inter (body) ─────────
+  // Text themes using Plus Jakarta Sans (headings) + Inter (body)
   static TextTheme _textTheme(Color primary, Color secondary) {
     final headingStyle = GoogleFonts.plusJakartaSansTextTheme().copyWith(
       displayLarge: GoogleFonts.plusJakartaSans(
@@ -109,7 +109,7 @@ class AppTheme {
     return headingStyle;
   }
 
-  // ── Light Theme ───────────────────────────────────────────────────────────
+  // Light Theme
   static ThemeData _buildLight() {
     const colorScheme = ColorScheme(
       brightness: Brightness.light,
@@ -375,7 +375,7 @@ class AppTheme {
     );
   }
 
-  // ── Dark Theme ────────────────────────────────────────────────────────────
+  // Dark Theme
   static ThemeData _buildDark() {
     const darkPrimary = Color(0xFF818CF8); // indigo-400 — lighter for dark bg
     const colorScheme = ColorScheme(

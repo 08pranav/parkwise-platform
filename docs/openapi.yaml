@@ -48,8 +48,8 @@ paths:
     get:
       operationId: v1_admin_refunds_retrieve
       description: |-
-        GET  /api/v1/admin/refunds/        – list all refunds (audit trail)
-        POST /api/v1/admin/refunds/        – initiate a refund for a booking
+        GET  /api/v1/admin/refunds/        - list all refunds (audit trail)
+        POST /api/v1/admin/refunds/        - initiate a refund for a booking
       tags:
       - v1
       security:
@@ -60,8 +60,8 @@ paths:
     post:
       operationId: v1_admin_refunds_create
       description: |-
-        GET  /api/v1/admin/refunds/        – list all refunds (audit trail)
-        POST /api/v1/admin/refunds/        – initiate a refund for a booking
+        GET  /api/v1/admin/refunds/        - list all refunds (audit trail)
+        POST /api/v1/admin/refunds/        - initiate a refund for a booking
       tags:
       - v1
       security:
@@ -721,7 +721,7 @@ paths:
       operationId: v1_bookings_overtime_retrieve
       description: |-
         Read-only: returns live overtime status for an active booking.
-        Does NOT create a penalty — that only happens when the exit QR is scanned.
+        Does NOT create a penalty; that only happens when the exit QR is scanned.
         The Flutter app uses this to show the red overtime counter and estimated charge.
       parameters:
       - in: path

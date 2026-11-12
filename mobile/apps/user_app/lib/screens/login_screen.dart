@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Top Gradient Brand Header ────────────────────────────────
+              // Top Gradient Brand Header
               Container(
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 60),
                 decoration: const BoxDecoration(
@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              // ── Login Form Card ──────────────────────────────────────────
+              // Login Form Card
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
                 child: Form(

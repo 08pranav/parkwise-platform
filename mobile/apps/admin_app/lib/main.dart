@@ -61,7 +61,7 @@ class _AdminAppState extends State<AdminApp> {
       child: ListenableBuilder(
         listenable: widget.themeNotifier,
         builder: (context, _) => MaterialApp.router(
-          title: 'Parking Admin',
+          title: 'ParkWise Admin',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: widget.themeNotifier.themeMode,

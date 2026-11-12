@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // ── Brand header ───────────────────────────────────────────
+                    // Brand header
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 48),
 
-                    // ── Email ──────────────────────────────────────────────────
+                    // Email
                     AppTextField(
                       controller: _emailController,
                       label: 'EMAIL ADDRESS',
@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 14),
 
-                    // ── Password ───────────────────────────────────────────────
+                    // Password
                     AppTextField(
                       controller: _passwordController,
                       label: 'PASSWORD',
@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // ── Submit ─────────────────────────────────────────────────
+                    // Submit
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return PrimaryButton(
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // ── Apply link ─────────────────────────────────────────────
+                    // Apply link
                     Center(
                       child: GestureDetector(
                         onTap: () => context.go('/apply'),

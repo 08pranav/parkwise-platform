@@ -21,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
 
           return CustomScrollView(
             slivers: [
-              // ── Top App Bar ─────────────────────────────────────────────────
+              // Top App Bar
               SliverAppBar(
                 pinned: true,
                 backgroundColor: Theme.of(context).colorScheme.surface,
@@ -45,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              // ── Avatar & name ────────────────────────────────────────────────
+              // Avatar & name
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 32, 20, 0),
@@ -125,7 +125,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              // ── Info cards ──────────────────────────────────────────────────
+              // Info cards
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 32, 20, 0),
@@ -164,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              // ── Actions ─────────────────────────────────────────────────────
+              // Actions
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
@@ -195,7 +195,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              // ── Sign Out ─────────────────────────────────────────────────────
+              // Sign Out
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 32, 20, 48),
